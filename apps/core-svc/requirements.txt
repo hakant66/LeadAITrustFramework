@@ -1,0 +1,7 @@
+﻿fastapi
+uvicorn[standard]
+pydantic
+sqlalchemy
+psycopg[binary]
+python-dotenv
+asyncpg>=0.29,<0.31
