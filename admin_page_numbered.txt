@@ -1,0 +1,784 @@
+   1: "use client";
+   2: 
+   3: import { useCallback, useEffect, useState } from "react";
+   4: 
+   5: import Header from "@/app/(components)/Header";
+   6: 
+   7: type ProjectCreate = {
+   8:   slug: string;
+   9:   name: string;
+  10:   risk_level?: string;
+  11:   target_threshold: number; // 0..1
+  12: };
+  13: 
+  14: type ProjectSummary = {
+  15:   id: string;
+  16:   slug: string;
+  17:   name: string;
+  18:   risk_level?: string | null;
+  19:   target_threshold?: number | null;
+  20: };
+  21: 
+  22: type PillarPayload = {
+  23:   pillar: string;
+  24:   score_pct: number;
+  25:   maturity?: number;
+  26: };
+  27: 
+  28: type ScorePayload = {
+  29:   control_id: string;
+  30:   score: number;
+  31: };
+  32: 
+  33: const base =
+  34:   process.env.NEXT_PUBLIC_CORE_SVC_URL ??
+  35:   process.env.CORE_SVC_URL ??
+  36:   "http://localhost:8001";
+  37: 
+  38: const emptyProject: ProjectCreate = {
+  39:   slug: "",
+  40:   name: "",
+  41:   risk_level: "low",
+  42:   target_threshold: 0.75,
+  43: };
+  44: 
+  45: function ensureCloneSlug(sourceSlug: string, existing: Set<string>): string {
+  46:   const normalized =
+  47:     sourceSlug.trim().toLowerCase().replace(/\s+/g, "-") || "project";
+  48:   const root = `${normalized}-clone`;
+  49:   if (!existing.has(root)) return root;
+  50:   let idx = 2;
+  51:   let candidate = `${root}-${idx}`;
+  52:   while (existing.has(candidate)) {
+  53:     idx += 1;
+  54:     candidate = `${root}-${idx}`;
+  55:   }
+  56:   return candidate;
+  57: }
+  58: 
+  59: function extractPillarPayload(detail: any): PillarPayload[] {
+  60:   if (!Array.isArray(detail?.pillars)) return [];
+  61:   const results: PillarPayload[] = [];
+  62:   for (const raw of detail.pillars) {
+  63:     const pillar = String(
+  64:       raw?.pillar ?? raw?.pillar_key ?? raw?.name ?? ""
+  65:     ).trim();
+  66:     if (!pillar) continue;
+  67:     const scoreValue = Number(raw?.score_pct ?? raw?.score ?? NaN);
+  68:     if (!Number.isFinite(scoreValue)) continue;
+  69:     const maturityValue = Number(raw?.maturity);
+  70:     results.push({
+  71:       pillar,
+  72:       score_pct: Math.max(0, Math.min(100, Math.round(scoreValue))),
+  73:       maturity: Number.isFinite(maturityValue) ? maturityValue : undefined,
+  74:     });
+  75:   }
+  76:   return results;
+  77: }
+  78: 
+  79: function extractScorePayload(detail: any): ScorePayload[] {
+  80:   if (!Array.isArray(detail?.kpis)) return [];
+  81:   const items: ScorePayload[] = [];
+  82:   for (const k of detail.kpis) {
+  83:     const controlId = String(
+  84:       k?.key ?? k?.control_id ?? k?.kpi_id ?? ""
+  85:     ).trim();
+  86:     if (!controlId) continue;
+  87:     const rawValue = Number(k?.raw_value);
+  88:     const normalized = Number(k?.normalized_pct);
+  89:     const value = Number.isFinite(rawValue)
+  90:       ? rawValue
+  91:       : Number.isFinite(normalized)
+  92:       ? normalized
+  93:       : null;
+  94:     if (value === null) continue;
+  95:     items.push({ control_id: controlId, score: value });
+  96:   }
+  97:   return items;
+  98: }
+  99: 
+ 100: export default function AdminCaptureProjectPage() {
+ 101:   const [proj, setProj] = useState<ProjectCreate>({ ...emptyProject });
+ 102:   const [createBusy, setCreateBusy] = useState(false);
+ 103:   const [cloneBusy, setCloneBusy] = useState(false);
+ 104:   const [deleteBusy, setDeleteBusy] = useState(false);
+ 105:   const [updateBusy, setUpdateBusy] = useState(false);
+ 106: 
+ 107:   const [projects, setProjects] = useState<ProjectSummary[]>([]);
+ 108:   const [projectsLoading, setProjectsLoading] = useState(false);
+ 109:   const [cloneTarget, setCloneTarget] = useState("");
+ 110:   const [deleteTarget, setDeleteTarget] = useState("");
+ 111:   const [editTarget, setEditTarget] = useState("");
+ 112:   const [editForm, setEditForm] = useState<ProjectCreate>({ ...emptyProject });
+ 113: 
+ 114:   const [msg, setMsg] = useState<string | null>(null);
+ 115:   const [error, setError] = useState<string | null>(null);
+ 116: 
+ 117:   const loadProjects = useCallback(async () => {
+ 118:     setProjectsLoading(true);
+ 119:     try {
+ 120:       const res = await fetch(`${base}/projects`, { cache: "no-store" });
+ 121:       if (!res.ok) {
+ 122:         throw new Error(`Failed to load projects (${res.status})`);
+ 123:       }
+ 124:       const data = await res.json();
+ 125:       const list: ProjectSummary[] = Array.isArray(data)
+ 126:         ? data.map((p: any) => ({
+ 127:             id: String(p.id ?? ""),
+ 128:             slug: String(p.slug ?? ""),
+ 129:             name: String(p.name ?? p.slug ?? ""),
+ 130:             risk_level: typeof p.risk_level === "string" ? p.risk_level : null,
+ 131:             target_threshold:
+ 132:               typeof p.target_threshold === "number"
+ 133:                 ? p.target_threshold
+ 134:                 : Number.isFinite(Number(p.target_threshold))
+ 135:                 ? Number(p.target_threshold)
+ 136:                 : null,
+ 137:           }))
+ 138:         : [];
+ 139:       setProjects(list);
+ 140:       if (list.length) {
+ 141:         const fallbackSlug = list[0].slug;
+ 142:         setCloneTarget((prev) =>
+ 143:           prev && list.some((p) => p.slug === prev) ? prev : fallbackSlug
+ 144:         );
+ 145:         setDeleteTarget((prev) =>
+ 146:           prev && list.some((p) => p.slug === prev) ? prev : fallbackSlug
+ 147:         );
+ 148:         setEditTarget((prev) =>
+ 149:           prev && list.some((p) => p.slug === prev) ? prev : fallbackSlug
+ 150:         );
+ 151:       } else {
+ 152:         setCloneTarget("");
+ 153:         setDeleteTarget("");
+ 154:         setEditTarget("");
+ 155:         setEditForm({ ...emptyProject });
+ 156:       }
+ 157:     } catch (e: any) {
+ 158:       setError(e?.message ?? String(e));
+ 159:     } finally {
+ 160:       setProjectsLoading(false);
+ 161:     }
+ 162:   }, []);
+ 163: 
+ 164:   useEffect(() => {
+ 165:     void loadProjects();
+ 166:   }, [loadProjects]);
+ 167: 
+ 168:   useEffect(() => {
+ 169:     if (!editTarget) {
+ 170:       setEditForm({ ...emptyProject });
+ 171:       return;
+ 172:     }
+ 173:     const selected = projects.find((p) => p.slug === editTarget);
+ 174:     if (selected) {
+ 175:       setEditForm({
+ 176:         slug: selected.slug,
+ 177:         name: selected.name,
+ 178:         risk_level: selected.risk_level ?? "low",
+ 179:         target_threshold:
+ 180:           typeof selected.target_threshold === "number"
+ 181:             ? selected.target_threshold
+ 182:             : 0.75,
+ 183:       });
+ 184:     }
+ 185:   }, [editTarget, projects]);
+ 186: 
+ 187:   const onCreateProject = async () => {
+ 188:     setCreateBusy(true);
+ 189:     setMsg(null);
+ 190:     setError(null);
+ 191:     try {
+ 192:       const res = await fetch(`${base}/admin/projects`, {
+ 193:         method: "POST",
+ 194:         headers: { "Content-Type": "application/json" },
+ 195:         body: JSON.stringify(proj),
+ 196:       });
+ 197:       if (!res.ok) {
+ 198:         const j = await res.json().catch(() => ({}));
+ 199:         throw new Error(j?.detail || `Create project failed (${res.status})`);
+ 200:       }
+ 201:       setMsg(`Project '${proj.slug}' created.`);
+ 202:       setProj({ ...emptyProject });
+ 203:       await loadProjects();
+ 204:     } catch (e: any) {
+ 205:       setError(e?.message ?? String(e));
+ 206:     } finally {
+ 207:       setCreateBusy(false);
+ 208:     }
+ 209:   };
+ 210: 
+ 211:   const handleCloneProject = async () => {
+ 212:     if (!cloneTarget) return;
+ 213:     setCloneBusy(true);
+ 214:     setMsg(null);
+ 215:     setError(null);
+ 216:     try {
+ 217:       const source = projects.find((p) => p.slug === cloneTarget);
+ 218:       const detailRes = await fetch(
+ 219:         `${base}/scorecard/${encodeURIComponent(cloneTarget)}`,
+ 220:         { cache: "no-store" }
+ 221:       );
+ 222:       if (!detailRes.ok) {
+ 223:         throw new Error(`Failed to load project data (${detailRes.status})`);
+ 224:       }
+ 225:       const payload = await detailRes.json();
+ 226:       const sourceProject = payload?.project ?? {};
+ 227:       const currentSlugs = new Set(projects.map((p) => p.slug));
+ 228: 
+ 229:       const canonicalSlug =
+ 230:         String(sourceProject.slug ?? source?.slug ?? cloneTarget) || cloneTarget;
+ 231:       const newSlug = ensureCloneSlug(canonicalSlug, currentSlugs);
+ 232:       const newName = `${String(
+ 233:         sourceProject.name ?? source?.name ?? cloneTarget
+ 234:       )} clone`;
+ 235:       const riskLevel =
+ 236:         typeof sourceProject.risk_level === "string"
+ 237:           ? sourceProject.risk_level
+ 238:           : source?.risk_level ?? "low";
+ 239:       const targetThreshold =
+ 240:         typeof sourceProject.target_threshold === "number"
+ 241:           ? sourceProject.target_threshold
+ 242:           : typeof source?.target_threshold === "number"
+ 243:           ? source?.target_threshold ?? 0.75
+ 244:           : Number.isFinite(Number(source?.target_threshold))
+ 245:           ? Number(source?.target_threshold)
+ 246:           : 0.75;
+ 247: 
+ 248:       const createRes = await fetch(`${base}/admin/projects`, {
+ 249:         method: "POST",
+ 250:         headers: { "Content-Type": "application/json" },
+ 251:         body: JSON.stringify({
+ 252:           slug: newSlug,
+ 253:           name: newName,
+ 254:           risk_level: riskLevel,
+ 255:           target_threshold: targetThreshold,
+ 256:         }),
+ 257:       });
+ 258:       if (!createRes.ok) {
+ 259:         const j = await createRes.json().catch(() => ({}));
+ 260:         throw new Error(
+ 261:           j?.detail || `Clone failed during creation (${createRes.status})`
+ 262:         );
+ 263:       }
+ 264: 
+ 265:       const pillarPayload = extractPillarPayload(payload);
+ 266: 
+ 267:       if (pillarPayload.length) {
+ 268:         const pillarsRes = await fetch(
+ 269:           `${base}/scorecard/${encodeURIComponent(newSlug)}/pillars`,
+ 270:           {
+ 271:             method: "POST",
+ 272:             headers: { "Content-Type": "application/json" },
+ 273:             body: JSON.stringify({ pillars: pillarPayload }),
+ 274:           }
+ 275:         );
+ 276:         if (!pillarsRes.ok) {
+ 277:           const text = await pillarsRes.text().catch(() => "");
+ 278:           throw new Error(
+ 279:             `Failed to copy pillars (${pillarsRes.status}): ${text}`
+ 280:           );
+ 281:         }
+ 282:       }
+ 283: 
+ 284:       const scorePayload = extractScorePayload(payload);
+ 285: 
+ 286:       if (scorePayload.length) {
+ 287:         const scoreRes = await fetch(
+ 288:           `${base}/scorecard/${encodeURIComponent(newSlug)}`,
+ 289:           {
+ 290:             method: "POST",
+ 291:             headers: { "Content-Type": "application/json" },
+ 292:             body: JSON.stringify({ scores: scorePayload }),
+ 293:           }
+ 294:         );
+ 295:         if (!scoreRes.ok) {
+ 296:           const text = await scoreRes.text().catch(() => "");
+ 297:           throw new Error(
+ 298:             `Failed to copy KPI scores (${scoreRes.status}): ${text}`
+ 299:           );
+ 300:         }
+ 301:       }
+ 302: 
+ 303:       setMsg(
+ 304:         `Project '${newName}' cloned from '${source?.name ?? cloneTarget}'.`
+ 305:       );
+ 306:       await loadProjects();
+ 307:       setCloneTarget(newSlug);
+ 308:       setDeleteTarget(newSlug);
+ 309:       setEditTarget(newSlug);
+ 310:     } catch (e: any) {
+ 311:       setError(e?.message ?? String(e));
+ 312:     } finally {
+ 313:       setCloneBusy(false);
+ 314:     }
+ 315:   };
+ 316: 
+ 317:   const handleDeleteProject = async () => {
+ 318:     if (!deleteTarget) return;
+ 319:     const project = projects.find((p) => p.slug === deleteTarget);
+ 320:     if (typeof window !== "undefined") {
+ 321:       const confirmed = window.confirm(
+ 322:         "Are you sure? All data will be permanently deleted."
+ 323:       );
+ 324:       if (!confirmed) return;
+ 325:     }
+ 326:     setDeleteBusy(true);
+ 327:     setMsg(null);
+ 328:     setError(null);
+ 329:     try {
+ 330:       const res = await fetch(
+ 331:         `${base}/projects/${encodeURIComponent(deleteTarget)}`,
+ 332:         { method: "DELETE" }
+ 333:       );
+ 334:       if (!res.ok && res.status !== 204) {
+ 335:         const text = await res.text().catch(() => "");
+ 336:         throw new Error(
+ 337:           text || `Delete failed (${res.status || "unknown status"})`
+ 338:         );
+ 339:       }
+ 340:       setMsg(`Project '${project?.name ?? deleteTarget}' deleted.`);
+ 341:       await loadProjects();
+ 342:     } catch (e: any) {
+ 343:       setError(e?.message ?? String(e));
+ 344:     } finally {
+ 345:       setDeleteBusy(false);
+ 346:     }
+ 347:   };
+ 348: 
+ 349:   const handleUpdateProject = async () => {
+ 350:     if (!editTarget) return;
+ 351:     setUpdateBusy(true);
+ 352:     setMsg(null);
+ 353:     setError(null);
+ 354:     try {
+ 355:       const original = projects.find((p) => p.slug === editTarget);
+ 356:       if (!original) {
+ 357:         throw new Error("Selected project not found.");
+ 358:       }
+ 359: 
+ 360:       const desiredSlug = editForm.slug.trim();
+ 361:       if (!desiredSlug) {
+ 362:         throw new Error("Slug cannot be empty.");
+ 363:       }
+ 364:       const targetThreshold = Number(editForm.target_threshold);
+ 365:       if (!Number.isFinite(targetThreshold) || targetThreshold < 0 || targetThreshold > 1) {
+ 366:         throw new Error("Target threshold must be between 0 and 1.");
+ 367:       }
+ 368: 
+ 369:       const payload = {
+ 370:         slug: desiredSlug,
+ 371:         name: editForm.name.trim() || desiredSlug,
+ 372:         risk_level: editForm.risk_level?.trim() || "low",
+ 373:         target_threshold: targetThreshold,
+ 374:       };
+ 375: 
+ 376:       if (desiredSlug === original.slug) {
+ 377:         const res = await fetch(`${base}/admin/projects`, {
+ 378:           method: "POST",
+ 379:           headers: { "Content-Type": "application/json" },
+ 380:           body: JSON.stringify(payload),
+ 381:         });
+ 382:         if (!res.ok) {
+ 383:           const text = await res.text().catch(() => "");
+ 384:           throw new Error(text || `Update failed (${res.status})`);
+ 385:         }
+ 386:       } else {
+ 387:         const detailRes = await fetch(
+ 388:           `${base}/scorecard/${encodeURIComponent(original.slug)}`,
+ 389:           { cache: "no-store" }
+ 390:         );
+ 391:         if (!detailRes.ok) {
+ 392:           throw new Error(
+ 393:             `Failed to load project data for rename (${detailRes.status})`
+ 394:           );
+ 395:         }
+ 396:         const detail = await detailRes.json();
+ 397: 
+ 398:         const createRes = await fetch(`${base}/admin/projects`, {
+ 399:           method: "POST",
+ 400:           headers: { "Content-Type": "application/json" },
+ 401:           body: JSON.stringify(payload),
+ 402:         });
+ 403:         if (!createRes.ok) {
+ 404:           const text = await createRes.text().catch(() => "");
+ 405:           throw new Error(
+ 406:             text || `Failed to create renamed project (${createRes.status})`
+ 407:           );
+ 408:         }
+ 409: 
+ 410:         const pillarPayload = extractPillarPayload(detail);
+ 411:         if (pillarPayload.length) {
+ 412:           const pillarsRes = await fetch(
+ 413:             `${base}/scorecard/${encodeURIComponent(desiredSlug)}/pillars`,
+ 414:             {
+ 415:               method: "POST",
+ 416:               headers: { "Content-Type": "application/json" },
+ 417:               body: JSON.stringify({ pillars: pillarPayload }),
+ 418:             }
+ 419:           );
+ 420:           if (!pillarsRes.ok) {
+ 421:             const text = await pillarsRes.text().catch(() => "");
+ 422:             throw new Error(
+ 423:               `Failed to migrate pillars (${pillarsRes.status}): ${text}`
+ 424:             );
+ 425:           }
+ 426:         }
+ 427: 
+ 428:         const scorePayload = extractScorePayload(detail);
+ 429:         if (scorePayload.length) {
+ 430:           const scoreRes = await fetch(
+ 431:             `${base}/scorecard/${encodeURIComponent(desiredSlug)}`,
+ 432:             {
+ 433:               method: "POST",
+ 434:               headers: { "Content-Type": "application/json" },
+ 435:               body: JSON.stringify({ scores: scorePayload }),
+ 436:             }
+ 437:           );
+ 438:           if (!scoreRes.ok) {
+ 439:             const text = await scoreRes.text().catch(() => "");
+ 440:             throw new Error(
+ 441:               `Failed to migrate KPI scores (${scoreRes.status}): ${text}`
+ 442:             );
+ 443:           }
+ 444:         }
+ 445: 
+ 446:         const deleteRes = await fetch(
+ 447:           `${base}/projects/${encodeURIComponent(original.slug)}`,
+ 448:           { method: "DELETE" }
+ 449:         );
+ 450:         if (!deleteRes.ok && deleteRes.status !== 204) {
+ 451:           const text = await deleteRes.text().catch(() => "");
+ 452:           throw new Error(
+ 453:             text || `Failed to delete old project (${deleteRes.status})`
+ 454:           );
+ 455:         }
+ 456:       }
+ 457: 
+ 458:       setMsg(`Project '${payload.name}' updated.`);
+ 459:       await loadProjects();
+ 460:       setEditTarget(payload.slug);
+ 461:       setCloneTarget(payload.slug);
+ 462:       setDeleteTarget(payload.slug);
+ 463:     } catch (e: any) {
+ 464:       setError(e?.message ?? String(e));
+ 465:     } finally {
+ 466:       setUpdateBusy(false);
+ 467:     }
+ 468:   };
+ 469: 
+ 470:   return (
+ 471:     <main className="min-h-screen bg-gray-50">
+ 472:       <div className="px-6 py-6 max-w-4xl mx-auto space-y-6">
+ 473:         <Header title="AI Projects Admin" subtitle="LeadAI - Admin Tools">
+ 474:           <div className="flex flex-col sm:flex-row gap-3">
+ 475:             <a
+ 476:               href="/scorecard"
+ 477:               className="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-indigo-100 bg-white text-indigo-700 hover:bg-indigo-50 transition"
+ 478:             >
+ 479:               Back to AI Projects
+ 480:             </a>
+ 481:           </div>
+ 482:         </Header>
+ 483: 
+ 484:         {error && (
+ 485:           <div className="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3">
+ 486:             {error}
+ 487:           </div>
+ 488:         )}
+ 489:         {msg && (
+ 490:           <div className="rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 px-4 py-3">
+ 491:             {msg}
+ 492:           </div>
+ 493:         )}
+ 494: 
+ 495:         <section className="border rounded-2xl bg-white shadow-sm p-4 space-y-3">
+ 496:           <div className="flex items-center justify-between gap-3 flex-wrap">
+ 497:             <div>
+ 498:               <div className="text-lg font-semibold">Change AI Project</div>
+ 499:               <p className="text-sm text-gray-600">
+ 500:                 Update project properties or rename an existing scorecard.
+ 501:               </p>
+ 502:             </div>
+ 503:             <select
+ 504:               className="rounded-lg border px-3 py-2"
+ 505:               value={editTarget}
+ 506:               onChange={(e) => setEditTarget(e.target.value)}
+ 507:               disabled={projectsLoading || projects.length === 0}
+ 508:             >
+ 509:               {projects.length === 0 ? (
+ 510:                 <option value="">No projects yet</option>
+ 511:               ) : (
+ 512:                 projects.map((p) => (
+ 513:                   <option key={p.slug} value={p.slug}>
+ 514:                     {p.name} ({p.slug})
+ 515:                   </option>
+ 516:                 ))
+ 517:               )}
+ 518:             </select>
+ 519:           </div>
+ 520: 
+ 521:           <div className="grid grid-cols-1 gap-3">
+ 522:             <label className="text-sm">
+ 523:               <div className="text-gray-600 mb-1">Slug</div>
+ 524:               <input
+ 525:                 className="w-full rounded-lg border px-3 py-2"
+ 526:                 value={editForm.slug}
+ 527:                 onChange={(e) =>
+ 528:                   setEditForm((prev) => ({ ...prev, slug: e.target.value }))
+ 529:                 }
+ 530:                 placeholder="contract-analysis"
+ 531:                 disabled={!editTarget || projectsLoading}
+ 532:               />
+ 533:             </label>
+ 534: 
+ 535:             <label className="text-sm">
+ 536:               <div className="text-gray-600 mb-1">Name</div>
+ 537:               <input
+ 538:                 className="w-full rounded-lg border px-3 py-2"
+ 539:                 value={editForm.name}
+ 540:                 onChange={(e) =>
+ 541:                   setEditForm((prev) => ({ ...prev, name: e.target.value }))
+ 542:                 }
+ 543:                 placeholder="Contract Analysis"
+ 544:                 disabled={!editTarget || projectsLoading}
+ 545:               />
+ 546:             </label>
+ 547: 
+ 548:             <label className="text-sm">
+ 549:               <div className="text-gray-600 mb-1">Risk level</div>
+ 550:               <select
+ 551:                 className="w-full rounded-lg border px-3 py-2"
+ 552:                 value={editForm.risk_level}
+ 553:                 onChange={(e) =>
+ 554:                   setEditForm((prev) => ({ ...prev, risk_level: e.target.value }))
+ 555:                 }
+ 556:                 disabled={!editTarget || projectsLoading}
+ 557:               >
+ 558:                 <option value="low">low</option>
+ 559:                 <option value="medium">medium</option>
+ 560:                 <option value="high">high</option>
+ 561:               </select>
+ 562:             </label>
+ 563: 
+ 564:             <label className="text-sm">
+ 565:               <div className="text-gray-600 mb-1">Target threshold (0..1)</div>
+ 566:               <input
+ 567:                 type="number"
+ 568:                 step="0.01"
+ 569:                 min={0}
+ 570:                 max={1}
+ 571:                 className="w-full rounded-lg border px-3 py-2"
+ 572:                 value={editForm.target_threshold}
+ 573:                 onChange={(e) =>
+ 574:                   setEditForm((prev) => ({
+ 575:                     ...prev,
+ 576:                     target_threshold: Number(e.target.value),
+ 577:                   }))
+ 578:                 }
+ 579:                 disabled={!editTarget || projectsLoading}
+ 580:               />
+ 581:             </label>
+ 582:           </div>
+ 583: 
+ 584:           <div className="flex gap-3 flex-wrap items-center">
+ 585:             <button
+ 586:               type="button"
+ 587:               onClick={handleUpdateProject}
+ 588:               disabled={
+ 589:                 !editTarget ||
+ 590:                 updateBusy ||
+ 591:                 projectsLoading ||
+ 592:                 !editForm.slug.trim() ||
+ 593:                 !editForm.name.trim()
+ 594:               }
+ 595:               className="inline-flex items-center justify-center rounded-xl bg-indigo-600 text-white px-4 py-2 disabled:opacity-50"
+ 596:             >
+ 597:               {updateBusy ? "Saving..." : "Save Changes"}
+ 598:             </button>
+ 599:             {editForm.slug && (
+ 600:               <a
+ 601:                 className="inline-flex items-center rounded-xl border px-4 py-2 hover:bg-gray-50 transition"
+ 602:                 href={`/scorecard/${encodeURIComponent(
+ 603:                   editForm.slug
+ 604:                 )}/dashboard/admin`}
+ 605:               >
+ 606:                 Go to project admin
+ 607:               </a>
+ 608:             )}
+ 609:           </div>
+ 610: 
+ 611:           <p className="text-xs text-gray-500">
+ 612:             Changing the slug will move all scorecard data to the new slug and delete the original project.
+ 613:           </p>
+ 614:         </section>
+ 615: 
+ 616:         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+ 617:           <div className="border rounded-2xl bg-white shadow-sm p-4 md:col-span-2">
+ 618:             <div className="text-lg font-semibold mb-3">Capture AI Project</div>
+ 619: 
+ 620:             <div className="grid grid-cols-1 gap-3">
+ 621:               <label className="text-sm">
+ 622:                 <div className="text-gray-600 mb-1">Slug</div>
+ 623:                 <input
+ 624:                   className="w-full rounded-lg border px-3 py-2"
+ 625:                   placeholder="contract-analysis"
+ 626:                   value={proj.slug}
+ 627:                   onChange={(e) => setProj({ ...proj, slug: e.target.value })}
+ 628:                 />
+ 629:               </label>
+ 630: 
+ 631:               <label className="text-sm">
+ 632:                 <div className="text-gray-600 mb-1">Name</div>
+ 633:                 <input
+ 634:                   className="w-full rounded-lg border px-3 py-2"
+ 635:                   placeholder="Contract Analysis"
+ 636:                   value={proj.name}
+ 637:                   onChange={(e) => setProj({ ...proj, name: e.target.value })}
+ 638:                 />
+ 639:               </label>
+ 640: 
+ 641:               <label className="text-sm">
+ 642:                 <div className="text-gray-600 mb-1">Risk level</div>
+ 643:                 <select
+ 644:                   className="w-full rounded-lg border px-3 py-2"
+ 645:                   value={proj.risk_level}
+ 646:                   onChange={(e) =>
+ 647:                     setProj({ ...proj, risk_level: e.target.value })
+ 648:                   }
+ 649:                 >
+ 650:                   <option value="low">low</option>
+ 651:                   <option value="medium">medium</option>
+ 652:                   <option value="high">high</option>
+ 653:                 </select>
+ 654:               </label>
+ 655: 
+ 656:               <label className="text-sm">
+ 657:                 <div className="text-gray-600 mb-1">Target threshold (0..1)</div>
+ 658:                 <input
+ 659:                   type="number"
+ 660:                   step="0.01"
+ 661:                   min={0}
+ 662:                   max={1}
+ 663:                   className="w-full rounded-lg border px-3 py-2"
+ 664:                   value={proj.target_threshold}
+ 665:                   onChange={(e) =>
+ 666:                     setProj({
+ 667:                       ...proj,
+ 668:                       target_threshold: Number(e.target.value),
+ 669:                     })
+ 670:                   }
+ 671:                 />
+ 672:               </label>
+ 673: 
+ 674:               <div className="flex gap-2 items-center flex-wrap">
+ 675:                 <button
+ 676:                   disabled={
+ 677:                     createBusy ||
+ 678:                     !proj.slug.trim() ||
+ 679:                     !proj.name.trim() ||
+ 680:                     Number.isNaN(proj.target_threshold)
+ 681:                   }
+ 682:                   onClick={onCreateProject}
+ 683:                   className="mt-2 inline-flex items-center justify-center rounded-xl bg-indigo-600 text-white px-4 py-2 disabled:opacity-50"
+ 684:                 >
+ 685:                   {createBusy ? "Creating..." : "Create Project"}
+ 686:                 </button>
+ 687: 
+ 688:                 {proj.slug && (
+ 689:                   <a
+ 690:                     className="mt-2 inline-flex items-center rounded-xl border px-4 py-2 hover:bg-gray-50 transition"
+ 691:                     href={`/scorecard/${encodeURIComponent(
+ 692:                       proj.slug
+ 693:                     )}/dashboard/admin`}
+ 694:                   >
+ 695:                     Go to this project's admin
+ 696:                   </a>
+ 697:                 )}
+ 698:               </div>
+ 699:             </div>
+ 700:           </div>
+ 701: 
+ 702:           <div className="border rounded-2xl bg-white shadow-sm p-4 space-y-3">
+ 703:             <div className="text-lg font-semibold">Clone AI Project</div>
+ 704:             <p className="text-sm text-gray-600">
+ 705:               Duplicate an existing project. The new project keeps KPI scores
+ 706:               and pillar overrides, with the name suffixed by <code>clone</code>.
+ 707:             </p>
+ 708:             <label className="text-sm">
+ 709:               <div className="text-gray-600 mb-1">Project to clone</div>
+ 710:               <select
+ 711:                 className="w-full rounded-lg border px-3 py-2"
+ 712:                 value={cloneTarget}
+ 713:                 onChange={(e) => setCloneTarget(e.target.value)}
+ 714:                 disabled={projectsLoading || cloneBusy || projects.length === 0}
+ 715:               >
+ 716:                 {projects.length === 0 ? (
+ 717:                   <option value="">No projects yet</option>
+ 718:                 ) : (
+ 719:                   projects.map((p) => (
+ 720:                     <option key={p.slug} value={p.slug}>
+ 721:                       {p.name} ({p.slug})
+ 722:                     </option>
+ 723:                   ))
+ 724:                 )}
+ 725:               </select>
+ 726:             </label>
+ 727:             <button
+ 728:               type="button"
+ 729:               onClick={handleCloneProject}
+ 730:               disabled={!cloneTarget || cloneBusy || projectsLoading}
+ 731:               className="inline-flex items-center justify-center rounded-xl bg-indigo-600 text-white px-4 py-2 disabled:opacity-50"
+ 732:             >
+ 733:               {cloneBusy ? "Cloning..." : "Clone Project"}
+ 734:             </button>
+ 735:           </div>
+ 736: 
+ 737:           <div className="border rounded-2xl bg-white shadow-sm p-4 space-y-3">
+ 738:             <div className="text-lg font-semibold text-red-600">
+ 739:               Delete AI Project
+ 740:             </div>
+ 741:             <p className="text-sm text-gray-600">
+ 742:               Remove a project and all of its scorecard data from the backend.
+ 743:             </p>
+ 744:             <label className="text-sm">
+ 745:               <div className="text-gray-600 mb-1">Project to delete</div>
+ 746:               <select
+ 747:                 className="w-full rounded-lg border px-3 py-2"
+ 748:                 value={deleteTarget}
+ 749:                 onChange={(e) => setDeleteTarget(e.target.value)}
+ 750:                 disabled={projectsLoading || deleteBusy || projects.length === 0}
+ 751:               >
+ 752:                 {projects.length === 0 ? (
+ 753:                   <option value="">No projects yet</option>
+ 754:                 ) : (
+ 755:                   projects.map((p) => (
+ 756:                     <option key={p.slug} value={p.slug}>
+ 757:                       {p.name} ({p.slug})
+ 758:                     </option>
+ 759:                   ))
+ 760:                 )}
+ 761:               </select>
+ 762:             </label>
+ 763:             <button
+ 764:               type="button"
+ 765:               onClick={handleDeleteProject}
+ 766:               disabled={!deleteTarget || deleteBusy || projectsLoading}
+ 767:               className="inline-flex items-center justify-center rounded-xl bg-red-600 text-white px-4 py-2 disabled:opacity-50"
+ 768:             >
+ 769:               {deleteBusy ? "Deleting..." : "Delete Project"}
+ 770:             </button>
+ 771:           </div>
+ 772:         </section>
+ 773: 
+ 774:         <div className="text-sm text-gray-600">
+ 775:           Need to manage global controls? Go to{" "}
+ 776:           <a className="underline" href="/scorecard/controls">
+ 777:             Controls manager
+ 778:           </a>
+ 779:           .
+ 780:         </div>
+ 781:       </div>
+ 782:     </main>
+ 783:   );
+ 784: }

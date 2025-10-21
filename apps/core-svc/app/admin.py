@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import io
-from datetime import datetime
+from datetime import date, datetime, timezone
 from typing import List, Optional
 
 import asyncpg
@@ -19,6 +19,14 @@ from .scorecard import (
 )
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+def _clean_optional_str(value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return None
+    trimmed = value.strip()
+    return trimmed if trimmed else None
+
 
 # ---------- Models ----------
 class ControlIn(BaseModel):
@@ -41,6 +49,11 @@ class ProjectIn(BaseModel):
     name: str = Field(min_length=1)
     risk_level: Optional[str] = None
     target_threshold: float = 0.75  # 0..1
+    priority: Optional[str] = None
+    sponsor: Optional[str] = None
+    owner: Optional[str] = None
+    creation_date: Optional[date] = None
+    update_date: Optional[datetime] = None
 
 
 class ProjectOut(ProjectIn):
@@ -123,18 +136,63 @@ async def delete_control(control_id: str) -> dict:
 async def create_project(body: ProjectIn) -> ProjectOut:
     pool = await get_pool()
     async with pool.acquire() as conn:
-        existing = await conn.fetchrow("SELECT id FROM projects WHERE slug=$1", body.slug)
+        existing = await conn.fetchrow(
+            """
+            SELECT id, risk_level, priority, sponsor, owner, creation_date
+            FROM projects
+            WHERE slug=$1
+            """,
+            body.slug,
+        )
+
+        base_risk = _clean_optional_str(body.risk_level) or (existing["risk_level"] if existing and existing["risk_level"] else "medium")
+        priority = _clean_optional_str(body.priority) or base_risk
+        sponsor = _clean_optional_str(body.sponsor)
+        owner = _clean_optional_str(body.owner)
+
+        if existing:
+            if sponsor is None and existing["sponsor"] is not None and body.sponsor is None:
+                sponsor = existing["sponsor"]
+            if owner is None and existing["owner"] is not None and body.owner is None:
+                owner = existing["owner"]
+            creation_date = (
+                body.creation_date if body.creation_date is not None else existing["creation_date"]
+            )
+        else:
+            creation_date = body.creation_date or date.today()
+
+        update_ts = body.update_date or datetime.now(timezone.utc)
+
         if existing:
             await conn.execute(
                 """
                 UPDATE projects
-                SET name=$2, risk_level=$3, target_threshold=$4
+                SET name=$2,
+                    risk_level=$3,
+                    target_threshold=$4,
+                    priority=$5,
+                    sponsor=$6,
+                    owner=$7,
+                    creation_date=$8,
+                    update_date=$9
                 WHERE slug=$1
                 """,
-                body.slug, body.name, body.risk_level, body.target_threshold,
+                body.slug,
+                body.name,
+                base_risk,
+                body.target_threshold,
+                priority,
+                sponsor,
+                owner,
+                creation_date,
+                update_ts,
             )
             row = await conn.fetchrow(
-                "SELECT id, slug, name, risk_level, target_threshold FROM projects WHERE slug=$1",
+                """
+                SELECT id, slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
+                FROM projects
+                WHERE slug=$1
+                """,
                 body.slug,
             )
             return ProjectOut(**dict(row))
@@ -142,11 +200,30 @@ async def create_project(body: ProjectIn) -> ProjectOut:
         try:
             row = await conn.fetchrow(
                 """
-                INSERT INTO projects (id, slug, name, risk_level, target_threshold)
-                VALUES (gen_random_uuid()::text, $1, $2, $3, $4)
-                RETURNING id, slug, name, risk_level, target_threshold
+                INSERT INTO projects (
+                    id,
+                    slug,
+                    name,
+                    risk_level,
+                    target_threshold,
+                    priority,
+                    sponsor,
+                    owner,
+                    creation_date,
+                    update_date
+                )
+                VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, $7, $8, $9)
+                RETURNING id, slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
                 """,
-                body.slug, body.name, body.risk_level, body.target_threshold,
+                body.slug,
+                body.name,
+                base_risk,
+                body.target_threshold,
+                priority,
+                sponsor,
+                owner,
+                creation_date,
+                update_ts,
             )
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to create project: {e}")

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     Boolean,
+    Date,
     DateTime,
     Float,
     ForeignKey,
@@ -34,6 +35,20 @@ class Project(Base):
     name: Mapped[str] = mapped_column(String(200))
     risk_level: Mapped[str] = mapped_column(String(50), default="medium")
     target_threshold: Mapped[float] = mapped_column(Float, default=0.80)
+    priority: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    sponsor: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    owner: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    creation_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
+        server_default=func.current_date(),
+    )
+    update_date: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
 
     assessments: Mapped[list["Assessment"]] = relationship(
         back_populates="project",

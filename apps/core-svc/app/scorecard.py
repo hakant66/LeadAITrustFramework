@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpg
@@ -81,6 +81,11 @@ class ProjectOut(BaseModel):
     name: str
     risk_level: Optional[str] = None
     target_threshold: float
+    priority: Optional[str] = None
+    sponsor: Optional[str] = None
+    owner: Optional[str] = None
+    creation_date: Optional[date] = None
+    update_date: Optional[datetime] = None
 
 
 class PillarOut(BaseModel):
@@ -129,17 +134,28 @@ class PillarUpsertRequest(BaseModel):
 
 # ---- Project helpers (split: get-or-none vs ensure) ----
 def _row_to_project_out(row: asyncpg.Record) -> ProjectOut:
+    risk_level = row.get("risk_level")
+    priority = row.get("priority") or risk_level
     return ProjectOut(
         slug=row["slug"],
         name=row["name"],
-        risk_level=row.get("risk_level"),
+        risk_level=risk_level,
         target_threshold=row["target_threshold"],
+        priority=priority,
+        sponsor=row.get("sponsor"),
+        owner=row.get("owner"),
+        creation_date=row.get("creation_date"),
+        update_date=row.get("update_date"),
     )
 
 
 async def get_project_out_or_none(conn: asyncpg.Connection, slug: str) -> Optional[ProjectOut]:
     row = await conn.fetchrow(
-        "SELECT slug, name, risk_level, target_threshold FROM projects WHERE slug = $1",
+        """
+        SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
+        FROM projects
+        WHERE slug = $1
+        """,
         slug,
     )
     return _row_to_project_out(row) if row else None
@@ -151,20 +167,34 @@ async def ensure_project(conn: asyncpg.Connection, slug: str) -> ProjectOut:
     Used by POST routes that should auto-create projects in dev/MVP flows.
     """
     row = await conn.fetchrow(
-        "SELECT slug, name, risk_level, target_threshold FROM projects WHERE slug = $1",
+        """
+        SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
+        FROM projects
+        WHERE slug = $1
+        """,
         slug,
     )
     if not row:
         await conn.execute(
             """
-            INSERT INTO projects (slug, name, risk_level, target_threshold)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO projects (slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_DATE, NOW())
             ON CONFLICT (slug) DO NOTHING
             """,
-            slug, slug, "low", DEFAULT_TARGET_THRESHOLD,
+            slug,
+            slug,
+            "low",
+            DEFAULT_TARGET_THRESHOLD,
+            "low",
+            None,
+            None,
         )
         row = await conn.fetchrow(
-            "SELECT slug, name, risk_level, target_threshold FROM projects WHERE slug = $1",
+            """
+            SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
+            FROM projects
+            WHERE slug = $1
+            """,
             slug,
         )
     return _row_to_project_out(row)
