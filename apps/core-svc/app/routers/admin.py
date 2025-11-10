@@ -1,24 +1,29 @@
-# app/admin.py
+# app/routers/admin.py
 from __future__ import annotations
 
 import io
+import os
+import hashlib
+from pathlib import Path
 from datetime import date, datetime, timezone
 from typing import List, Optional
 
 import asyncpg
-from fastapi import APIRouter, HTTPException, File, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, HTTPException, File, UploadFile, Request, Depends
+from fastapi.responses import StreamingResponse, Response
 from openpyxl import Workbook, load_workbook
 from pydantic import BaseModel, Field
+from app.db import get_db
+from app.services.scorecard_read import fetch_project_pillars 
+from app.scorecard import get_pool, ensure_schema, get_project_id_by_slug
 
-from .scorecard import (
-    get_pool,
-    ensure_schema,              # ensures controls + control_values demo tables
-    get_project_id_by_slug,     # helper to resolve project_id
-    upsert_control_value,       # reuse normalization logic
-)
+
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+# Where to drop uploaded binaries locally (dev-only stub storage)
+LOCAL_EVIDENCE_ROOT = Path(os.getenv("EVIDENCE_LOCAL_ROOT", "/tmp/leadai-evidence")).resolve()
+LOCAL_EVIDENCE_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 def _clean_optional_str(value: Optional[str]) -> Optional[str]:
@@ -123,7 +128,6 @@ async def delete_control(control_id: str) -> dict:
     pool = await get_pool()
     async with pool.acquire() as conn:
         await ensure_schema(conn)
-        # explicit delete for clarity; control_values has FK ON DELETE CASCADE in demo schema
         await conn.execute("DELETE FROM control_values WHERE control_id=$1", control_id)
         res = await conn.execute("DELETE FROM controls WHERE control_id=$1", control_id)
         if int(res.split()[-1]) == 0:
@@ -131,7 +135,7 @@ async def delete_control(control_id: str) -> dict:
         return {"deleted": control_id}
 
 
-# ---------- Projects (create/upsert; used by global 'Capture AI Project' page) ----------
+# ---------- Projects (create/upsert) ----------
 @router.post("/projects", response_model=ProjectOut)
 async def create_project(body: ProjectIn) -> ProjectOut:
     pool = await get_pool()
@@ -230,19 +234,313 @@ async def create_project(body: ProjectIn) -> ProjectOut:
         return ProjectOut(**dict(row))
 
 
+# ---------- Evidence helper for UI ----------
+@router.get("/projects/{project_slug}/kpis/{kpi_key}/control-id")
+async def get_control_id_for_kpi(project_slug: str, kpi_key: str) -> dict:
+    """
+    Used by Evidence() button:
+    returns the control_id (uuid text) for a given {project_slug, kpi_key}.
+    """
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        # Resolve once to fail fast if the project doesn't exist
+        await get_project_id_by_slug(conn, project_slug)
+
+        row = await conn.fetchrow(
+            """
+            SELECT v.control_id::text AS control_id
+            FROM control_values v
+            LEFT JOIN controls c ON c.id = v.control_id
+            WHERE v.project_slug = $1
+              AND (v.kpi_key = $2 OR c.kpi_key = $2)
+            LIMIT 1
+            """,
+            project_slug, kpi_key,
+        )
+        if not row or not row["control_id"]:
+            raise HTTPException(status_code=404, detail="Control not found for KPI")
+        return {"control_id": row["control_id"]}
+
+
+# ---------- Evidence endpoints (using current schema) ----------
+class EvidenceUpdate(BaseModel):
+    evidence_source: Optional[str] = None
+    owner_role: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class EvidenceFinalize(BaseModel):
+    evidence_id: int            # adjust to str if your id is UUID
+    sha256_hex: Optional[str] = None
+
+
+@router.get("/projects/{project_slug}/controls/{control_id}/evidence")
+async def get_control_evidence(project_slug: str, control_id: str) -> dict:
+    """
+    Evidence() drawer fetch.
+    Returns current metadata for this control in this project.
+    """
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            """
+            SELECT v.project_slug,
+                   v.control_id::text              AS control_id,
+                   COALESCE(c.kpi_key, v.kpi_key)  AS kpi_key,
+                   v.evidence_source,
+                   v.owner_role,
+                   v.notes,
+                   v.updated_at
+            FROM control_values v
+            LEFT JOIN controls c ON c.id = v.control_id
+            WHERE v.project_slug = $1 AND (v.control_id::text = $2 OR v.control_id = $2::uuid)
+            """,
+            project_slug, control_id,
+        )
+        if not row:
+            raise HTTPException(status_code=404, detail="Evidence not found for control")
+
+        files = await conn.fetch(
+            """
+            SELECT id, name, mime, size_bytes, sha256, uri, status, created_at, updated_at
+            FROM evidence
+            WHERE project_slug=$1 AND (control_id::text=$2 OR control_id=$2::uuid)
+            ORDER BY updated_at DESC NULLS LAST, id DESC
+            """,
+            project_slug, control_id
+        )
+
+        attachments = []
+        for f in files:
+            attachments.append({
+                "id": int(f["id"]),
+                "filename": f["name"],        # alias for UI
+                "name": f["name"],
+                "content_type": f["mime"],
+                "size_bytes": f["size_bytes"],
+                "sha256_hex": f["sha256"],
+                "storage_url": f["uri"],
+                "status": f["status"],
+                "created_at": f["created_at"].isoformat() if f["created_at"] else None,
+                "updated_at": f["updated_at"].isoformat() if f["updated_at"] else None,
+            })
+
+        return {
+            "project_slug": row["project_slug"],
+            "control_id": row["control_id"],
+            "kpi_key": row["kpi_key"],
+            "evidence_source": row["evidence_source"],
+            "owner_role": row["owner_role"],
+            "notes": row["notes"],
+            "updated_at": row["updated_at"].isoformat() if row["updated_at"] else None,
+            "attachments": attachments,
+        }
+
+
+@router.post("/projects/{project_slug}/controls/{control_id}/evidence:init")
+async def init_control_evidence_upload(
+    request: Request,
+    project_slug: str,
+    control_id: str,
+) -> dict:
+    """
+    Import Evidence button preflight/init.
+
+    Creates an 'evidence' row with status 'pending' and returns a PUT URL
+    that the UI can upload to (this API).
+    """
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        # Validate control exists for the project
+        exists = await conn.fetchval(
+            "SELECT 1 FROM control_values WHERE project_slug=$1 AND (control_id::text=$2 OR control_id=$2::uuid)",
+            project_slug, control_id
+        )
+        if not exists:
+            raise HTTPException(status_code=404, detail="Control not found")
+
+        row = await conn.fetchrow(
+            """
+            INSERT INTO evidence (
+              project_slug, control_id, name, mime,
+              size_bytes, sha256, uri, status, created_by,
+              created_at, updated_at
+            )
+            VALUES ($1, $2::uuid, '', '', 0, NULL, '', 'pending', 'system', NOW(), NOW())
+            RETURNING id, uri, status
+            """,
+            project_slug, control_id
+        )
+        evidence_id = row["id"]
+
+    # Build absolute URL so the browser PUTs to backend (not Next)
+    scheme = request.url.scheme
+    host = request.headers.get("host")  # e.g., "localhost:8001"
+    relative_put = f"/admin/projects/{project_slug}/controls/{control_id}/evidence:upload/{evidence_id}"
+    absolute_put = f"{scheme}://{host}{relative_put}"
+
+    return {
+        "ok": True,
+        "mode": "put",
+        # new key expected by frontend:
+        "upload_url": absolute_put,
+        # legacy alias for completeness:
+        "put_url": absolute_put,
+        "headers": {},                 # client may send Content-Type; we read it
+        "max_size_mb": 100,
+        "accepted": ["application/pdf", "text/csv", "image/*", "text/plain"],
+        "evidence_id": evidence_id,
+        # expose storage fields for UI (aliases too)
+        "storage_url": row["uri"],
+        "uri": row["uri"],
+        "status": row["status"] or "pending",
+        "method": "PUT",
+    }
+
+
+@router.put("/projects/{project_slug}/controls/{control_id}/evidence:upload/{evidence_id}")
+async def upload_control_evidence_binary(
+    request: Request,
+    project_slug: str,
+    control_id: str,
+    evidence_id: int,  # change to str if UUID
+):
+    """
+    Step 2: UI does a PUT to this URL with the raw file body.
+    We stream the body to a local file and update the DB row with size/mime,
+    sha256 and a local file URI.
+    """
+    original_filename = request.headers.get("X-Original-Filename", "upload.bin")
+    content_type = request.headers.get("Content-Type", "application/octet-stream")
+
+    bucket_dir = LOCAL_EVIDENCE_ROOT / project_slug / control_id
+    bucket_dir.mkdir(parents=True, exist_ok=True)
+    target_path = bucket_dir / f"{evidence_id}-{original_filename}"
+
+    hasher = hashlib.sha256()
+    size = 0
+    with target_path.open("wb") as f:
+        async for chunk in request.stream():
+            if not chunk:
+                continue
+            f.write(chunk)
+            hasher.update(chunk)
+            size += len(chunk)
+    sha_hex = hasher.hexdigest()
+
+    storage_uri = f"file://{target_path.as_posix()}"
+
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        res = await conn.execute(
+            """
+            UPDATE evidence
+            SET name         = $4,
+                mime         = $5,
+                size_bytes   = $6,
+                sha256       = $7,
+                uri          = $8,
+                status       = 'uploaded',
+                updated_at   = NOW()
+            WHERE id = $3 AND project_slug = $1 AND (control_id::text=$2 OR control_id=$2::uuid)
+            """,
+            project_slug, control_id, evidence_id,
+            original_filename, content_type, size, sha_hex, storage_uri
+        )
+        if res.split()[-1] == "0":
+            try:
+                target_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+            raise HTTPException(status_code=404, detail="Evidence row not found")
+
+    return Response(status_code=200)
+
+
+@router.post("/projects/{project_slug}/controls/{control_id}/evidence:finalize")
+async def finalize_control_evidence_upload(
+    project_slug: str,
+    control_id: str,
+    body: EvidenceFinalize
+) -> dict:
+    """
+    Step 3: UI sends sha256_hex (optional) after the PUT finishes.
+    We persist the hash (if provided) and set status to 'ready'.
+    """
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        res = await conn.execute(
+            """
+            UPDATE evidence
+            SET sha256     = COALESCE($4, sha256),
+                status     = 'ready',
+                updated_at = NOW()
+            WHERE id = $3 AND project_slug = $1 AND (control_id::text=$2 OR control_id=$2::uuid)
+            """,
+            project_slug, control_id, body.evidence_id, body.sha256_hex
+        )
+        if res.split()[-1] == "0":
+            raise HTTPException(status_code=404, detail="Evidence row not found")
+    return {"ok": True, "evidence_id": body.evidence_id}
+
+
+# ---- Finalize shims to match frontend path style (/.../evidence:finalize/{id}) ----
+@router.post("/projects/{project_slug}/controls/{control_id}/evidence:finalize/{evidence_id}")
+@router.post("/projects/{project_slug}/controls/{control_id}/evidence/finalize/{evidence_id}")
+async def finalize_control_evidence_upload_with_path_id(
+    project_slug: str,
+    control_id: str,
+    evidence_id: int,
+    body: EvidenceFinalize
+) -> dict:
+    body.evidence_id = evidence_id
+    return await finalize_control_evidence_upload(project_slug, control_id, body)
+
+
+# ---- Download URL helper expected by frontend (/admin/evidence/{id}:download-url) ----
+@router.post("/evidence/{evidence_id}:download-url")
+async def evidence_download_url(evidence_id: int) -> dict:
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow("SELECT uri FROM evidence WHERE id=$1", evidence_id)
+        if not row:
+            raise HTTPException(status_code=404, detail="Evidence not found")
+        return {"url": row["uri"]}
+
+
+# ---------- Evidence metadata-only update ----------
+@router.post("/projects/{project_slug}/controls/{control_id}/evidence")
+async def save_control_evidence(project_slug: str, control_id: str, body: EvidenceUpdate) -> dict:
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        res = await conn.execute(
+            """
+            UPDATE control_values
+            SET evidence_source = COALESCE($3, evidence_source),
+                owner_role      = COALESCE($4, owner_role),
+                notes           = COALESCE($5, notes),
+                updated_at      = NOW()
+            WHERE project_slug = $1 AND (control_id::text=$2 OR control_id=$2::uuid)
+            """,
+            project_slug, control_id, body.evidence_source, body.owner_role, body.notes
+        )
+        if res.split()[-1] == "0":
+            raise HTTPException(status_code=404, detail="Control not found")
+        return {"ok": True}
+
+
 # =====================================================================
 #  Excel Import/Export (per-project)
-#  A) Pillar Overrides (pillar_overrides.xlsx)
-#  B) Control Values   (control_values.xlsx)
 # =====================================================================
 
-# ---------- A) Pillar Overrides ----------
+def _naive_or_same(x: Optional[datetime]):
+    if isinstance(x, datetime):
+        return x.replace(tzinfo=None) if x.tzinfo is not None else x
+    return x
+
+
 @router.get("/projects/{project_slug}/pillar_overrides.xlsx")
 async def export_pillar_overrides(project_slug: str):
-    """
-    Exports columns:
-      pillar (pillar_key), score_pct (0..100), maturity (1..5)
-    """
     pool = await get_pool()
     async with pool.acquire() as conn:
         rows = await conn.fetch(
@@ -282,11 +580,6 @@ async def export_pillar_overrides(project_slug: str):
 
 @router.post("/projects/{project_slug}/pillar_overrides")
 async def import_pillar_overrides(project_slug: str, file: UploadFile = File(...)) -> dict:
-    """
-    Accepts an .xlsx with a sheet containing columns:
-      pillar, score_pct, maturity
-    Upserts into pillar_overrides for the given project.
-    """
     if not file.filename.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="Please upload an .xlsx file")
 
@@ -341,28 +634,11 @@ async def import_pillar_overrides(project_slug: str, file: UploadFile = File(...
     return {"ok": True, "upserts": n_upserts}
 
 
-# ---------- B) Control Values ----------
-def _naive_or_same(x: Optional[datetime]):
-    """
-    Excel cells cannot hold tz-aware datetimes.
-    - If x is a datetime with tzinfo -> return x.replace(tzinfo=None)
-    - If x is a naive datetime -> return as-is
-    - Otherwise -> return as-is (e.g., None or string)
-    """
-    if isinstance(x, datetime):
-        return x.replace(tzinfo=None) if x.tzinfo is not None else x
-    return x
-
-
 @router.get("/projects/{project_slug}/control_values.xlsx")
 async def export_control_values(project_slug: str):
-    """
-    Exports columns:
-      control_id, name, raw_value, normalized_pct, observed_at, updated_at
-    """
     pool = await get_pool()
     async with pool.acquire() as conn:
-        await ensure_schema(conn)  # control_values table
+        await ensure_schema(conn)
         rows = await conn.fetch(
             """
             SELECT v.control_id,
@@ -372,7 +648,7 @@ async def export_control_values(project_slug: str):
                    v.observed_at,
                    v.updated_at
             FROM control_values v
-            LEFT JOIN controls c ON c.control_id = v.control_id
+            LEFT JOIN controls c ON c.id = v.control_id
             WHERE v.project_slug = $1
             ORDER BY v.control_id
             """,
@@ -407,11 +683,6 @@ async def export_control_values(project_slug: str):
 
 @router.post("/projects/{project_slug}/control_values")
 async def import_control_values(project_slug: str, file: UploadFile = File(...)) -> dict:
-    """
-    Accepts an .xlsx with columns:
-      control_id, raw_value  (normalized_pct optional; will be recomputed anyway)
-    Each row is upserted via upsert_control_value() to apply normalization.
-    """
     if not file.filename.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="Please upload an .xlsx file")
 
@@ -445,7 +716,32 @@ async def import_control_values(project_slug: str, file: UploadFile = File(...))
             except Exception:
                 raise HTTPException(status_code=400, detail=f"Row {r}: raw_value must be numeric")
 
-            await upsert_control_value(conn, project_slug, str(control_id), raw_f)
+            # Minimal upsert: write raw/normalized via control bounds
+            await conn.execute(
+                """
+                INSERT INTO control_values (
+                  project_slug, control_id, kpi_key, raw_value, normalized_pct, updated_at
+                )
+                SELECT $1, $2, c.kpi_key,
+                       $3,
+                       CASE
+                         WHEN c.norm_min IS NULL OR c.norm_max IS NULL OR c.norm_min = c.norm_max
+                           THEN LEAST(GREATEST($3, 0), 100)
+                         WHEN c.higher_is_better
+                           THEN LEAST(GREATEST( (($3 - c.norm_min) / NULLIF(c.norm_max - c.norm_min, 0)) * 100, 0), 100)
+                         ELSE LEAST(GREATEST( ((c.norm_max - $3) / NULLIF(c.norm_max - c.norm_min, 0)) * 100, 0), 100)
+                       END,
+                       NOW()
+                FROM controls c
+                WHERE c.id = $2
+                ON CONFLICT (project_slug, control_id)
+                DO UPDATE SET
+                  raw_value      = EXCLUDED.raw_value,
+                  normalized_pct = EXCLUDED.normalized_pct,
+                  updated_at     = NOW()
+                """,
+                project_slug, str(control_id), float(raw_f)
+            )
             n_upserts += 1
 
     return {"ok": True, "upserts": n_upserts}

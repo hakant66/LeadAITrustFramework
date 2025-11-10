@@ -1,11 +1,12 @@
+# app/routers/trends.py - older version - DO NOT USE IF YOU DO KNOW WHAT YOU ARE DOING!!!
 from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select, desc, func
-from .db import engine
-from .models import Project, Pillar, KPI, Assessment, KPIValue
+from app.db import get_db, engine
+from app.models import Project, Pillar, KPI, Assessment, KPIValue
 
 router = APIRouter(prefix="/scorecard", tags=["trends"])
 

@@ -1,11 +1,11 @@
-# C:\Apps\_TheLeadAI\apps\core-svc\app\projects.py
-# app/projects.py
+# C:\Apps\_TheLeadAI\apps\core-svc\app\routers\projects.py
+# app/routers/projects.py
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import delete, select, text
 from sqlalchemy.orm import Session
 
-from .db import engine
-from .models import Assessment, PillarOverride, Project
+from app.db import get_db, engine
+from app.models import Assessment, PillarOverride, Project
 
 router = APIRouter(prefix="", tags=["projects"])
 

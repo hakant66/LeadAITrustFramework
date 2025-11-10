@@ -6,6 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine
 import os
+import logging
+logger = logging.getLogger("uvicorn.error")
+
 
 from ..services.s3_client import presign_put, presign_get, object_uri
 from ..db.evidence_dao import (
@@ -109,7 +112,47 @@ from sqlalchemy import text
 
 @router.get("/projects/{project_slug}/kpis/{kpi_key}/control-id")
 def resolve_control_id(project_slug: str, kpi_key: str):
-    with engine.begin() as conn:
+    # DEBUG: show raw path params exactly as FastAPI parsed them
+    print(f"[resolve_control_id] project_slug='{project_slug}' kpi_key='{kpi_key}'")
+    print(f"[resolve_control_id] kpi_key raw: {kpi_key!r}")
+    print(f"[resolve_control_id] {project_slug=}, {kpi_key=}")
+    logger.info("[resolve_control_id] project=%s key=%s", project_slug, key)
+
+    """
+    Resolve the *global* control id for a KPI key.
+    New model: controls are global (per KPI), not per project.
+    We therefore:
+      1) Try to select controls.id (UUID PK used by scorecard.py),
+      2) Fallback to controls.control_id (legacy schema in admin.py),
+      3) As a last resort, look up the latest control_id from control_values
+         for this project (legacy behaviour).
+    """
+  with engine.begin() as conn:
+        # 1) Try modern schema: controls.id by kpi_key
+        try:
+            row = conn.execute(
+                text("SELECT id FROM controls WHERE kpi_key = :key LIMIT 1"),
+                {"key": kpi_key},
+            ).first()
+            if row and row[0]:
+                return {"control_id": str(row[0])}
+        except Exception:
+            # If the column 'id' doesn't exist in this deployment, fall through
+            pass
+
+        # 2) Try legacy schema: controls.control_id by kpi_key
+        try:
+            row = conn.execute(
+                text("SELECT control_id FROM controls WHERE kpi_key = :key LIMIT 1"),
+                {"key": kpi_key},
+            ).first()
+            if row and row[0]:
+                return {"control_id": str(row[0])}
+        except Exception:
+            # If the column 'control_id' also doesn't exist, fall through
+            pass
+
+        # 3) Legacy fallback: latest control_values row for this project+kpi_key
         row = conn.execute(
             text("""
                 SELECT control_id
@@ -120,6 +163,12 @@ def resolve_control_id(project_slug: str, kpi_key: str):
             """),
             {"slug": project_slug, "key": kpi_key},
         ).first()
-        if not row:
-            raise HTTPException(404, "control_id not found for kpi_key")
-        return {"control_id": str(row[0])}
+        
+        logger.info("[resolve_control_id] result for project=%s key=%s -> %s",
+            project_slug, key, (str(row[0]) if row else "None"))
+            
+        if row and row[0]:
+            return {"control_id": str(row[0])}
+
+    # Nothing matched
+    raise HTTPException(404, "control_id not found for kpi_key")

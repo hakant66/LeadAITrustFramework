@@ -1,81 +1,121 @@
 # app/scorecard.py
 from __future__ import annotations
 
+"""
+Scorecard API for LeadAI
+
+This module exposes read + write endpoints used by the web app’s scorecard pages.
+
+ENDPOINTS
+---------
+GET  /scorecard/{project_slug}
+    Returns the complete scorecard payload:
+      {
+        project: { slug, name, target_threshold, ... },
+        overall_pct: number,               # avg of pillar percentages (0..100)
+        pillars: [{ key, name, score_pct, maturity }, ...],
+        kpis:    [{
+                   pillar,                 # display pillar from controls.pillar
+                   key, name, unit, raw_value,
+                   normalized_pct, kpi_score, updated_at
+                 }, ...]
+      }
+
+GET  /scorecard/{project_slug}/pillars
+    Returns the "effective" set of pillars for the project:
+    - If any rows exist in pillar_overrides for the project, those rows are
+      authoritative and are returned as-is (no mixing with calculated pillars).
+    - If no overrides exist, pillars are derived by aggregating KPI normalized
+      scores by controls.pillar found in control_values/controls.
+
+GET  /scorecard/{project_slug}/controls
+    Returns a flat list of KPI/control metadata for the project used by UI detail
+    pages (owner_role, evidence_source, targets, normalized_pct, etc).
+
+POST /scorecard/{project_slug}
+    Upserts KPI raw values by *kpi_key* into control_values while computing
+    normalized_pct using the corresponding bounds from controls. This endpoint is
+    used by the Admin EditKpis UI. It accepts any of the following body shapes:
+
+      A) {"scores":[{"key":"<kpi_key>", "value": <num>}], "options": {...}}
+      B) {"scores":[{"key":"<kpi_key>", "raw_value": <num>}]}
+      C) {"updates":[{"kpi_key":"<kpi_key>", "raw_value": <num>}], "options": {...}}
+
+    Notes:
+    - We resolve the control (controls.id) by matching controls.kpi_key.
+    - normalized_pct is min-max normalized against controls.norm_min / norm_max
+      and respects controls.higher_is_better. If bounds are missing or equal,
+      we clamp raw_value directly into 0..100.
+    - The control_values PK is (project_slug, control_id). We UPSERT on this key.
+
+DESIGN RULES
+------------
+* Pillars:
+  If pillar_overrides exist for a project, those rows define the pillar set and
+  their scores/maturity. Otherwise, pillars are computed by aggregating KPI
+  normalized scores grouped by the display pillar name from controls.pillar.
+
+* KPIs:
+  KPI rows originate from control_values joined with controls (to get pillar,
+  names, units and normalization bounds).
+
+* Schema:
+  We do not create tables here—migrations own schema. `ensure_schema()` remains
+  a no-op to preserve back-compat for older imports that call it.
+
+TABLES (expected)
+-----------------
+projects(id text PK (uuid-as-text), slug text UNIQUE, name text, target_threshold float8, ...)
+controls(id uuid PK, kpi_key text, name text, pillar text, unit text,
+         norm_min float8, norm_max float8, higher_is_better bool, weight float8, ...)
+control_values(project_slug text, control_id uuid FK->controls(id), kpi_key text,
+               raw_value float8, normalized_pct float8, observed_at timestamptz,
+               updated_at timestamptz, ... ; PRIMARY KEY (project_slug, control_id))
+pillar_overrides(id text PK, project_id text FK->projects(id),
+                 pillar_key varchar(60), pillar_name varchar(120) DEFAULT '',
+                 score_pct float8, maturity int, updated_at timestamptz,
+                 UNIQUE(project_id, pillar_key))
+"""
+
 import os
+from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpg
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field, conint
 
 router = APIRouter(prefix="/scorecard", tags=["scorecard"])
 
-# ---- Configuration ----
+# ---- Configuration -----------------------------------------------------------
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    # asyncpg expects "postgresql://"
     "postgresql://leadai:leadai@localhost:5432/leadai",
 )
-DEFAULT_TARGET_THRESHOLD = float(os.getenv("DEFAULT_TARGET_THRESHOLD", "0.75"))
+DEFAULT_TARGET_THRESHOLD = float(os.getenv("DEFAULT_TARGET_THRESHOLD", "0.80"))
 
-# Optional fallback mapping for pillar labels if not present in control definitions
-PILLAR_OF: Dict[str, str] = {
-    "velocity": "Delivery",
-    "cycle_time_days": "Delivery",
-    "deployment_freq": "Delivery",
-    "lead_time_days": "Delivery",
-    "defect_rate": "Quality",
-    "change_fail_rate": "Quality",
-}
-
-# ---- DB Pool (lazily created) ----
 _pool: Optional[asyncpg.Pool] = None
 
 
 async def get_pool() -> asyncpg.Pool:
+    """Create/reuse a global asyncpg pool. Strips +driver suffixes if present."""
     global _pool
     if _pool is None:
-        url = DATABASE_URL.replace("+asyncpg", "")  # ensure asyncpg DSN
-        _pool = await asyncpg.create_pool(dsn=url, min_size=1, max_size=10)
+        dsn = DATABASE_URL.replace("+asyncpg", "").replace("+psycopg", "")
+        try:
+            _pool = await asyncpg.create_pool(dsn=dsn, min_size=1, max_size=10)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"DB connection failed: {e}")
     return _pool
 
 
-# ---- Schema bootstrap (ONLY for local demo tables) ----
-# IMPORTANT: We no longer create `projects` or `pillar_overrides` here.
-# Those are Alembic/ORM-managed in your normalized schema.
-SCHEMA_SQL = """
-CREATE TABLE IF NOT EXISTS controls (
-  control_id          TEXT PRIMARY KEY,
-  name                TEXT NOT NULL,
-  pillar              TEXT,
-  unit                TEXT,
-  norm_min            DOUBLE PRECISION,
-  norm_max            DOUBLE PRECISION,
-  higher_is_better    BOOLEAN NOT NULL DEFAULT TRUE,
-  weight              DOUBLE PRECISION NOT NULL DEFAULT 1.0
-);
-
-CREATE TABLE IF NOT EXISTS control_values (
-  project_slug        TEXT NOT NULL,
-  control_id          TEXT NOT NULL,
-  raw_value           DOUBLE PRECISION,
-  normalized_pct      DOUBLE PRECISION,
-  observed_at         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (project_slug, control_id),
-  FOREIGN KEY (control_id) REFERENCES controls(control_id) ON DELETE CASCADE
-);
-"""
+# Back-compat shim so imports from admin.py keep working.
+async def ensure_schema(_: asyncpg.Connection) -> None:
+    return None
 
 
-async def ensure_schema(conn: asyncpg.Connection) -> None:
-    # Only ensure local demo KPI tables if you still use them.
-    # Does NOT touch `projects` or `pillar_overrides`.
-    await conn.execute(SCHEMA_SQL)
-
-
-# ---- Pydantic shapes ----
+# ---- Models ------------------------------------------------------------------
 class ProjectOut(BaseModel):
     slug: str
     name: str
@@ -89,20 +129,24 @@ class ProjectOut(BaseModel):
 
 
 class PillarOut(BaseModel):
-    pillar: str
+    key: str
+    name: str
     score_pct: float
-    weight: float = 1.0
-    maturity: int = 1
+    maturity: int
+    # NEW: expose weight for UI (fraction 0..1) and a precomputed percent 0..100
+    weight: Optional[float] = None
+    pillar_weight_pct: Optional[float] = None
 
 
 class KPIOut(BaseModel):
     pillar: Optional[str]
     key: str
     name: str
-    unit: Optional[str]
-    raw_value: Optional[float]
-    normalized_pct: float
-    updated_at: Optional[datetime]
+    unit: Optional[str] = None
+    raw_value: Optional[float] = None
+    normalized_pct: Optional[float] = None
+    kpi_score: Optional[float] = None
+    updated_at: Optional[datetime] = None
 
 
 class ScorecardOut(BaseModel):
@@ -111,35 +155,44 @@ class ScorecardOut(BaseModel):
     pillars: List[PillarOut]
     kpis: List[KPIOut]
 
+class PillarWeightItem(BaseModel):
+    id: Optional[str] = None          # optional override row id
+    pillar_key: str
+    weight: float                     # fraction 0..1
 
-class ControlScore(BaseModel):
-    control_id: str
-    score: float  # raw score coming from UI (we'll normalize)
-
-
-class PostScoresBody(BaseModel):
-    project_id: Optional[str] = None
-    scores: List[ControlScore]
-
-
-class PillarUpsert(BaseModel):
-    pillar: str = Field(min_length=1)  # maps to pillar_key in the new table
-    score_pct: conint(ge=0, le=100)
-    maturity: Optional[int] = None
+class PillarWeightsIn(BaseModel):
+    items: List[PillarWeightItem]
+    
+# ---- Helpers -----------------------------------------------------------------
+def clamp01(x: float) -> float:
+    return 0.0 if x < 0 else 1.0 if x > 1 else x
 
 
-class PillarUpsertRequest(BaseModel):
-    pillars: List[PillarUpsert]
+def clamp100(x: float) -> float:
+    return 0.0 if x < 0 else 100.0 if x > 100 else x
 
 
-# ---- Project helpers (split: get-or-none vs ensure) ----
+def maturity_from_score(s: float) -> int:
+    return 5 if s >= 85 else 4 if s >= 70 else 3 if s >= 55 else 2 if s >= 40 else 1
+
+
+def normalize(min_v: Optional[float], max_v: Optional[float], hib: bool, raw: float) -> float:
+    """Min-max normalize raw to 0..100 using control definition bounds."""
+    if min_v is None or max_v is None or max_v == min_v:
+        return clamp100(raw)
+    if hib:
+        pct01 = (raw - min_v) / (max_v - min_v)
+    else:
+        pct01 = (max_v - raw) / (max_v - min_v)
+    return clamp100(round(clamp01(pct01) * 100, 2))
+
+
 def _row_to_project_out(row: asyncpg.Record) -> ProjectOut:
-    risk_level = row.get("risk_level")
-    priority = row.get("priority") or risk_level
+    priority = row.get("priority") or row.get("risk_level")
     return ProjectOut(
         slug=row["slug"],
         name=row["name"],
-        risk_level=risk_level,
+        risk_level=row.get("risk_level"),
         target_threshold=row["target_threshold"],
         priority=priority,
         sponsor=row.get("sponsor"),
@@ -152,7 +205,8 @@ def _row_to_project_out(row: asyncpg.Record) -> ProjectOut:
 async def get_project_out_or_none(conn: asyncpg.Connection, slug: str) -> Optional[ProjectOut]:
     row = await conn.fetchrow(
         """
-        SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
+        SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner,
+               creation_date, update_date
         FROM projects
         WHERE slug = $1
         """,
@@ -162,13 +216,10 @@ async def get_project_out_or_none(conn: asyncpg.Connection, slug: str) -> Option
 
 
 async def ensure_project(conn: asyncpg.Connection, slug: str) -> ProjectOut:
-    """
-    Create if missing, then return ProjectOut.
-    Used by POST routes that should auto-create projects in dev/MVP flows.
-    """
     row = await conn.fetchrow(
         """
-        SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
+        SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner,
+               creation_date, update_date
         FROM projects
         WHERE slug = $1
         """,
@@ -177,21 +228,17 @@ async def ensure_project(conn: asyncpg.Connection, slug: str) -> ProjectOut:
     if not row:
         await conn.execute(
             """
-            INSERT INTO projects (slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_DATE, NOW())
+            INSERT INTO projects (id, slug, name, risk_level, target_threshold, priority,
+                                  sponsor, owner, creation_date, update_date)
+            VALUES (gen_random_uuid()::text, $1, $1, 'low', $2, 'low', NULL, NULL, CURRENT_DATE, NOW())
             ON CONFLICT (slug) DO NOTHING
             """,
-            slug,
-            slug,
-            "low",
-            DEFAULT_TARGET_THRESHOLD,
-            "low",
-            None,
-            None,
+            slug, DEFAULT_TARGET_THRESHOLD
         )
         row = await conn.fetchrow(
             """
-            SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner, creation_date, update_date
+            SELECT slug, name, risk_level, target_threshold, priority, sponsor, owner,
+                   creation_date, update_date
             FROM projects
             WHERE slug = $1
             """,
@@ -201,338 +248,507 @@ async def ensure_project(conn: asyncpg.Connection, slug: str) -> ProjectOut:
 
 
 async def get_project_id_by_slug(conn: asyncpg.Connection, slug: str) -> str:
-    row = await conn.fetchrow("SELECT id FROM projects WHERE slug = $1", slug)
+    row = await conn.fetchrow("SELECT id FROM projects WHERE slug=$1", slug)
     if not row:
         raise HTTPException(status_code=404, detail=f"Project '{slug}' not found")
     return row["id"]
 
 
-# ---- Normalization helpers ----
-def clamp01(x: float) -> float:
-    return 0.0 if x < 0 else 1.0 if x > 1 else x
-
-
-def clamp100(x: float) -> float:
-    return 0.0 if x < 0 else 100.0 if x > 100 else x
-
-
-def maturity_from_score(s: float) -> int:
-    # Simple 1..5 ladder (edit as needed)
-    return 5 if s >= 85 else 4 if s >= 70 else 3 if s >= 55 else 2 if s >= 40 else 1
-
-
-def normalize(min_v: Optional[float], max_v: Optional[float], hib: bool, raw: float) -> float:
-    """Min-max normalize raw -> 0..100. If no bounds, clamp raw to 0..100."""
-    if min_v is None or max_v is None or max_v == min_v:
-        return clamp100(raw)  # assume already 0..100 scale
-    if hib:  # higher is better
-        pct01 = (raw - min_v) / (max_v - min_v)
-    else:    # lower is better
-        pct01 = (max_v - raw) / (max_v - min_v)
-    return clamp100(round(clamp01(pct01) * 100, 2))
-
-
-# ---- DB ops for KPIs ----
-async def upsert_control_value(
-    conn: asyncpg.Connection,
-    project_slug: str,
-    control_id: str,
-    raw_value: float,
-) -> Dict[str, Any]:
-    # Use definition for normalization if exists
-    defn = await conn.fetchrow(
-        "SELECT control_id, norm_min, norm_max, higher_is_better, weight, name, pillar, unit "
-        "FROM controls WHERE control_id = $1",
-        control_id,
-    )
-    if defn:
-        normalized_pct = normalize(
-            defn["norm_min"],
-            defn["norm_max"],
-            bool(defn["higher_is_better"]),
-            float(raw_value),
-        )
-    else:
-        # Fallback: assume raw already in 0..100 space
-        normalized_pct = clamp100(float(raw_value))
-
-    await conn.execute(
-        """
-        INSERT INTO control_values (project_slug, control_id, raw_value, normalized_pct, observed_at, updated_at)
-        VALUES ($1, $2, $3, $4, NOW(), NOW())
-        ON CONFLICT (project_slug, control_id)
-        DO UPDATE SET raw_value = EXCLUDED.raw_value,
-                      normalized_pct = EXCLUDED.normalized_pct,
-                      observed_at = EXCLUDED.observed_at,
-                      updated_at = NOW()
-        """,
-        project_slug, control_id, float(raw_value), float(normalized_pct),
-    )
-
-    return {
-        "control_id": control_id,
-        "raw_value": float(raw_value),
-        "normalized_pct": float(normalized_pct),
-    }
-
-
-async def load_scorecard(
-    conn: asyncpg.Connection,
-    project_slug: str,
-    project: Optional[ProjectOut] = None,
-) -> ScorecardOut:
-    """
-    Build the scorecard snapshot. If `project` is None, we'll 404 if it's missing.
-    """
-    if project is None:
-        proj = await get_project_out_or_none(conn, project_slug)
-        if proj is None:
-            raise HTTPException(status_code=404, detail="Project not found")
-        project = proj
-
-    # Load KPI values (+ definitions) — include norms so we can compute fallbacks safely
+# ---- KPI / Pillar loading ----------------------------------------------------
+async def _load_kpis_for_project(conn: asyncpg.Connection, project_slug: str) -> List[KPIOut]:
     rows = await conn.fetch(
         """
         SELECT
-          c.control_id,
-          c.name                         AS control_name,
-          COALESCE(c.pillar, '')         AS pillar_from_def,
-          c.unit,
-          COALESCE(c.weight, 1.0)        AS weight,
-          c.norm_min,
-          c.norm_max,
-          c.higher_is_better,
-          v.raw_value,
-          v.normalized_pct,
-          v.updated_at
-        FROM controls c
-        LEFT JOIN control_values v
-          ON v.control_id = c.control_id
-         AND v.project_slug = $1
-        ORDER BY c.pillar NULLS LAST, c.control_id
+          COALESCE(c.pillar, '')                AS pillar_from_def,
+          COALESCE(c.kpi_key, v.kpi_key)        AS kpi_key,
+          COALESCE(c.name, c.kpi_key, v.kpi_key, '') AS control_name,
+          c.unit                                AS unit,
+          c.norm_min                            AS norm_min,
+          c.norm_max                            AS norm_max,
+          c.higher_is_better                    AS higher_is_better,
+          v.raw_value                           AS raw_value,
+          v.normalized_pct                      AS normalized_pct,
+          v.kpi_score                           AS kpi_score,
+          v.updated_at                          AS updated_at
+        FROM control_values v
+        LEFT JOIN controls c ON c.id = v.control_id
+        WHERE v.project_slug = $1
+        ORDER BY c.pillar NULLS LAST, COALESCE(c.kpi_key, v.kpi_key)
         """,
         project_slug,
     )
 
-    # Build KPIs (safe coalescing) and collect for aggregation
-    kpis: List[KPIOut] = []
-    agg_inputs: List[Tuple[str, float, float]] = []  # (pillar, weight, normalized_pct)
-
+    out: List[KPIOut] = []
     for r in rows:
-        cid = r["control_id"]
-        pillar = r["pillar_from_def"] or PILLAR_OF.get(cid) or None
-
-        raw_val = r["raw_value"]
-        norm_pct = r["normalized_pct"]
-
-        # Safe fallback for normalized_pct
-        if norm_pct is None:
-            if raw_val is not None:
-                # Try to compute from definition; if any field missing, clamp raw
-                hib = bool(r["higher_is_better"]) if r["higher_is_better"] is not None else True
-                norm_pct = normalize(r["norm_min"], r["norm_max"], hib, float(raw_val))
-            else:
-                norm_pct = 0.0
-
-        # KPIOut expects floats for normalized_pct; raw_value can be None
-        kpis.append(
+        norm = r["normalized_pct"]
+        if norm is None and r["raw_value"] is not None:
+            norm = normalize(
+                r["norm_min"], r["norm_max"],
+                True if r["higher_is_better"] is None else bool(r["higher_is_better"]),
+                float(r["raw_value"]),
+            )
+        out.append(
             KPIOut(
-                pillar=pillar,
-                key=cid,
-                name=r["control_name"] or cid,
+                pillar=(r["pillar_from_def"] or None),
+                key=str(r["kpi_key"] or ""),
+                name=str(r["control_name"] or "") or str(r["kpi_key"] or ""),
                 unit=r["unit"],
-                raw_value=float(raw_val) if raw_val is not None else None,
-                normalized_pct=float(norm_pct),
+                raw_value=float(r["raw_value"]) if r["raw_value"] is not None else None,
+                normalized_pct=float(norm) if norm is not None else None,
+                kpi_score=float(r["kpi_score"]) if r["kpi_score"] is not None else None,
                 updated_at=r["updated_at"],
             )
         )
+    return out
 
-        # For aggregation we need a pillar label
-        pillar_for_agg = (pillar or "Unassigned").strip() or "Unassigned"
-        w = float(r["weight"] or 1.0)
-        agg_inputs.append((pillar_for_agg, w, float(norm_pct)))
 
-    # Aggregate pillars (weighted average)
-    agg: Dict[str, Tuple[float, float]] = {}  # pillar -> (sum_w, sum_norm_w)
-    for pillar_name, w, norm in agg_inputs:
-        if pillar_name not in agg:
-            agg[pillar_name] = (0.0, 0.0)
-        sw, sn = agg[pillar_name]
-        agg[pillar_name] = (sw + w, sn + w * norm)
-
-    pillars: List[PillarOut] = []
-    for pillar_name, (sum_w, sum_norm_w) in agg.items():
-        score_pct = round(sum_norm_w / sum_w, 2) if sum_w > 0 else 0.0
-        pillars.append(
-            PillarOut(
-                pillar=pillar_name,
-                score_pct=score_pct,
-                weight=1.0,
-                maturity=maturity_from_score(score_pct),
-            )
-        )
-
-    # Apply pillar overrides from normalized table (join via project_id)
-    overrides = await conn.fetch(
+async def _load_overrides(conn: asyncpg.Connection, project_slug: str) -> List[PillarOut]:
+    """
+    Load explicit pillar overrides. If any rows are present for the project, they
+    *fully* define the pillar list and scores.
+    """
+    rows = await conn.fetch(
         """
-        SELECT po.pillar_key AS pillar, po.score_pct, po.maturity
+        SELECT
+          po.pillar_key,
+          COALESCE(NULLIF(po.pillar_name, ''), po.pillar_key) AS pillar_name,
+          po.score_pct,
+          po.maturity,
+          po.weight
         FROM pillar_overrides po
         JOIN projects p ON p.id = po.project_id
         WHERE p.slug = $1
+        ORDER BY po.pillar_key
         """,
         project_slug,
     )
-    if overrides:
-        idx: Dict[str, int] = {p.pillar: i for i, p in enumerate(pillars)}
-        for o in overrides:
-            name = o["pillar"]
-            score_pct = float(o["score_pct"]) if o["score_pct"] is not None else 0.0
-            maturity = (
-                int(o["maturity"])
-                if o["maturity"] is not None
-                else maturity_from_score(score_pct)
+    pillars: List[PillarOut] = []
+    for r in rows:
+        score = float(r["score_pct"]) if r["score_pct"] is not None else 0.0
+        mat = int(r["maturity"]) if r["maturity"] is not None else maturity_from_score(score)
+        w = float(r["weight"]) if r["weight"] is not None else None  # fraction 0..1
+        pillars.append(
+            PillarOut(
+                key=str(r["pillar_key"]),
+                name=str(r["pillar_name"]),
+                score_pct=score,
+                maturity=mat,
+                weight=w,
+                pillar_weight_pct=round(w * 100.0, 2) if w is not None else None,
             )
-            if name in idx:
-                i = idx[name]
-                pillars[i] = PillarOut(
-                    pillar=name,
-                    score_pct=score_pct,
-                    weight=pillars[i].weight,
-                    maturity=maturity,
-                )
-            else:
-                pillars.append(
-                    PillarOut(pillar=name, score_pct=score_pct, maturity=maturity)
-                )
-
-    overall_pct = round(
-        sum(p.score_pct for p in pillars) / len(pillars), 2
-    ) if pillars else 0.0
-
-    return ScorecardOut(
-        project=project,
-        overall_pct=overall_pct,
-        pillars=sorted(pillars, key=lambda x: x.pillar),
-        kpis=kpis,
-    )
+        )
+    return pillars
 
 
-# ---- Routes ----
-@router.get("/{project_slug}", response_model=ScorecardOut)
-async def get_scorecard(
-    project_slug: str,
-    as_of: Optional[datetime] = Query(None),
-) -> ScorecardOut:
+async def _aggregate_pillars_from_kpis(kpis: List[KPIOut]) -> List[PillarOut]:
     """
-    Return scorecard snapshot for an *existing* project (404 if not found).
+    Fall back aggregation when there are no overrides:
+    group KPIs by controls.pillar and average normalized_pct.
+    (No explicit weights in this path; UI may treat missing weight as 0 or default.)
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        await ensure_schema(conn)  # only ensures controls/control_values
+    if not kpis:
+        return []
+    sums: Dict[str, Tuple[float, float]] = {}  # pillar_name -> (sum_w, sum_w*score)
+    for k in kpis:
+        pillar = (k.pillar or "Unassigned").strip() or "Unassigned"
+        w = 1.0
+        sw, sn = sums.get(pillar, (0.0, 0.0))
+        sums[pillar] = (sw + w, sn + w * (k.normalized_pct or 0.0))
+
+    out: List[PillarOut] = []
+    for name, (sw, sn) in sums.items():
+        pct = round((sn / sw) if sw > 0 else 0.0, 2)
+        out.append(
+            PillarOut(
+                key=name,
+                name=name,
+                score_pct=pct,
+                maturity=maturity_from_score(pct),
+                # weight and pillar_weight_pct intentionally None in fallback mode
+            )
+        )
+    out.sort(key=lambda x: x.name)
+    return out
+
+
+async def load_scorecard(conn: asyncpg.Connection, project_slug: str, project: Optional[ProjectOut] = None) -> ScorecardOut:
+    if project is None:
         project = await get_project_out_or_none(conn, project_slug)
         if project is None:
             raise HTTPException(status_code=404, detail="Project not found")
-        # (as_of not used in this simplified snapshot)
-        return await load_scorecard(conn, project_slug, project=project)
+
+    kpis = await _load_kpis_for_project(conn, project_slug)
+    overrides = await _load_overrides(conn, project_slug)
+    if overrides:
+        pillars = overrides
+    else:
+        pillars = await _aggregate_pillars_from_kpis(kpis)
+    overall = round(sum(p.score_pct for p in pillars) / len(pillars), 2) if pillars else 0.0
+
+    return ScorecardOut(project=project, overall_pct=overall, pillars=pillars, kpis=kpis)
 
 
-def _coerce_post_body(payload: Dict[str, Any], project_slug: str) -> PostScoresBody:
-    # Primary: { project_id?, scores: [{control_id, score}] }
-    if isinstance(payload.get("scores"), list) and all(isinstance(x, dict) for x in payload["scores"]):
-        items: List[ControlScore] = []
-        for s in payload["scores"]:
-            control_id = str(s.get("control_id") or s.get("key") or s.get("kpi_key") or s.get("id") or "")
-            score = s.get("score", s.get("raw", s.get("value", None)))
-            if control_id and score is not None:
-                items.append(ControlScore(control_id=control_id, score=float(score)))
-        return PostScoresBody(project_id=payload.get("project_id") or project_slug, scores=items)
-
-    # Map: { scores: { "<id>": <val>, ... } }
-    if isinstance(payload.get("scores"), dict):
-        items = [ControlScore(control_id=str(k), score=float(v)) for k, v in payload["scores"].items()]
-        return PostScoresBody(project_id=payload.get("project_id") or project_slug, scores=items)
-
-    # Legacy: { kpis: [{ key|id|kpi_key, raw|value|score }] }
-    if isinstance(payload.get("kpis"), list) and all(isinstance(x, dict) for x in payload["kpis"]):
-        items = []
-        for k in payload["kpis"]:
-            control_id = str(k.get("key") or k.get("kpi_key") or k.get("id") or "")
-            score = k.get("raw", k.get("value", k.get("score", None)))
-            if control_id and score is not None:
-                items.append(ControlScore(control_id=control_id, score=float(score)))
-        return PostScoresBody(project_id=payload.get("project_id") or project_slug, scores=items)
-
-    # Nothing usable
-    return PostScoresBody(project_id=payload.get("project_id") or project_slug, scores=[])
-
-
-@router.post("/{project_slug}")
-async def upsert_scores(project_slug: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Upsert raw scores for KPIs ("controls"); compute normalized 0–100 and persist.
-    Accepts:
-      - { project_id?, scores: [{control_id, score}] }
-      - { scores: { "<id>": <value>, ... } }
-      - { kpis: [{ key|id|kpi_key, raw|value|score }] }
-    """
-    payload = _coerce_post_body(body, project_slug)
-    if not payload.scores:
-        raise HTTPException(status_code=400, detail="No valid scores provided.")
-
+# ---- Public Endpoints (GET) --------------------------------------------------
+@router.get("/{project_slug}", response_model=ScorecardOut)
+async def get_scorecard(project_slug: str, as_of: Optional[datetime] = Query(None)) -> ScorecardOut:
     pool = await get_pool()
-    async with pool.acquire() as conn:
-        await ensure_schema(conn)
-        # For write paths we *ensure* the project exists
-        project = await ensure_project(conn, project_slug)
-
-        upserted = []
-        for item in payload.scores:
-            res = await upsert_control_value(conn, project.slug, item.control_id, item.score)
-            upserted.append(res)
-
-        snapshot = await load_scorecard(conn, project.slug, project=project)
-        return {
-            "project_slug": project.slug,
-            "upserted": upserted,
-            "overall_pct": snapshot.overall_pct,
-            "pillars": [p.dict() for p in snapshot.pillars],
-            "kpis": [k.dict() for k in snapshot.kpis],
-        }
+    try:
+        async with pool.acquire() as conn:
+            project = await get_project_out_or_none(conn, project_slug)
+            if project is None:
+                raise HTTPException(status_code=404, detail="Project not found")
+            return await load_scorecard(conn, project_slug, project=project)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load scorecard: {e}")
 
 
-@router.post("/{project_slug}/pillars")
-async def upsert_pillars(project_slug: str, req: PillarUpsertRequest) -> Dict[str, Any]:
-    """
-    Override pillar scores (normalized 0–100) + optional maturity.
-    Persists to normalized `pillar_overrides` with (project_id, pillar_key) uniqueness.
-    """
-    if not req.pillars:
-        raise HTTPException(status_code=400, detail="No pillars provided")
-
+@router.get("/{project_slug}/pillars", response_model=List[PillarOut])
+async def get_pillars(project_slug: str) -> List[PillarOut]:
     pool = await get_pool()
-    async with pool.acquire() as conn:
-        # No schema creation here—this is Alembic-managed.
-        # Ensure project row (so slug exists)
-        project = await ensure_project(conn, project_slug)
-        project_id = await get_project_id_by_slug(conn, project.slug)
+    try:
+        async with pool.acquire() as conn:
+            project = await get_project_out_or_none(conn, project_slug)
+            if project is None:
+                raise HTTPException(status_code=404, detail="Project not found")
 
-        for p in req.pillars:
-            await conn.execute(
+            overrides = await _load_overrides(conn, project_slug)
+            if overrides:
+                return overrides
+
+            kpis = await _load_kpis_for_project(conn, project_slug)
+            return await _aggregate_pillars_from_kpis(kpis)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load pillars: {e}")
+
+
+@router.get("/{project_slug}/controls")
+async def get_project_controls(project_slug: str) -> Dict[str, Any]:
+    """
+    Return per-project control values in a shape the UI can render directly.
+    """
+    pool = await get_pool()
+    try:
+        async with pool.acquire() as conn:
+            project = await get_project_out_or_none(conn, project_slug)
+            if project is None:
+                raise HTTPException(status_code=404, detail="Project not found")
+
+            rows = await conn.fetch(
                 """
-                INSERT INTO pillar_overrides (id, project_id, pillar_key, score_pct, maturity, updated_at)
-                VALUES (gen_random_uuid()::text, $1, $2, $3, $4, NOW())
-                ON CONFLICT (project_id, pillar_key)
-                DO UPDATE SET
-                  score_pct  = EXCLUDED.score_pct,
-                  maturity   = COALESCE(EXCLUDED.maturity, pillar_overrides.maturity),
-                  updated_at = NOW()
+                SELECT
+                  v.kpi_key                                  AS kpi_key,
+                  v.control_id                                AS control_id,
+                  COALESCE(NULLIF(c.name, ''), c.kpi_key)     AS control_name,
+                  c.pillar                                    AS pillar,
+                  c.unit                                      AS unit,
+
+                  v.raw_value                                 AS raw_value,
+                  v.normalized_pct                            AS normalized_pct,
+                  v.updated_at                                AS updated_at,
+                  v.observed_at                               AS observed_at,
+
+                  -- optional enrichment columns (if present)
+                  v.owner_role                                AS owner_role,
+                  v.evidence_source                           AS evidence_source,
+                  v.target_numeric                            AS target_numeric,
+                  v.target_text                               AS target_text,
+                  v.current_value                             AS current_value,
+                  v.kpi_score                                 AS kpi_score
+                FROM control_values v
+                LEFT JOIN controls c ON c.id = v.control_id
+                WHERE v.project_slug = $1
+                ORDER BY COALESCE(c.kpi_key, v.kpi_key)
                 """,
-                project_id, p.pillar, float(p.score_pct), p.maturity,
+                project_slug,
             )
 
-        snapshot = await load_scorecard(conn, project.slug, project=project)
-        return {
-            "project_slug": project.slug,
-            "pillars": [p.dict() for p in snapshot.pillars],
-            "overall_pct": snapshot.overall_pct,
-        }
+            items: List[Dict[str, Any]] = []
+            for r in rows:
+                # Target: prefer text, else numeric
+                if r["target_text"] is not None and str(r["target_text"]).strip() != "":
+                    target = r["target_text"]
+                else:
+                    target = float(r["target_numeric"]) if r["target_numeric"] is not None else None
+
+                # Current value: prefer explicit, else raw_value, else normalized_pct
+                if r["current_value"] is not None and str(r["current_value"]).strip() != "":
+                    cur_val = r["current_value"]
+                elif r["raw_value"] is not None:
+                    cur_val = float(r["raw_value"])
+                elif r["normalized_pct"] is not None:
+                    cur_val = float(r["normalized_pct"])
+                else:
+                    cur_val = None
+
+                # As-of timestamp: prefer observed_at, else updated_at
+                as_of = r["observed_at"] or r["updated_at"]
+
+                items.append(
+                    {
+                        # keys
+                        "kpi_key": r["kpi_key"],
+                        "control_id": str(r["control_id"]) if r["control_id"] is not None else None,
+
+                        # UI columns
+                        "control_name": (r["control_name"] or "") if r["control_name"] is not None else "",
+                        "owner": r["owner_role"],
+                        "target": target,
+                        "current_value": cur_val,
+                        "as_of": as_of.isoformat() if as_of else None,
+
+                        # extras kept for client use
+                        "pillar": r["pillar"],
+                        "unit": r["unit"],
+                        "evidence_source": r["evidence_source"],
+                        "kpi_score": float(r["kpi_score"]) if r["kpi_score"] is not None else None,
+                        "raw_value": float(r["raw_value"]) if r["raw_value"] is not None else None,
+                        "normalized_pct": float(r["normalized_pct"]) if r["normalized_pct"] is not None else None,
+                        "updated_at": r["updated_at"].isoformat() if r["updated_at"] else None,
+                        "observed_at": r["observed_at"].isoformat() if r["observed_at"] else None,
+                        "target_text": r["target_text"],
+                        "target_numeric": float(r["target_numeric"]) if r["target_numeric"] is not None else None,
+                    }
+                )
+
+            return {"items": items}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load controls: {e}")
+
+
+# ---- POST : update pillar weights BEGIN
+@router.put("/{project_slug}/pillar_weights")
+async def put_pillar_weights(project_slug: str, body: PillarWeightsIn):
+    """
+    Upsert pillar_overrides.weight (fraction 0..1) for the given project+pillar_key.
+    If a row doesn't exist, insert it; if it exists, update weight and updated_at.
+    """
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        proj = await conn.fetchrow("SELECT id FROM projects WHERE slug=$1", project_slug)
+        if not proj:
+            raise HTTPException(status_code=404, detail="Project not found")
+        project_id = proj["id"]
+
+        updated = 0
+        for it in body.items:
+            w = float(it.weight)
+            if w < 0:
+                w = 0.0
+            if w > 1:
+                w = 1.0
+
+            # 👇 note the ::varchar(60) casts on EVERY use of $2
+            await conn.execute(
+                """
+                INSERT INTO pillar_overrides (
+                  id, project_id, pillar_key, pillar_name, weight, updated_at
+                )
+                VALUES (
+                  COALESCE($4, gen_random_uuid()::text),
+                  $1,
+                  $2::varchar(60),
+                  COALESCE(
+                    (SELECT name FROM pillars WHERE key = $2::varchar(60) LIMIT 1),
+                    $2::varchar(60)
+                  ),
+                  $3,
+                  NOW()
+                )
+                ON CONFLICT (project_id, pillar_key)
+                DO UPDATE SET
+                  weight = EXCLUDED.weight,
+                  updated_at = NOW()
+                """,
+                project_id, it.pillar_key, w, it.id
+            )
+            updated += 1
+
+        return {"ok": True, "updated": updated}
+
+
+
+# ---- POST : update pillar weights END
+
+# ---- Public Endpoint (POST) : upsert KPI values ------------------------------
+@router.post("/{project_slug}")
+async def post_update_scores(project_slug: str, request: Request) -> Dict[str, Any]:
+    """
+    Upserts KPI values for a project by kpi_key, computing normalized_pct from controls bounds.
+    """
+    body = await request.json()
+    pairs: List[Tuple[str, float]] = []
+
+    # A / B
+    if isinstance(body.get("scores"), list):
+        for item in body["scores"]:
+            if not isinstance(item, dict):
+                continue
+            key = item.get("key")
+            if key is None:
+                continue
+            raw = item.get("value", item.get("raw_value"))
+            if raw is None:
+                continue
+            try:
+                raw_f = float(raw)
+            except Exception:
+                continue
+            pairs.append((str(key), raw_f))
+
+    # C
+    if isinstance(body.get("updates"), list):
+        for item in body["updates"]:
+            if not isinstance(item, dict):
+                continue
+            key = item.get("kpi_key") or item.get("key")
+            raw = item.get("raw_value", item.get("value"))
+            if key is None or raw is None:
+                continue
+            try:
+                raw_f = float(raw)
+            except Exception:
+                continue
+            pairs.append((str(key), raw_f))
+
+    if not pairs:
+        raise HTTPException(status_code=400, detail="No valid KPI updates provided")
+
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        proj = await get_project_out_or_none(conn, project_slug)
+        if proj is None:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        details: List[Dict[str, Any]] = []
+        updated = 0
+
+        for kpi_key, raw_value in pairs:
+            cdef = await conn.fetchrow(
+                """
+                SELECT id, norm_min, norm_max, higher_is_better
+                FROM controls
+                WHERE kpi_key = $1
+                LIMIT 1
+                """,
+                kpi_key,
+            )
+            if not cdef:
+                raise HTTPException(status_code=404, detail=f"Unknown KPI key '{kpi_key}'")
+
+            control_id = cdef["id"]
+            norm = normalize(
+                float(cdef["norm_min"]) if cdef["norm_min"] is not None else None,
+                float(cdef["norm_max"]) if cdef["norm_max"] is not None else None,
+                True if cdef["higher_is_better"] is None else bool(cdef["higher_is_better"]),
+                float(raw_value),
+            )
+
+            await conn.execute(
+                """
+                INSERT INTO control_values (
+                  project_slug, control_id, kpi_key, raw_value, normalized_pct, updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, NOW())
+                ON CONFLICT (project_slug, control_id)
+                DO UPDATE SET
+                  kpi_key        = EXCLUDED.kpi_key,
+                  raw_value      = EXCLUDED.raw_value,
+                  normalized_pct = EXCLUDED.normalized_pct,
+                  updated_at     = NOW()
+                """,
+                project_slug, control_id, kpi_key, float(raw_value), float(norm)
+            )
+            updated += 1
+            details.append({"key": kpi_key, "raw_value": float(raw_value), "normalized_pct": float(norm)})
+
+        return {"ok": True, "updated": updated, "details": details}
+        
+async def put_pillar_weights(project_slug: str, request: Request):
+    """
+    Upsert pillar_overrides.weight (fraction 0..1) for the given project+pillar_key.
+    Accepts either:
+      { "items": [ { id?, pillar_key, weight | weight_pct } ] }
+    or
+      [ { id?, pillar_key, weight | weight_pct } ]
+    """
+    # 1) Read raw JSON body
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    # 2) Normalize to a list of items
+    if isinstance(body, dict) and isinstance(body.get("items"), list):
+        items = body["items"]
+    elif isinstance(body, list):
+        items = body
+    else:
+        raise HTTPException(
+            status_code=422,
+            detail="Body should be an object with 'items' array or a top-level array",
+        )
+
+    # 3) Normalize each item (support weight_pct -> weight)
+    norm_items = []
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        key = it.get("pillar_key")
+        if not key:
+            continue
+        if "weight" in it and it["weight"] is not None:
+            w = float(it["weight"])
+        elif "weight_pct" in it and it["weight_pct"] is not None:
+            w = float(it["weight_pct"]) / 100.0
+        else:
+            # if neither provided, skip
+            continue
+        # clamp 0..1
+        if w < 0: w = 0.0
+        if w > 1: w = 1.0
+        norm_items.append({
+            "id": it.get("id"),
+            "pillar_key": key,
+            "weight": w,
+        })
+
+    if not norm_items:
+        raise HTTPException(status_code=400, detail="No valid items to upsert")
+
+    # 4) Upsert
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        proj = await conn.fetchrow("SELECT id FROM projects WHERE slug=$1", project_slug)
+        if not proj:
+            raise HTTPException(status_code=404, detail="Project not found")
+        project_id = proj["id"]
+
+        updated = 0
+        for it in norm_items:
+            await conn.execute(
+                """
+                INSERT INTO pillar_overrides (
+                  id, project_id, pillar_key, pillar_name, weight, updated_at
+                )
+                VALUES (
+                  COALESCE($4, gen_random_uuid()::text),
+                  $1, $2,
+                  COALESCE((SELECT name FROM pillars WHERE key=$2 LIMIT 1), $2),
+                  $3, NOW()
+                )
+                ON CONFLICT (project_id, pillar_key)
+                DO UPDATE SET
+                  weight = EXCLUDED.weight,
+                  updated_at = NOW()
+                """,
+                project_id, it["pillar_key"], it["weight"], it["id"]
+            )
+            updated += 1
+
+    return {"ok": True, "updated": updated}

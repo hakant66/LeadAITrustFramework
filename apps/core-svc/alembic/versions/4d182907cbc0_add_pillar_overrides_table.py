@@ -8,7 +8,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision = "20251017_add_pillar_overrides"
+revision = "4d182907cbc0"
 down_revision = "8ce721d9c4ca"
 branch_labels = None
 depends_on = None
