@@ -1,5 +1,32 @@
-# apps/coresvc/app/leadai_scorecards_update.py.
+# apps/coresvc/app/leadai_compute_kpi_scores.py
+"""
+LeadAI KPI score recompute (normalized_pct + kpi_score)
+
+QUICK COMMANDS
+--------------
+# 0) Ensure DB URL (if not using default)
+export DATABASE_URL="postgresql://leadai:leadai@localhost:5432/leadai"   # macOS/Linux
+set DATABASE_URL=postgresql://leadai:leadai@localhost:5432/leadai        # Windows (cmd)
+$env:DATABASE_URL="postgresql://leadai:leadai@localhost:5432/leadai"     # Windows (PowerShell)
+
+# 1) Recompute for ALL projects
+python -m apps.coresvc.app.leadai_compute_kpi_scores
+
+# 2) Recompute for ONE project (by slug)
+python -m apps.coresvc.app.leadai_compute_kpi_scores --project ai-document-processing
+
+# 3) Dry-run (see how many rows would change)
+python -m apps.coresvc.app.leadai_compute_kpi_scores --project ai-document-processing --dry-run
+
+# 4) Override DB URL just for this run
+python -m apps.coresvc.app.leadai_compute_kpi_scores --db "postgresql://user:pass@host:5432/db"
+
+# 5) Verbose output
+python -m apps.coresvc.app.leadai_compute_kpi_scores --project my-project --verbose
+"""
+
 import os
+import argparse
 from typing import Optional, Tuple
 import psycopg
 from psycopg.rows import dict_row
@@ -148,10 +175,12 @@ def update_row(conn, project_slug: str, control_id: str, normalized_pct: float, 
         cur.execute(sql, params)
 
 
-def main() -> Tuple[int, int]:
+def run(project_filter: Optional[str], dry_run: bool = False, verbose: bool = False) -> Tuple[int, int]:
     updated, skipped = 0, 0
     with psycopg.connect(DB_URL, autocommit=False) as conn:
-        rows = fetch_rows(conn, PROJECT_FILTER)
+        rows = fetch_rows(conn, project_filter)
+        if verbose:
+            print(f"Fetched {len(rows)} row(s) for project={project_filter or 'ALL'}")
         for r in rows:
             hib = bool(r.get("higher_is_better"))
 
@@ -179,15 +208,35 @@ def main() -> Tuple[int, int]:
             needs_score = (new_score is not None) and ((prev_score is None) or (int(prev_score) != int(new_score)))
 
             if needs_norm or needs_score:
-                update_row(conn, r["project_slug"], r["control_id"], new_norm, new_score)
+                if verbose:
+                    print(f"- UPDATE {r['project_slug']} / {r['control_id']} :: norm {prev_norm}->{new_norm}, score {prev_score}->{new_score}")
+                if not dry_run:
+                    update_row(conn, r["project_slug"], r["control_id"], new_norm, new_score)
                 updated += 1
             else:
                 skipped += 1
 
-        conn.commit()
+        if dry_run:
+            conn.rollback()
+        else:
+            conn.commit()
     return updated, skipped
 
 
 if __name__ == "__main__":
-    up, sk = main()
-    print(f"Updated rows: {up} | Skipped: {sk}")
+    parser = argparse.ArgumentParser(description="Recompute normalized_pct and kpi_score for control_values.")
+    parser.add_argument("--project", help="Limit to project slug (default: ALL projects).", default=None)
+    parser.add_argument("--db", help="Override DATABASE_URL for this run.", default=None)
+    parser.add_argument("--dry-run", action="store_true", help="Compute without writing changes.")
+    parser.add_argument("--verbose", action="store_true", help="Print detailed progress.")
+    args = parser.parse_args()
+
+    # Allow one-off DB override
+    if args.db:
+        DB_URL = args.db  # type: ignore
+
+    # Allow one-off project filter override
+    PROJECT_FILTER = args.project if args.project else None
+
+    up, sk = run(PROJECT_FILTER, dry_run=args.dry_run, verbose=args.verbose)
+    print(f"Updated rows: {up} | Skipped: {sk} | Scope: {PROJECT_FILTER or 'ALL'} | Dry-run: {args.dry_run}")

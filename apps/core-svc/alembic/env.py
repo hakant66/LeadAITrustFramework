@@ -10,47 +10,49 @@ from pathlib import Path
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# in alembic/env.py
-from app.models import Base
-target_metadata = Base.metadata
-
-
-# --- Paths ---
+# --- Paths --------------------------------------------------------------------
 THIS_DIR = Path(__file__).resolve().parent
-SERVICE_ROOT = THIS_DIR.parent                # ...\apps\core-svc
-WORKSPACE_ROOT = SERVICE_ROOT.parent.parent   # ...\Apps\_TheLeadAI
+SERVICE_ROOT = THIS_DIR.parent                # .../apps/core-svc
+WORKSPACE_ROOT = SERVICE_ROOT.parent.parent   # .../_TheLeadAI
 
-# Make project importable
+# Make project importable (service root and optional ./src)
 sys.path.insert(0, str(SERVICE_ROOT))
 SRC = SERVICE_ROOT / "src"
 if SRC.exists():
     sys.path.insert(0, str(SRC))
 
-# --- Load .env (optional) ---
+# --- Load .env (optional) -----------------------------------------------------
 try:
     from dotenv import load_dotenv
     for env_path in (SERVICE_ROOT / ".env", WORKSPACE_ROOT / ".env"):
         if env_path.exists():
             load_dotenv(env_path, override=False)
 except Exception:
+    # .env loading is optional
     pass
 
-# --- Alembic config ---
+# --- Alembic config -----------------------------------------------------------
 config = context.config
 if config.config_file_name:
     fileConfig(config.config_file_name)
 
-# Allow DATABASE_URL to override alembic.ini sqlalchemy.url
+# Respect DATABASE_URL if provided, and normalize to psycopg3 driver.
 db_url = os.getenv("DATABASE_URL")
 if db_url:
+    if db_url.startswith("postgresql://"):
+        db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
     config.set_main_option("sqlalchemy.url", db_url)
 
-# --- Locate your metadata for autogenerate ---
+# --- Locate your metadata for autogenerate -----------------------------------
 def load_target_metadata():
+    """
+    Resolve metadata from ALEMBIC_BASE if set (e.g., "app.models:Base"),
+    else try a list of common fallbacks.
+    """
     override = os.getenv("ALEMBIC_BASE")  # e.g. "app.models:Base" or "app.models:SQLModel"
     candidates = [override] if override else []
     candidates += [
-        "app.models:Base",        # your known location
+        "app.models:Base",        # common project location
         "models:Base",
         "core_svc.models:Base",
         "core_svc.db:Base",
@@ -83,9 +85,10 @@ def load_target_metadata():
 target_metadata = load_target_metadata()
 
 def include_object(object, name, type_, reflected, compare_to):
-    # include everything by default
+    # include everything by default; customize if you need to skip views, etc.
     return True
 
+# --- Offline / Online runners -------------------------------------------------
 def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
     context.configure(

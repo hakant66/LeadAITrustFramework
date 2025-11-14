@@ -43,6 +43,21 @@ class ControlIn(BaseModel):
     norm_max: Optional[float] = None
     higher_is_better: bool = True
     weight: float = 1.0
+    # extended columns from controls table
+    target_text: Optional[str] = None
+    target_numeric: Optional[int] = None
+    evidence_source: Optional[str] = None
+    owner_role: Optional[str] = None
+    frequency: Optional[int] = None
+    failure_action: Optional[int] = None
+    maturity_anchor_l3: Optional[int] = None
+    current_value: Optional[int] = None
+    as_of: Optional[int] = None
+    notes: Optional[str] = None
+    kpi_score: Optional[int] = None
+    description: Optional[str] = None
+    example: Optional[str] = None
+
 
 
 class ControlOut(ControlIn):
@@ -59,6 +74,7 @@ class ProjectIn(BaseModel):
     owner: Optional[str] = None
     creation_date: Optional[date] = None
     update_date: Optional[datetime] = None
+    update_date: Optional[datetime] = None
 
 
 class ProjectOut(ProjectIn):
@@ -66,19 +82,42 @@ class ProjectOut(ProjectIn):
 
 
 # ---------- Controls CRUD (global) ----------
-@router.get("/controls", response_model=List[ControlOut])
-async def list_controls() -> List[ControlOut]:
+@router.get("/controls", response_model=List[ControlOut])  # or drop response_model for flexibility
+async def list_controls():
     pool = await get_pool()
     async with pool.acquire() as conn:
         await ensure_schema(conn)
         rows = await conn.fetch(
             """
-            SELECT control_id, name, pillar, unit, norm_min, norm_max, higher_is_better, weight
+            SELECT
+              id::text         AS control_id,
+              kpi_key,
+              name,
+              pillar,
+              unit,
+              norm_min,
+              norm_max,
+              higher_is_better,
+              weight,
+              target_text,
+              target_numeric,
+              evidence_source,
+              owner_role,
+              frequency,
+              failure_action,
+              maturity_anchor_l3,
+              current_value,
+              as_of,
+              kpi_score,
+              description,
+              example,
+              notes
             FROM controls
-            ORDER BY pillar NULLS LAST, control_id
+            ORDER BY pillar ASC NULLS LAST, kpi_key ASC
             """
         )
-        return [ControlOut(**dict(r)) for r in rows]
+        return [dict(r) for r in rows]
+
 
 
 @router.post("/controls", response_model=ControlOut)
@@ -90,8 +129,8 @@ async def create_control(body: ControlIn) -> ControlOut:
             await conn.execute(
                 """
                 INSERT INTO controls
-                  (control_id, name, pillar, unit, norm_min, norm_max, higher_is_better, weight)
-                VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+                  (id, name, pillar, unit, norm_min, norm_max, higher_is_better, weight)
+                VALUES ($1::uuid, $2, $3, $4, $5, $6, $7, $8)
                 """,
                 body.control_id, body.name, body.pillar, body.unit,
                 body.norm_min, body.norm_max, body.higher_is_better, body.weight,
@@ -113,7 +152,7 @@ async def update_control(control_id: str, body: ControlIn) -> ControlOut:
             """
             UPDATE controls
             SET name=$2, pillar=$3, unit=$4, norm_min=$5, norm_max=$6, higher_is_better=$7, weight=$8
-            WHERE control_id=$1
+            WHERE id=$1::uuid
             """,
             body.control_id, body.name, body.pillar, body.unit,
             body.norm_min, body.norm_max, body.higher_is_better, body.weight,
@@ -128,11 +167,38 @@ async def delete_control(control_id: str) -> dict:
     pool = await get_pool()
     async with pool.acquire() as conn:
         await ensure_schema(conn)
-        await conn.execute("DELETE FROM control_values WHERE control_id=$1", control_id)
-        res = await conn.execute("DELETE FROM controls WHERE control_id=$1", control_id)
+        await conn.execute("DELETE FROM control_values WHERE id=$1::uuid", control_id)
+        res = await conn.execute("DELETE FROM controls WHERE id=$1::uuid", control_id)
         if int(res.split()[-1]) == 0:
             raise HTTPException(status_code=404, detail="control not found")
         return {"deleted": control_id}
+
+# ---------- kpis handler ----------
+@router.get("/kpis")
+async def list_kpis():
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT
+              k.id,
+              k.key,
+              k.name,
+              pl.key  AS pillar_key,
+              pl.name AS pillar_name,
+              k.unit,
+              k.weight,
+              k.min_ideal,
+              k.max_ideal,
+              k.invert,
+              k.description,
+              k.example
+            FROM public.kpis k
+            JOIN public.pillars pl ON pl.id = k.pillar_id
+            ORDER BY pillar_name ASC NULLS LAST, k.key
+            """
+        )
+        return [dict(r) for r in rows]
 
 
 # ---------- Projects (create/upsert) ----------
@@ -232,6 +298,7 @@ async def create_project(body: ProjectIn) -> ProjectOut:
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to create project: {e}")
         return ProjectOut(**dict(row))
+
 
 
 # ---------- Evidence helper for UI ----------
