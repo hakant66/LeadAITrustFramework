@@ -29,6 +29,8 @@ from app.scorecard import router as scorecard_router
 from app.routers.trends import router as trends_router
 from app.routers.projects import router as projects_router
 from app.routers.admin import router as admin_router
+from app.routers.reports import router as reports_router
+
 
 # --- Debug aid: see which scorecard modules were loaded at startup ------------
 # Tip: Comment out or guard with `if os.getenv("DEBUG"):` in production.
@@ -71,5 +73,7 @@ app.include_router(scorecard_router)  # /scorecard: scorecards, pillars, control
 app.include_router(trends_router)     # /scorecard/.../trends: time-series derived from history
 app.include_router(projects_router)   # /projects: list/delete projects
 app.include_router(admin_router)      # /admin: control CRUD, evidence, imports/exports
+app.include_router(reports_router)  # /admin/reports: KPI report endpoints
+
 
 # End of file
