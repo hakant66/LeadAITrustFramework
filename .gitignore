@@ -1,2 +1,3 @@
 node_modules
 /apps/core-svc/app/__pycache__
+/docs
