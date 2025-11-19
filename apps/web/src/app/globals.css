@@ -1,0 +1,22 @@
+/* apps/web/src/.../globals.css */
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Global light/dark defaults */
+  body {
+    /* Tell the browser we support both */
+    color-scheme: light dark;
+
+    /* Tailwind-powered defaults */
+    @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50;
+  }
+
+  /* Optional: links that stay visible in dark mode */
+  a {
+    @apply text-indigo-600 dark:text-indigo-400;
+  }
+}
