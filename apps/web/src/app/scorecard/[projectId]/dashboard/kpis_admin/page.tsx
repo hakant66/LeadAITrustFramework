@@ -222,9 +222,10 @@ async function fetchControlValues(slug: string): Promise<ControlValueRow[]> {
 export default async function KpisAdminPage({
   params,
 }: {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
-  const { projectId: slug } = params;
+  // 👇 critical change: await params
+  const { projectId: slug } = await params;
 
   // Scorecard for project label + KPI list
   const res = await fetch(

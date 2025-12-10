@@ -70,7 +70,7 @@ export default function PillarsWeightsCard({
           },
         ],
       };
-      console.log("PUT payload (saveOne)", payload);
+      // console.log("PUT payload (saveOne)", payload);
 
       const res = await fetch(
         `/api/scorecard/${encodeURIComponent(project)}/pillar_weights`,

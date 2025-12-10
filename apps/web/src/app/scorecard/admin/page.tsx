@@ -827,7 +827,7 @@ export default function AdminCaptureProjectPage() {
                 className="inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 transition dark:border-slate-600 dark:hover:bg-slate-800"
                 href={`/scorecard/${encodeURIComponent(
                   editForm.slug
-                )}/dashboard/admin`}
+                )}/dashboard/kpis_admin`}
               >
                 Go to project admin
               </a>
@@ -1013,7 +1013,7 @@ export default function AdminCaptureProjectPage() {
                     className="mt-2 inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 transition dark:border-slate-600 dark:hover:bg-slate-800"
                     href={`/scorecard/${encodeURIComponent(
                       proj.slug
-                    )}/dashboard/admin`}
+                    )}/dashboard/kpis_admin`}
                   >
                     Go to this project's admin
                   </a>

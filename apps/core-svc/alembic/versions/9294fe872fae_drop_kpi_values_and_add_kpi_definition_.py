@@ -1,28 +1,23 @@
-"""add guardrail guardrails tables
+"""drop kpi_values and add kpi_definition_v2
 
-Revision ID: 93714713f947
-Revises: 54a4d5959155
-Create Date: 2025-12-08 12:10:11.682877
+Revision ID: 9294fe872fae
+Revises: 93714713f947
+Create Date: 2025-12-08 16:48:26.557192
 
 """
-from typing import Sequence, Union
-
 from alembic import op
 import sqlalchemy as sa
 
-from sqlalchemy.dialects import postgresql as psql
-
-
 
 # revision identifiers, used by Alembic.
-revision: str = '93714713f947'
-down_revision: Union[str, Sequence[str], None] = '54a4d5959155'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision = "9294fe872fae"
+down_revision = "93714713f947"
+branch_labels = None
+depends_on = None
+
 
 def upgrade() -> None:
     # 1) Drop kpi_values table if it exists
-    # Using raw SQL with IF EXISTS for safety across environments
     op.execute("DROP TABLE IF EXISTS kpi_values CASCADE;")
 
     # 2) Create kpi_definition table
@@ -41,19 +36,20 @@ def upgrade() -> None:
         sa.Column("example", sa.Text(), nullable=True),
         sa.Column("definition", sa.Text(), nullable=True),
 
-        sa.PrimaryKeyConstraint("kpi_id", name="kpis_pkey"),
-        sa.UniqueConstraint("kpi_key", name="kpis_key_unique"),
+        # Primary key & unique on key (new names to avoid collision with kpis)
+        sa.PrimaryKeyConstraint("kpi_id", name="kpi_definition_pkey"),
+        sa.UniqueConstraint("kpi_key", name="kpi_definition_kpi_key_unique"),
 
-        # FK: pillar_id → public.pillars(id)
+        # FK: pillar_id → pillars.id  (same as kpis)
         sa.ForeignKeyConstraint(
             ["pillar_id"],
             ["pillars.id"],
-            name="fk_kpis_pillar",
+            name="fk_kpi_definition_pillar",
             ondelete="CASCADE",
         ),
 
-        # Optional FKs back to kpis (to mirror your intended logic)
-        # If you don't want circular linkage, you can comment these out.
+        # Optional: FKs back to kpis to keep mapping
+        # Remove these two if you plan to fully replace kpis.
         sa.ForeignKeyConstraint(
             ["kpi_id"],
             ["kpis.id"],
@@ -66,16 +62,16 @@ def upgrade() -> None:
         ),
     )
 
-    # Optional: index on kpi_key (though UniqueConstraint will create one anyway)
+    # Optional index on kpi_key (mirroring ix_kpis_key pattern)
     op.create_index(
-        "ix_kpi_definition_key",
+        "ix_kpi_definition_kpi_key",
         "kpi_definition",
         ["kpi_key"],
         unique=True,
     )
 
     # 3) Copy data from kpis → kpi_definition
-    # Note: definition column is new; we set it to NULL for now.
+    # New column "definition" is set to NULL for now.
     op.execute(
         """
         INSERT INTO kpi_definition (
@@ -112,18 +108,35 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     # 1) Drop index & kpi_definition table
-    op.drop_index("ix_kpi_definition_key", table_name="kpi_definition")
+    op.drop_index("ix_kpi_definition_kpi_key", table_name="kpi_definition")
     op.drop_table("kpi_definition")
 
-    # 2) Recreate kpi_values table (schema guessed – adjust to your original)
-    # If you have the exact DDL of kpi_values, replace this block with that.
+    # 2) Recreate kpi_values exactly as originally defined
     op.create_table(
         "kpi_values",
-        sa.Column("id", sa.String(), primary_key=True),
+        sa.Column("id", sa.String(), nullable=False),
+        sa.Column("assessment_id", sa.String(), nullable=False),
         sa.Column("kpi_id", sa.String(), nullable=False),
-        sa.Column("project_id", sa.String(), nullable=False),
-        sa.Column("value", sa.Float(), nullable=False),
-        sa.Column("recorded_at", sa.DateTime(), nullable=False),
-        # add FKs back if you had them originally, e.g.:
-        # sa.ForeignKeyConstraint(["kpi_id"], ["kpis.id"], name="fk_kpi_values_kpi_id"),
+        sa.Column("raw_value", sa.Float(), nullable=False),
+        sa.Column("normalized_0_100", sa.Float(), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.PrimaryKeyConstraint("id", name="kpi_values_pkey"),
+        sa.ForeignKeyConstraint(
+            ["kpi_id"],
+            ["kpis.id"],
+            name="fk_kv_kpi",
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["assessment_id"],
+            ["assessments.id"],
+            name="kpi_values_assessment_id_fkey",
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["kpi_id"],
+            ["kpis.id"],
+            name="kpi_values_kpi_id_fkey",
+            ondelete="CASCADE",
+        ),
     )

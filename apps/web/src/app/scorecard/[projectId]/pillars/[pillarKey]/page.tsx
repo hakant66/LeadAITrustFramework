@@ -9,7 +9,7 @@ type ScorecardResp = {
   project: { slug: string; name: string; target_threshold?: number };
   kpis: {
     pillar?: string | null;
-    key: string;               // kpi_key
+    key: string; // kpi_key
     name: string;
     unit?: string | null;
     raw_value?: number | null;
@@ -20,8 +20,8 @@ type ScorecardResp = {
 };
 
 type PillarRow = {
-  key: string;                 // canonical key (e.g., GOV, CRA)
-  name: string;                // display name
+  key: string; // canonical key (e.g., GOV, CRA)
+  name: string; // display name
   score_pct: number | null;
   maturity: number | null;
 };
@@ -133,7 +133,6 @@ export default async function PillarDetailsPage({
                   <th className="px-4 py-2">Target</th>
                   <th className="px-4 py-2">Raw</th>
                   <th className="px-4 py-2">KPI Score</th>
-                  <th className="px-4 py-2">Normalized</th>
                   <th className="px-4 py-2">As of</th>
                 </tr>
               </thead>
@@ -163,9 +162,10 @@ export default async function PillarDetailsPage({
                     const kpiScoreDisplay =
                       typeof kpiScore === "number" ? `${Math.round(kpiScore)}%` : "—";
 
+                    // Color-coded chip based on KPI score (same palette as old Normalized chip)
                     const chipCls =
-                      typeof k.normalized_pct === "number"
-                        ? k.normalized_pct >= 75
+                      typeof kpiScore === "number"
+                        ? kpiScore >= 75
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-500/60"
                           : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-500/60"
                         : "bg-gray-50 text-gray-600 border-gray-200 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-700";
@@ -176,12 +176,21 @@ export default async function PillarDetailsPage({
                         className="hover:bg-gray-50/60 dark:hover:bg-slate-800/60"
                       >
                         <td className="px-4 py-2">
-                          <div className="font-medium text-slate-900 dark:text-slate-50">
-                            {k.name}
-                          </div>
-                          <div className="text-xs text-slate-500 font-mono dark:text-slate-400">
-                            {k.key}
-                          </div>
+                          <Link
+                            href={`/scorecard/${encodeURIComponent(
+                              sc.project.slug,
+                            )}/kpis/${encodeURIComponent(k.key)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="group inline-flex flex-col"
+                          >
+                            <span className="font-medium text-slate-900 group-hover:underline dark:text-slate-50">
+                              {k.name}
+                            </span>
+                            <span className="text-xs text-slate-500 font-mono group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200">
+                              {k.key}
+                            </span>
+                          </Link>
                         </td>
                         <td className="px-4 py-2 text-slate-700 dark:text-slate-200">
                           {m.owner_role ?? "—"}
@@ -195,9 +204,6 @@ export default async function PillarDetailsPage({
                         <td className="px-4 py-2 text-slate-800 dark:text-slate-100">
                           {rawDisplay}
                         </td>
-                        <td className="px-4 py-2 text-slate-700 dark:text-slate-200">
-                          {kpiScoreDisplay}
-                        </td>
                         <td className="px-4 py-2">
                           <span
                             className={`
@@ -205,9 +211,7 @@ export default async function PillarDetailsPage({
                               ${chipCls}
                             `}
                           >
-                            {typeof k.normalized_pct === "number"
-                              ? `${Math.round(k.normalized_pct)}%`
-                              : "—"}
+                            {kpiScoreDisplay}
                           </span>
                         </td>
                         <td className="px-4 py-2 text-slate-600 dark:text-slate-300">
@@ -222,7 +226,7 @@ export default async function PillarDetailsPage({
                   <tr>
                     <td
                       className="px-4 py-6 text-slate-500 dark:text-slate-400"
-                      colSpan={8}
+                      colSpan={7}
                     >
                       No KPIs for this pillar yet.
                     </td>

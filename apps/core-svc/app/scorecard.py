@@ -148,6 +148,15 @@ class KPIOut(BaseModel):
     kpi_score: Optional[float] = None
     updated_at: Optional[datetime] = None
 
+    # update: enrichment fields (line up with control_values + frontend)
+    owner_role: Optional[str] = None
+    owner: Optional[str] = None   # alias so UI can use either
+    target_text: Optional[str] = None
+    target_numeric: Optional[float] = None
+    current_value: Optional[float] = None
+    evidence_source: Optional[str] = None
+    as_of: Optional[datetime] = None
+
 
 class ScorecardOut(BaseModel):
     project: ProjectOut
@@ -266,10 +275,19 @@ async def _load_kpis_for_project(conn: asyncpg.Connection, project_slug: str) ->
           c.norm_min                            AS norm_min,
           c.norm_max                            AS norm_max,
           c.higher_is_better                    AS higher_is_better,
+          
           v.raw_value                           AS raw_value,
           v.normalized_pct                      AS normalized_pct,
           v.kpi_score                           AS kpi_score,
-          v.updated_at                          AS updated_at
+          v.updated_at                          AS updated_at,
+
+          -- NEW: enrichment columns from control_values
+          v.owner_role                          AS owner_role,
+          v.evidence_source                     AS evidence_source,
+          v.target_text                         AS target_text,
+          v.target_numeric                      AS target_numeric,
+          v.current_value                       AS current_value,
+          COALESCE(v.observed_at, v.updated_at) AS as_of
         FROM control_values v
         LEFT JOIN controls c ON c.id = v.control_id
         WHERE v.project_slug = $1
@@ -297,6 +315,22 @@ async def _load_kpis_for_project(conn: asyncpg.Connection, project_slug: str) ->
                 normalized_pct=float(norm) if norm is not None else None,
                 kpi_score=float(r["kpi_score"]) if r["kpi_score"] is not None else None,
                 updated_at=r["updated_at"],
+                # NEW: enrichment
+                owner_role=r["owner_role"],
+                owner=r["owner_role"],  # alias for convenience
+                target_text=r["target_text"],
+                target_numeric=(
+                    float(r["target_numeric"])
+                    if r["target_numeric"] is not None
+                    else None
+                ),
+                current_value=(
+                    float(r["current_value"])
+                    if r["current_value"] is not None
+                    else None
+                ),
+                evidence_source=r["evidence_source"],
+                as_of=r["as_of"],
             )
         )
     return out
@@ -495,7 +529,7 @@ async def get_project_controls(project_slug: str) -> Dict[str, Any]:
 
                         # UI columns
                         "control_name": (r["control_name"] or "") if r["control_name"] is not None else "",
-                        "owner": r["owner_role"],
+                        "owner_role": r["owner_role"],
                         "target": target,
                         "current_value": cur_val,
                         "as_of": as_of.isoformat() if as_of else None,

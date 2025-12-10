@@ -120,7 +120,7 @@ async function fetchControlValues(
       normalized_pct:
         typeof cv.normalized_pct === "number" ? cv.normalized_pct : null,
       updated_at: cv.updated_at ?? null,
-      owner_role: cv.owner_role ?? null,
+      owner_role: (cv.owner ?? cv.owner_role ?? null) as string | null,
       target_numeric:
         typeof cv.target_numeric === "number" ? cv.target_numeric : null,
       kpi_score:
@@ -151,7 +151,7 @@ async function fetchControlValues(
       normalized_pct:
         typeof cv.normalized_pct === "number" ? cv.normalized_pct : null,
       updated_at: cv.updated_at ?? null,
-      owner_role: cv.owner_role ?? null,
+      owner_role: (cv.owner ?? cv.owner_role ?? null) as string | null,
       target_numeric:
         typeof cv.target_numeric === "number" ? cv.target_numeric : null,
       kpi_score:

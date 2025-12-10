@@ -48,6 +48,10 @@ type KpiRow = {
 
   // enrichment
   owner_role?: string | null;
+  owner?: string | null;
+  owner_name?: string | null;
+  owner_email?: string | null;
+
   target_text?: string | null;
   target_numeric?: number | null;
   current_value?: number | string | null;
@@ -107,19 +111,22 @@ export default async function ScorecardDashboard(
         notes: k.notes ?? null,
 
         // enrichment passthrough
-        owner_role: k.owner_role ?? null,
-        target_text: k.target_text ?? null,
-        target_numeric:
-          typeof k.target_numeric === "number" ? k.target_numeric : null,
-        current_value:
-          typeof k.current_value === "number" ||
-          typeof k.current_value === "string"
-            ? k.current_value
-            : null,
-        kpi_score: typeof k.kpi_score === "number" ? k.kpi_score : null,
-        evidence_source: k.evidence_source ?? null,
-        as_of: k.as_of ?? null,
-        updated_at: k.updated_at ?? null,
+		owner_role: k.owner_role ?? null,
+		owner: k.owner ?? null,
+		owner_name: k.owner_name ?? null,
+		owner_email: k.owner_email ?? null,
+		target_text: k.target_text ?? null,
+		target_numeric:
+		  typeof k.target_numeric === "number" ? k.target_numeric : null,
+		current_value:
+		  typeof k.current_value === "number" ||
+		  typeof k.current_value === "string"
+			? k.current_value
+			: null,
+		kpi_score: typeof k.kpi_score === "number" ? k.kpi_score : null,
+		evidence_source: k.evidence_source ?? null,
+		as_of: k.as_of ?? null,
+		updated_at: k.updated_at ?? null,
       }))
     : [];
 
@@ -222,18 +229,18 @@ export default async function ScorecardDashboard(
               {/* Top row: Project Trust Score + Pillar Bars */}
               <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Project Trust Score */}
-                <div className="border border-slate-200 dark:border-slate-700 rounded-3xl p-5 bg-white dark:bg-slate-900 shadow-sm">
+                <div className="border border-slate-200 dark:border-slate-700 rounded-3xl p-4 bg-white dark:bg-slate-900 shadow-sm">
                   <div className="grid grid-cols-2 md:grid-cols-[auto,1fr] items-start gap-0">
                     <div className="flex flex-col">
                       <div className="text-sm font-semibold text-gray-800 dark:text-slate-100">
                         Project Trust Score
                       </div>
-                      <div className="mt-6">
-                        <TrustMarkBadge size={180} />
+                      <div className="mt-5">
+                        <TrustMarkBadge size={200} />
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-start md:items-end gap-3">
+                    <div className="flex flex-col items-start md:items-end gap-1">
                       <StatusBadge
                         onTrack={onTrack}
                         overallPct={overallPctRounded}
@@ -244,9 +251,20 @@ export default async function ScorecardDashboard(
                         count={pillarsAtOrAbove}
                         total={pillars.length}
                       />
+
                       <div className="w-[220px] h-[220px]">
                         <DonutGauge value={overallPct} />
                       </div>
+
+                      {/* Report button for ALL projects, using projectSlug */}
+                      <Link
+                        href={`/scorecard/${encodeURIComponent(
+                          projectSlug
+                        )}/report`}
+                        className="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-900 text-slate-50 hover:bg-slate-800 text-sm whitespace-nowrap self-end"
+                      >
+                        Report for AI Project : {projectSlug}
+                      </Link>
                     </div>
                   </div>
                 </div>

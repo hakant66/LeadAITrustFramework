@@ -709,7 +709,7 @@ async def export_control_values(project_slug: str):
         rows = await conn.fetch(
             """
             SELECT v.control_id,
-                   COALESCE(c.name, v.control_id) AS name,
+                   COALESCE(c.name, v.control_id::text) AS name,
                    v.raw_value,
                    v.normalized_pct,
                    v.observed_at,

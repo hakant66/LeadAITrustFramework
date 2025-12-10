@@ -1,3 +1,4 @@
+// src/app/(components)/TrendsChart.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -45,14 +46,26 @@ export function TrendsChart({ projectSlug }: { projectSlug: string }) {
       })
       .then((j) => {
         // accept {overall: [...]}, {data:[...]}, or just [...]
-        const arr: any[] = Array.isArray(j)
+        const raw: any[] = Array.isArray(j)
           ? j
           : Array.isArray(j?.overall)
           ? j.overall
           : Array.isArray(j?.data)
           ? j.data
           : [];
-        setData(arr as Point[]);
+
+        // 🔧 Map backend shape ({t, v}) -> chart shape ({as_of, score})
+        const arr: Point[] = raw.map((p: any) => ({
+          as_of: String(p.as_of ?? p.t ?? ""),
+          score:
+            typeof p.score === "number"
+              ? p.score
+              : typeof p.v === "number"
+              ? p.v
+              : 0,
+        }));
+
+        setData(arr);
       })
       .catch((e) => {
         setErr(String(e));

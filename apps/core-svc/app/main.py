@@ -25,11 +25,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import ping_db
-from app.scorecard import router as scorecard_router
-from app.routers.trends import router as trends_router
-from app.routers.projects import router as projects_router
-from app.routers.admin import router as admin_router
-from app.routers.reports import router as reports_router
+from app.scorecard import router as scorecard_router         
+from app.routers.trends import router as trends_router      
+from app.routers.projects import router as projects_router   
+from app.routers.admin import router as admin_router        
+from app.routers.reports import router as reports_router     
+from app.routers.kpidetail import router as kpidetail_router 
+from app.routers.ai_reports import router as ai_reports_router
+
+
 
 
 # --- Debug aid: see which scorecard modules were loaded at startup ------------
@@ -69,11 +73,13 @@ def healthz():
 # --- Mount feature routers ----------------------------------------------------
 # Keep these grouped and explicit to make API surface obvious.
 # Each router carries its own prefix and tags.
-app.include_router(scorecard_router)  # /scorecard: scorecards, pillars, controls, updates
-app.include_router(trends_router)     # /scorecard/.../trends: time-series derived from history
-app.include_router(projects_router)   # /projects: list/delete projects
-app.include_router(admin_router)      # /admin: control CRUD, evidence, imports/exports
-app.include_router(reports_router)  # /admin/reports: KPI report endpoints
+app.include_router(scorecard_router)   # /scorecard: scorecards, pillars, controls, updates
+app.include_router(trends_router)      # /scorecard/.../trends: time-series derived from history
+app.include_router(projects_router)    # /projects: list/delete projects
+app.include_router(admin_router)       # /admin: control CRUD, evidence, imports/exports
+app.include_router(reports_router)     # /admin/reports: KPI report endpoints
+app.include_router(kpidetail_router)   # /scorecard/.../kpis/{kpi_key}: KPI detail
+app.include_router(ai_reports_router)  # /
 
 
 # End of file
