@@ -63,7 +63,7 @@ The stack runs on Windows-native tooling and PowerShell automation to give you a
 The repo ships with `docker-compose.yml` that provisions:
 
 ```yaml
-postgres: postgres://leadai:leadai@localhost:5432/leadai
+postgres: postgres://xxxxx:xxxxx@localhost:5432/leadai
 redis:    redis://localhost:6379
 minio:    http://localhost:9000 (console on 9001)
 ```
@@ -185,7 +185,7 @@ Run scripts from the repo root (`C:\apps\_TheLeadAI`) with PowerShell.
 
 | Variable | Component | Default | Notes |
 |----------|-----------|---------|-------|
-| `DATABASE_URL` | Core API | `postgresql://leadai:leadai@localhost:5432/leadai` | Injected by `start_all.ps1`. |
+| `DATABASE_URL` | Core API | `postgresql://xxxxxx:xxxxxx@localhost:5432/leadai` | Injected by `start_all.ps1`. |
 | `OLLAMA_URL` | MCP | `http://localhost:11434` | Ensure Ollama is serving and models are pulled. |
 | `OLLAMA_CHAT_MODEL` | MCP | `llama3.1:8b` | Set in `apps/mcp/.env`. |
 | `OLLAMA_EMBED_MODEL` | MCP | `nomic-embed-text` | Must match the embedding dimension (768). |
