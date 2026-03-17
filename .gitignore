@@ -45,3 +45,7 @@ node_modules/
 !/docs/LeadAI_Process_Presentation.pdf
 .env
 .env
+trustmark_private.pem
+apps/core-svc/scripts/langfuse_project_keys.csv
+docs/infra/RESEND EMAIL  API KEY.rtf
+minio-data.tar.gz
