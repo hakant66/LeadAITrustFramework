@@ -1,0 +1,1230 @@
+{
+  "Common": {
+    "languages": {
+      "english": "English",
+      "turkish": "Turkish"
+    }
+  },
+  "DataManagerModal": {
+    "retireSystem": "Retire system"
+  },
+  "Auth": {
+    "register": {
+      "kicker": "LeadAI Access",
+      "title": "Register / Sign in",
+      "subtitle": "We will email you a secure one-time code. No password required.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@company.com",
+      "submit": "Send sign-in code",
+      "sending": "Sending...",
+      "sent": "Check your email for the one-time code.",
+      "codeLabel": "One-time code",
+      "codePlaceholder": "Enter the 6-digit code",
+      "verify": "Verify and sign in",
+      "error": "Something went wrong. Try again."
+    }
+  },
+  "GovernanceDashboard": {
+    "title": "AI Projects Governance Dashboard",
+    "subtitle": "LeadAI · Trust Scorecard",
+    "viewingEntity": "Viewing: {name}",
+    "switchEntity": "Switch entity",
+    "signOut": "Sign Out",
+    "mainMenu": "Main menu",
+    "executiveReport": {
+      "title": "Executive Portfolio Summary",
+      "coverageTitle": "AI Governance Coverage — {count} Projects",
+      "summary": "Portfolio view of risk, priority, status, trust level, ownership, and alerts.",
+      "entityLabel": "Entity: {name}",
+      "subtitle": "Board-level view across all AI projects.",
+      "note": "Status is measured against each project’s target threshold.",
+      "stats": {
+        "total": "Total Projects",
+        "onTarget": "On Target",
+        "belowTarget": "Below Target",
+        "noData": "No Data",
+        "avgTrust": "Average Trust",
+        "highRisk": "High Risk"
+      },
+      "table": {
+        "project": "Project",
+        "risk": "Risk",
+        "priority": "Priority",
+        "sponsor": "Sponsor",
+        "owner": "Owner",
+        "projectStatus": "Project Status",
+        "trust": "Overall Trust",
+        "alerts": "Alerts",
+        "target": "Target",
+        "status": "Status"
+      },
+      "status": {
+        "onTarget": "On target",
+        "belowTarget": "Below target",
+        "noData": "No data"
+      },
+      "alertsActive": "{count} active",
+      "alertsNone": "None",
+      "empty": "No projects available yet."
+    },
+    "projectCard": {
+      "na": "n/a",
+      "risk": "Risk",
+      "priority": "Priority",
+      "status": "Status",
+      "sponsor": "Sponsor",
+      "owner": "Owner",
+      "targetThreshold": "Target Threshold",
+      "openDashboard": "Open dashboard",
+      "openTitle": "Open {name} dashboard"
+    },
+    "trustLabels": {
+      "strong": "Strong",
+      "moderate": "Moderate",
+      "weak": "Weak",
+      "critical": "Critical"
+    },
+    "alerts": {
+      "title": "Policy Alerts",
+      "subtitle": "Open governance risks and compliance warnings tied to active policies.",
+      "empty": "No active policy alerts.",
+      "countLabel": "{count} open",
+      "columns": {
+        "policy": "Policy",
+        "project": "Project",
+        "severity": "Severity",
+        "type": "Alert",
+        "message": "Message",
+        "created": "Created"
+      }
+    },
+    "dashboardMenu": {
+      "title": "Executive Reporting",
+      "subtitle": "Navigation across executive reporting views.",
+      "highLevel": {
+        "title": "High-Level Report",
+        "summary": "Entity-wide governance summary for leadership review."
+      },
+      "portfolio": {
+        "title": "Project Portfolio Summary",
+        "summaryTitle": "Executive Portfolio Summary",
+        "coverage": "AI Governance Coverage — {count} Projects",
+        "summary": "Portfolio view of risk, priority, status, trust level, ownership, and alerts."
+      },
+      "scorecards": {
+        "title": "AI Readiness",
+        "summary": "Open project-level trust, risk, and readiness scorecards."
+      },
+      "presentation": {
+        "title": "Presentation Deck",
+        "summary": "Board-ready slide deck generated from the executive summary."
+      }
+    }
+  },
+  "MasterAdminPage": {
+    "title": "System Admin",
+    "subtitle": "View, update, and archive all entities",
+    "errors": {
+      "accessDenied": "You don't have permission to access System Admin. Only users configured as system admins can view this page.",
+      "accessRestrictedTitle": "Access restricted",
+      "errorTitle": "Error",
+      "loadFailed": "Failed to load entities. Please try again.",
+      "archiveFailed": "Failed to archive entity. Please try again."
+    },
+    "allEntities": "Choose Entity",
+    "refresh": "Refresh",
+    "noEntities": "No entities found.",
+    "archiveConfirmTitle": "Archive entity?",
+    "archiveConfirmMessage": "Archiving {name} will copy it to the archive and then remove it and all related data (projects, evidence, controls, etc.) from the system. This cannot be undone.",
+    "switchConfirmTitle": "Switch Entity",
+    "switchConfirmMessage": "Are you sure to switch to {name}?",
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel",
+    "archive": "Archive",
+    "archiving": "Archiving...",
+    "edit": "Edit",
+    "name": "Name",
+    "slug": "Slug",
+    "status": "Status",
+    "updated": "Updated",
+    "actions": "Actions"
+  },
+  "MasterTranslationPage": {
+    "title": "Master Translation",
+    "subtitle": "One translation page covering all entities, projects, and reports.",
+    "summary": "Unique English strings: {count}",
+    "columns": {
+      "english": "English text",
+      "turkish": "Turkish text",
+      "actions": "Actions"
+    },
+    "searchPlaceholder": "Search English or Turkish text...",
+    "loading": "Loading translations...",
+    "baseLabel": "Base",
+    "actions": {
+      "save": "Save",
+      "saving": "Saving…",
+      "reset": "Reset"
+    },
+    "errors": {
+      "loadFailed": "Failed to load translation overrides.",
+      "saveFailed": "Failed to save translation.",
+      "resetFailed": "Failed to reset translation."
+    },
+    "empty": "No translation entries found."
+  },
+  "ModelProvidersPage": {
+    "title": "Model Providers",
+    "subtitle": "System Admin",
+    "refresh": "Refresh",
+    "add": "Add",
+    "addPlaceholder": "New provider name",
+    "providerName": "Provider name",
+    "actions": "Actions",
+    "empty": "No model providers. Add one above.",
+    "edit": "Edit",
+    "editLabel": "Provider name",
+    "save": "Save",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "confirmRemove": "Remove?",
+    "yes": "Yes"
+  },
+  "AdminSidebar": {
+    "title": "AI GOVERNANCE",
+    "aria": {
+      "expand": "Expand sidebar",
+      "collapse": "Collapse sidebar"
+    },
+    "sections": {
+      "trustOps": "TrustOps",
+      "dataManager": "Data Manager",
+      "governanceDashboard": "Executive Reporting",
+      "governanceSetup": "Design",
+      "governanceExecution": "Execution",
+      "controlAudit": "Control",
+      "dataRegister": "Data Register",
+      "knowledgeBase": "Knowledge Library",
+      "trustScore": "TRUST & SCORE",
+      "iso42001": "ISO 42001",
+      "reportAdmin": "REPORT ADMIN",
+      "masterAdmin": "System Admin",
+      "aiReportSetup": "AI Report Setup"
+    },
+    "items": {
+      "trustOverview": "Trust Overview",
+      "aiSystemRegistry": "AI System Registry",
+      "requirementRegister": "Requirement Register",
+      "entityLegalStanding": "1. Entity - Legal Standing",
+      "entitySetup": "1. Entity - Onboarding",
+      "scope": "Scope - The Boundary",
+      "policyManager": "Policy Manager",
+      "trustAxes": "Trust Axes",
+      "safety": "Safety",
+      "compliance": "Compliance",
+      "provenance": "Provenance",
+      "evidenceVault": "Evidence Vault",
+      "provenanceLineage": "Provenance & Lineage",
+      "trustMonitoring": "Trust Monitoring",
+      "driftExpiry": "Drift & Expiry",
+      "scoreDecayEvents": "Score Decay Events",
+      "remediation": "Remediation",
+      "trustSnapshots": "Trust Snapshots",
+      "auditLog": "Audit Log",
+      "dataSources": "Data Sources",
+      "dataClassification": "Data Classification",
+      "retentionDeletion": "Retention & Deletion",
+      "interfaces": "Interfaces",
+      "dataQuality": "Data Quality",
+      "aiProjectsDashboard": "Projects",
+      "boardLevelReport": "High-Level Report",
+      "portfolioSummary": "Project Portfolio Summary",
+      "aiReadinessScorecards": "AI Readiness Scorecards",
+      "presentationDeck": "Presentation Deck",
+      "intelligentAlerts": "Intelligent Alerts & Trends",
+      "aiProjectsRegister": "AI Projects Register",
+      "aiProjectRegister": "2. Project - The Portfolio",
+      "aiSystemRegister": "3. System - The Inventory",
+      "aiRequirementsRegister": "4. KPI - The Metric",
+      "aiKpiRegister": "5. Control - The Action",
+      "aiPolicyRegister": "Policy - The Mandate",
+      "aiProjectManagement": "Projects - The Work",
+      "actionAssignment": "Assignment - The Action",
+      "actionAssignmentProject": "Action Assignment",
+      "policyExecution": "Policy Execution",
+      "modelCards": "Model Cards",
+      "pillarAdmin": "Pillar Admin",
+      "evidenceCapture": "Evidence - The Proof",
+      "kpiList": "KPI List",
+      "reportSetup": "Report Setup",
+      "kpiSchedule": "KPI Schedule",
+      "provenanceSchedule": "Provenance Schedule",
+      "allEntities": "Choose Entity",
+      "manageAccess": "Manage Access",
+      "emailSettings": "Email Settings",
+      "masterTranslation": "Master Translation",
+      "modelProviders": "Model Providers",
+      "systemHealth": "System Health",
+      "govReqPrompt": "Gov. Req. Report Prompt",
+      "executiveReportPrompt": "Executive Report Prompt",
+      "boardLevelReportPrompt": "Board-Level Report Prompt",
+      "boardLevelDeckPrompt": "Board-Level Deck Prompt",
+      "manageKpisControls": "Manage KPIs and Controls",
+      "knowledgeVault": "Knowledge Vault",
+      "knowhow": "Knowhow"
+    }
+  },
+  "ProjectRegisterPage": {
+    "title": "AI Projects Register",
+    "subtitle": "LeadAI · AI Governance Execution",
+    "stepNote": "Step 3 of 6",
+    "viewProject": "View"
+  },
+  "ModelCardsPage": {
+    "title": "Model Cards",
+    "subtitle": "LeadAI · Governance Execution",
+    "loading": "Loading model cards...",
+    "empty": "No AI systems found for this entity.",
+    "loadError": "Failed to load model cards.",
+    "syncLangfuse": "Sync Langfuse",
+    "syncing": "Syncing...",
+    "syncSuccess": "Langfuse evidence updated.",
+  "syncFailed": "Langfuse sync failed.",
+  "createDraft": "Create Draft",
+  "actionFailed": "Action failed.",
+  "promptLoadError": "Failed to load prompt versions.",
+  "noCard": "No model card drafted yet.",
+  "noEvidence": "No Langfuse evidence found.",
+  "metrics": {
+    "title": "Metrics Summary",
+    "avgLatency": "Avg latency",
+    "p95Latency": "P95 latency",
+    "totalTokens": "Total tokens",
+    "inputTokens": "Input tokens",
+    "outputTokens": "Output tokens",
+    "requests": "Requests",
+    "noMetrics": "No Langfuse metrics"
+  },
+  "promptChecklist": {
+    "title": "Prompt Key Checklist",
+    "subtitle": "Langfuse prompt keys required for model cards",
+    "configured": "Configured",
+    "missing": "Missing",
+    "error": "Error",
+    "unknown": "Checking"
+  },
+  "promptVersions": {
+    "title": "Prompt Versions",
+    "subtitle": "AI Summary prompt in Langfuse",
+    "envHint": "Set {envVar}",
+    "helperNote": "Create a prompt in Langfuse Prompt Management with the exact name set in {envVar} and label it {label}.",
+    "viewPrompt": "View prompt in Langfuse",
+    "empty": "No prompt versions available.",
+    "noPrompt": "No prompt text available."
+  },
+  "langfuseStatus": {
+    "reachable": "Langfuse reachable",
+    "unreachable": "Langfuse unreachable",
+    "notConfigured": "Langfuse not configured"
+  },
+  "modelMetaNote": "Provider/version pulled from Langfuse metadata.",
+  "fields": {
+    "modelProvider": "Model Provider",
+      "modelType": "Model Type",
+      "modelVersion": "Model Version",
+      "lifecycle": "Lifecycle Stage",
+      "intendedUse": "Intended Use",
+      "intendedUsers": "Intended Users",
+      "riskTier": "Risk Tier",
+      "systemStatus": "System Status",
+      "modelCard": "Model Card Summary",
+      "cardStatus": "Card Status",
+      "reviewCadence": "Review Cadence",
+      "lastUpdated": "Last Updated",
+      "evidence": "Langfuse Evidence"
+    }
+  },
+  "ActionAssignmentPage": {
+    "title": "Action Assignment",
+    "subtitle": "LeadAI · AI Governance Execution",
+    "titleNote": "Assign KPI and control actions for each project.",
+    "projectLabel": "Project",
+    "projectSlugLabel": "Project slug",
+    "backToList": "Back to list",
+    "setupPendingTitle": "AI Governance Setup is not finalised yet.",
+    "setupPendingBody": "Finalise the setup stage to unlock Action Assignment projects.",
+    "projectNotReadyTitle": "This project has not completed AI Governance Setup.",
+    "projectNotReadyBody": "Ensure systems, requirements, and controls are completed for this project.",
+    "emptyTitle": "No eligible projects yet",
+    "emptyBody": "Projects appear here after AI Governance Setup is finalised for the entity and the project has systems, requirements, and controls.",
+    "projectListTitle": "Governance Design Ready Projects",
+    "projectListBody": "Select a project to validate assignments",
+    "openProject": "Open Action Assignment",
+    "summary": {
+      "total": "Total controls",
+      "ownerAssigned": "Owner assigned",
+      "targetDefined": "Target defined",
+      "measurementActivated": "Measurement active",
+      "evidenceField": "Evidence"
+    },
+    "tableTitle": "KPI and Control Readiness",
+    "tableSubtitle": "Review the readiness of each KPI/control for action assignment.",
+    "table": {
+      "metric": "Metric (KPI)",
+      "control": "Control",
+      "owner": "Owner assigned",
+      "target": "Target",
+      "mechanism": "Measurement mechanism activated",
+      "evidence": "Evidence status",
+      "missing": "Not set",
+      "forwardEnabled": "Forward enabled"
+    },
+    "tableEmpty": "No control assignments found yet.",
+    "modal": {
+      "title": "Control details",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…",
+      "saveFailed": "Save failed.",
+      "kpiName": "KPI name",
+      "controlName": "Control name",
+      "evidenceSource": "Evidence source",
+      "targetText": "Target text",
+      "evidenceStatus": "Evidence status",
+      "ownerRole": "Owner role",
+      "designatedOwner": "Designated owner",
+      "ownerEmail": "Owner email",
+      "dueDate": "Due date",
+      "frequency": "Frequency",
+      "reminderDay": "Reminder day",
+      "reminderCount": "Reminder count",
+      "manager": "Manager",
+      "managerEmail": "Manager email",
+      "provideUrl": "Provide URL"
+    }
+  },
+  "PolicyExecutionPage": {
+    "title": "Policy Execution",
+    "subtitle": "LeadAI · AI Governance Execution",
+    "titleNote": "Link policies to controls and track evidence readiness.",
+    "setupPendingTitle": "AI Governance Setup is not finalised yet.",
+    "setupPendingBody": "Finalise the setup stage to unlock policy execution and review tasks.",
+    "loading": "Loading policy execution data…",
+    "loadError": "Failed to load policy execution data.",
+    "summary": {
+      "policies": "Policies",
+      "mappedControls": "Mapped controls",
+      "evidenceReady": "Evidence ready",
+      "openReviews": "Open reviews"
+    },
+    "tableTitle": "Policy Execution Status",
+    "tableSubtitle": "Map policies to controls and track evidence readiness.",
+    "table": {
+      "policy": "Policy",
+      "controls": "Linked controls",
+      "evidence": "Evidence status",
+      "reviewDue": "Review due",
+      "reviewStatus": "Review status",
+      "manage": "Manage",
+      "manageButton": "Manage"
+    },
+    "tableEmpty": "No policies found.",
+    "badges": {
+      "noControls": "No controls linked",
+      "evidenceReady": "Evidence ready",
+      "evidencePartial": "{ready}/{total} evidence",
+      "notScheduled": "Not scheduled",
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "overdue": "Overdue by {days}d",
+      "dueSoon": "Due in {days}d",
+      "dueLater": "Due in {days}d"
+    },
+    "manage": {
+      "title": "Manage controls",
+      "close": "Close",
+      "project": "Project",
+      "noProject": "No projects available yet.",
+      "selected": "Selected controls",
+      "selectedCount": "selected",
+      "controls": "Controls",
+      "noControls": "No controls available for this project yet.",
+      "noPolicyKpis": "This policy does not have KPI mappings yet. Update entity_policy_register.kpi_keys to filter controls.",
+      "autoMap": "Auto-map by KPIs",
+      "save": "Save mapping",
+      "saving": "Saving…",
+      "saveFailed": "Save failed.",
+      "saved": "Mapping saved.",
+      "evidenceReady": "Evidence ready",
+      "evidenceMissing": "Evidence missing",
+      "helper": "Select the controls this policy governs."
+    },
+    "tasks": {
+      "title": "Policy Review Tasks",
+      "subtitle": "Automatic review reminders based on policy due dates.",
+      "dueLabel": "Due",
+      "markReviewed": "Mark reviewed",
+      "completed": "Review marked as completed.",
+      "completeFailed": "Failed to complete review.",
+      "empty": "No review tasks yet."
+    }
+  },
+  "Home": {
+    "hero": {
+      "aria": {
+        "openLeadAi": "Open LeadAI site in new window"
+      },
+      "logoAlt": "LeadAI",
+      "badge": "Trust & Innovation (T&I) Compliance Framework",
+      "title": "Governance that keeps your AI infrastructure audit-ready.",
+      "description": "LeadAI watches your pipelines end-to-end, translating telemetry into living compliance scorecards. Ship faster, ship safer, and give your auditors the paper trail they demand."
+    },
+    "buttons": {
+      "governanceDashboard": "AI Governance Dashboard",
+      "governanceSetup": "AI Governance Setup",
+      "governanceExecution": "AI Governance Execution",
+      "controlAudit": "AI Control & Audit",
+      "dataRegister": "AI Data Register",
+      "aiReadinessCheck": "AI Readiness Check",
+      "aiLegalStanding": "Check EU AI Act Legal Standing for your organisation"
+    },
+    "highlights": {
+      "proactiveCompliance": {
+        "title": "Proactive compliance",
+        "description": "Guardrails that surface gaps before regulators or customers do."
+      },
+      "liveRiskScorecards": {
+        "title": "Live risk scorecards",
+        "description": "One-click snapshots of infra posture, data lineage, and drift."
+      },
+      "aiInformedWorkflows": {
+        "title": "AI-informed workflows",
+        "description": "LLMs summarize incidents and map fixes to affected teams."
+      },
+      "centralizedGovernance": {
+        "title": "Centralized AI Product Governance",
+        "description": "Embeds compliance into the Product team, not just Legal/Risk. Focuses on efficiency and market-driven trust signals."
+      }
+    },
+    "console": {
+      "title": "LeadAI Console",
+      "subtitle": "Use team credentials to unlock the mock console preview.",
+      "labels": {
+        "workEmail": "Work email",
+        "password": "Password"
+      },
+      "placeholders": {
+        "workEmail": "alex@lead.ai",
+        "password": "hunter2!",
+        "otp": "123456"
+      },
+      "errors": {
+        "missingCredentials": "Enter both email and password to continue.",
+        "invalidOtp": "Enter the 6 digit code sent to your inbox."
+      },
+      "actions": {
+        "checking": "Checking...",
+        "continue": "Continue",
+        "signingIn": "Signing in...",
+        "verifyLaunch": "Verify & Launch",
+        "startOver": "Start over"
+      },
+      "otp": {
+        "title": "Verify OTP",
+        "subtitle": "Enter the six digit passcode we just \"sent\" to {email}.",
+        "fallback": "your inbox"
+      }
+    },
+    "chat": {
+      "title": "LeadAI Chat",
+      "status": "Live",
+      "iframeTitle": "LeadAI Chatbot",
+      "missingConfig": "Set {origin} and {path} in the LeadAI environment and rebuild the web app to embed the chatbot here.",
+      "toggleOpen": "Open Chat",
+      "toggleClose": "Close Chat"
+    },
+    "sidebar": {
+      "mainTitle": "MAIN",
+      "accountTitle": "CREATE A FREE ACCOUNT",
+      "main": {
+        "overview": "Overview",
+        "aiDashboard": "AI Dashboard",
+        "aiGovernance": "AI Governance",
+        "aiCertification": "AI Certification",
+        "about": "About"
+      },
+      "account": {
+        "create": "Create an account",
+        "signIn": "Sign in"
+      }
+    }
+  },
+  "AiLegalStanding": {
+    "header": {
+      "aria": {
+        "home": "Go to LeadAI website"
+      },
+      "logoAlt": "LeadAI",
+      "subtitle": "LEADAI | EU AI ACT",
+      "title": "AI Legal Standing",
+      "returnTitle": "Return to LeadAI website",
+      "returnHome": "Return Home",
+      "description": "Capture key operator roles and risk classification before starting the assessment."
+    },
+    "intro": {
+      "title": "Before we start your legal standing check",
+      "subtitle": "Please share a few details so we can personalise your results and follow up with a summary if needed."
+    },
+    "share": {
+      "label": "Share the survey",
+      "linkCopied": "Link copied",
+      "title": "LeadAI - EU AI Act Legal Standing",
+      "text": "Take the LeadAI EU AI Act Legal Standing survey.",
+      "emailBody": "You can take the EU AI Act Legal Standing survey here:\n\n{url}"
+    },
+    "form": {
+      "name": "Name",
+      "surname": "Surname",
+      "email": "Email",
+      "company": "Company",
+      "disclaimer": "We'll only use this information in connection with this assessment.",
+      "start": "Start questionnaire",
+      "redo": "Redo questionnaire"
+    },
+    "survey": {
+      "title": "EU AI Act Legal Standing",
+      "description": "Answer the questions below to determine your operator role(s) and risk classification under Regulation (EU) 2024/1689.",
+      "sections": {
+        "role": "Operator Role Identification",
+        "risk": "Risk Classification"
+      }
+    },
+    "labels": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "validation": {
+      "warning": "Please answer all questions before generating your assessment."
+    },
+    "errors": {
+      "assessmentFailed": "Assessment failed ({status})",
+      "assessmentFailedDetail": "Assessment failed ({status}): {detail}",
+      "assessmentFailedFallback": "Assessment failed",
+      "copyDetails": "Copy error details",
+      "detailsCopied": "Error details copied"
+    },
+    "buttons": {
+      "assessing": "Assessing...",
+      "generate": "Generate Assessment",
+      "generateAndSave": "Generate Assessment and Save",
+      "generateAndGoNext": "Generate Assessment and Go Next Step",
+      "saveEntityInformation": "Save Entity Information",
+      "goNextStep": "Go Next Step: Entity Setup"
+    },
+    "summary": {
+      "title": "Assessment Summary",
+      "completeIndicator": "Questionnaire complete",
+      "empty": "Submit the questionnaire to see your operator role and risk classification.",
+      "primaryRole": "Primary Role",
+      "roles": "Roles: {roles}",
+      "riskClassification": "Risk Classification",
+      "keyResponsibilities": "Key Responsibilities",
+      "obligations": "Obligations",
+      "responsibilitySummary": "Responsibility Summary",
+      "decisionTrace": "Decision Trace"
+    },
+    "questions": {
+      "provider": {
+        "label": "Did your organization develop an AI system (or have one developed) with the intent to place it on the market or put it into service under your own name or trademark?",
+        "description": "Article 3(3)",
+        "purpose": "Purpose: Determine if you are the Provider.",
+        "explanation": "If you build it (or commission it) and sell/use it under your brand, you are the Provider and carry the main compliance obligations."
+      },
+      "deployer": {
+        "label": "Is your organization using an AI system to help run your business or perform professional tasks?",
+        "description": "Article 3(4)",
+        "purpose": "Purpose: Determine if you are the Deployer (user).",
+        "explanation": "If you use an AI system in operations or professional work, you are a Deployer and must ensure proper use, monitoring, and records."
+      },
+      "importer": {
+        "label": "Are you established in the EU and placing an AI system on the Union market that bears the trademark of a person established outside the EU?",
+        "description": "Article 3(6)",
+        "purpose": "Purpose: Identify if you are the Importer.",
+        "explanation": "If you bring a non-EU provider's AI system into the EU market under that provider's trademark, you are the Importer."
+      },
+      "distributor": {
+        "label": "Are you making an AI system available on the Union market in the supply chain (other than the provider or importer) without affecting its properties?",
+        "description": "Article 3(7)",
+        "purpose": "Purpose: Identify if you are the Distributor.",
+        "explanation": "If you resell or make the AI system available without modifying it, you are a Distributor and must check CE marking and documentation."
+      },
+      "authorized_representative": {
+        "label": "Have you received a written mandate from a non-EU provider to act on their behalf regarding specific tasks under this Regulation?",
+        "description": "Article 3(8)",
+        "purpose": "Purpose: Identify an Authorized Representative.",
+        "explanation": "If you are formally appointed by a non-EU provider to handle regulatory tasks, you are their Authorized Representative."
+      },
+      "product_manufacturer": {
+        "label": "Are you a manufacturer placing a product on the market (e.g., a smart car or medical device) that incorporates an AI system developed by someone else?",
+        "description": "Article 25(3)",
+        "purpose": "Purpose: Identify a product manufacturer integrating AI.",
+        "explanation": "If your product includes a third-party AI system, you may assume provider-like responsibilities for compliance."
+      },
+      "non_eu_rep_appointed": {
+        "label": "If you are a non-EU provider, have you formally appointed an EU-based representative to handle regulatory inquiries?",
+        "description": "Article 22",
+        "purpose": "Purpose: Check if a non-EU provider has an EU representative.",
+        "explanation": "Non-EU providers must appoint an EU-based representative to handle regulatory obligations and inquiries."
+      },
+      "distributor_access": {
+        "label": "Do you buy, sell, or provide access to an AI system that is already available within the EU?",
+        "description": "Distributor role + CE mark/documentation checks",
+        "purpose": "Purpose: Confirm Distributor activity within the EU.",
+        "explanation": "If you sell or provide access to an AI system already on the EU market, you must verify CE marking and documentation."
+      },
+      "importer_non_original": {
+        "label": "Are you someone other than the original developer (Provider) or the entity that first imported it into the EU (Importer)?",
+        "description": "Importer role + conformity assessment verification",
+        "purpose": "Purpose: Determine if you are not the Provider or Importer.",
+        "explanation": "If you are neither the original developer nor the first importer, you are likely a Distributor or Deployer with specific checks."
+      },
+      "provide_as_is": {
+        "label": "Do you provide the AI system to users exactly as you received it, without modifying its intended purpose, instructions, or performance?",
+        "description": "Article 25 / Recital 84",
+        "purpose": "Purpose: Confirm Distributor status by non-modification.",
+        "explanation": "If you supply the system without changes, you remain a Distributor. Modifying it can make you a Provider."
+      },
+      "substantial_modifier": {
+        "label": "Are you making a significant change to an AI system that is already on the market or in use (e.g., changes to its purpose, functionality, or performance)?",
+        "description": "Article 25 / Recital 84",
+        "purpose": "Purpose: Detect Provider-by-modification.",
+        "explanation": "Significant changes to purpose or performance can transfer Provider responsibilities to you."
+      },
+      "in_scope_ai": {
+        "label": "Does the system operate with varying levels of autonomy and exhibit adaptiveness after deployment (meaning it isn't just a rigid, rule-based 'if-then' script)?",
+        "description": "Article 3(1)",
+        "purpose": "Purpose: Determine if the system is in scope of the AI Act.",
+        "explanation": "If the system shows autonomy/adaptiveness beyond fixed rules, it likely qualifies as an AI system under the Act."
+      },
+      "prohibited_practices": {
+        "label": "Does the system use subliminal techniques to distort behavior, exploit vulnerabilities (age/disability), or perform social scoring or untargeted scraping of facial images?",
+        "description": "Article 5",
+        "purpose": "Purpose: Check for prohibited AI practices.",
+        "explanation": "If yes, the system is prohibited and cannot be placed on the market or put into service."
+      },
+      "safety_component": {
+        "label": "Is the AI system a safety component of a product that requires third-party conformity assessment (e.g., medical devices, machinery, toys)?",
+        "description": "Article 6(1) / Annex I",
+        "purpose": "Purpose: Identify safety-component AI systems.",
+        "explanation": "Safety components typically fall into high-risk scope and require stricter conformity assessment."
+      },
+      "annex_iii_sensitive": {
+        "label": "Is the AI system used in sensitive areas such as biometrics, critical infrastructure, education, employment, law enforcement, migration/asylum, or justice?",
+        "description": "Article 6(2) / Annex III",
+        "purpose": "Purpose: Detect Annex III high-risk use cases.",
+        "explanation": "If used in Annex III areas, the system is generally classified as high risk."
+      },
+      "narrow_procedural": {
+        "label": "Does the system only perform narrow procedural tasks or improve human activity without making or influencing decisions?",
+        "description": "Article 6(3)",
+        "purpose": "Purpose: Check for narrow procedural exclusions.",
+        "explanation": "If the system only assists with narrow procedural tasks, it may be excluded from high-risk classification."
+      },
+      "profiling": {
+        "label": "Does the system perform profiling of natural persons?",
+        "description": "Article 6(3)",
+        "purpose": "Purpose: Check profiling impact on risk classification.",
+        "explanation": "Profiling can trigger high-risk conditions and may override narrow procedural exclusions."
+      }
+    }
+  },
+  "EntityProfile": {
+    "header": {
+      "aria": {
+        "home": "Go to LeadAI website"
+      },
+      "logoAlt": "LeadAI",
+      "subtitle": "LEADAI | ENTITY PROFILE",
+      "title": "Entity Landing Page",
+      "returnTitle": "Return to LeadAI website",
+      "returnHome": "Return Home",
+      "description": "Capture your entity profile information for compliance assessment."
+    },
+    "sections": {
+      "coreIdentifiers": {
+        "title": "1. Core Entity Identifiers",
+        "description": "These are the foundational details used for the Declaration of Conformity and legal filings.",
+        "fullLegalName": "Full Legal Name",
+        "legalForm": "Legal Form",
+        "legalFormPlaceholder": "e.g., GmbH, Ltd., Inc., SA",
+        "companyRegistrationNumber": "Company Registration Number",
+        "companyRegistrationNumberPlaceholder": "e.g., VAT ID, LEI, or local Commercial Register number",
+        "headquartersCountry": "Headquarters Country",
+        "capturedBy": "Captured by",
+        "website": "Website / Digital Presence"
+      },
+      "operationalScope": {
+        "title": "2. Operational Scope & Footprint",
+        "description": "This helps determine which regional laws apply.",
+        "regionsOfOperation": "Regions of Operation",
+        "regionsOfOperationHint": "Select all countries where the AI system is being placed on the market or put into service.",
+        "other": "Other",
+        "otherRegionsLabel": "Other (please specify)",
+        "otherRegionsPlaceholder": "e.g. Country or region names",
+        "sector": "Sector / Industry",
+        "sectorHint": "Specific sectors (like Finance or Critical Infrastructure) automatically trigger \"High-Risk\" status under the EU AI Act Annex III. You may select multiple.",
+        "selectSector": "Select one or more sectors",
+        "otherSectorLabel": "Other sector (please specify)",
+        "otherSectorPlaceholder": "e.g. Retail, Manufacturing",
+        "sectors": {
+          "automotive": "Automotive",
+          "biometrics": "Biometrics",
+          "consumerServices": "Consumer Services",
+          "criticalInfrastructure": "Critical Infrastructure",
+          "cybersecurity": "Cybersecurity",
+          "education": "Education",
+          "energy": "Energy",
+          "finance": "Finance",
+          "governmentPublicService": "Government & Public Service",
+          "healthcare": "Healthcare",
+          "hiring": "Hiring",
+          "insurance": "Insurance",
+          "justice": "Justice",
+          "lawEnforcement": "Law Enforcement",
+          "manufacturing": "Manufacturing",
+          "migrationBorderControl": "Migration & Border Control",
+          "retail": "Retail",
+          "software": "Software",
+          "technology": "Technology",
+          "transport": "Transport",
+          "other": "Other"
+        }
+      },
+      "companySize": {
+        "title": "3. Company Size & Classification",
+        "description": "The EU AI Act provides \"SME (Small and Medium Enterprise) relief,\" so your size dictates your compliance costs and timelines.",
+        "employeeCount": "Employee Count",
+        "selectEmployeeCount": "Select employee count",
+        "ranges": {
+          "micro": "1-9 (Micro-enterprise)",
+          "small": "10-49 (Small)",
+          "medium": "50-249 (Medium)",
+          "large": "250-999 (Large)",
+          "enterprise": "1000+ (Enterprise)"
+        },
+        "annualTurnover": "Annual Turnover (Revenue)",
+        "annualTurnoverPlaceholder": "e.g., €1M, $5M",
+        "marketRole": "Market Role",
+        "marketRoleHint": "Your role under the EU AI Act will be determined in the next step.",
+        "selectMarketRole": "Select market role",
+        "roles": {
+          "provider": "Provider (you build it)",
+          "deployer": "Deployer (you use a third-party tool)",
+          "importer": "Importer",
+          "distributor": "Distributor"
+        }
+      },
+      "compliancePersonnel": {
+        "title": "4. Key Compliance Personnel",
+        "description": "Auditors need a \"Human-in-the-Loop\" contact for the Evidence Vault.",
+        "authorizedRepresentative": {
+          "title": "Authorized Representative",
+          "description": "The legal contact person residing in the EU (mandatory for non-EU companies)."
+        },
+        "aiComplianceOfficer": {
+          "title": "AI Compliance Officer / DPO",
+          "description": "The internal lead for the AI Management System (ISO 42001)."
+        },
+        "executiveSponsor": {
+          "title": "Executive Sponsor",
+          "description": "The C-level leader accountable for AI risk (NIST AI RMF requirement)."
+        },
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone"
+      }
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address",
+      "invalidUrl": "Please enter a valid URL (starting with http:// or https://)"
+    },
+    "buttons": {
+      "search": "Search",
+      "searching": "Searching...",
+      "nextToLegalStanding": "Next: AI Legal Standing Assessment",
+      "save": "Save Profile",
+      "saving": "Saving..."
+    }
+  },
+  "AiReadiness": {
+    "header": {
+      "aria": {
+        "home": "Go to LeadAI website"
+      },
+      "logoAlt": "LeadAI",
+      "subtitle": "LEADAI | TRUST SCORECARD",
+      "title": "AI Readiness Check",
+      "returnTitle": "Return to LeadAI website",
+      "returnHome": "Return Home"
+    },
+    "intro": {
+      "title": "Before we start your AI Readiness Check",
+      "subtitle": "Please share a few details so we can personalise your results and, if needed, follow up with a summary."
+    },
+    "share": {
+      "title": "LeadAI - AI Readiness Check",
+      "text": "Take the LeadAI - AI Readiness Check survey.",
+      "emailBody": "You can take the AI Readiness Check here:\n\n{url}",
+      "label": "Share the survey",
+      "linkCopied": "Link copied",
+      "reportTitle": "LeadAI - AI Readiness report",
+      "emailBodyLine1": "Here is your LeadAI - AI Readiness Check report.",
+      "emailBodyLine2": "You can download the PDF here:"
+    },
+    "form": {
+      "name": "Name",
+      "surname": "Surname",
+      "email": "Email",
+      "company": "Company",
+      "disclaimer": "We'll only use this information in connection with this assessment.",
+      "start": "Start questionnaire"
+    },
+    "intensity": {
+      "alwaysTrue": "Always true",
+      "sometimesTrue": "Sometimes true",
+      "neutral": "Neutral / Don't know",
+      "neutralShort": "Neutral"
+    },
+    "review": {
+      "title": "Review your answers",
+      "subtitle": "Here's a summary of the selections you made for each question. You can go back to adjust any category, or continue to view your AI Readiness scores.",
+      "leftStatement": "Left statement",
+      "rightStatement": "Right statement",
+      "yourSelection": "Your selection",
+      "backToLastCategory": "Back to last category",
+      "continueToResults": "Continue to results",
+      "selection": {
+        "left": "Closer to the left-hand statement",
+        "right": "Closer to the right-hand statement",
+        "neutral": "Neutral between the two statements",
+        "neutralSummary": "You indicated a neutral position between the two statements.",
+        "leftWithIntensity": "Closer to the left-hand statement — {intensity}",
+        "rightWithIntensity": "Closer to the right-hand statement — {intensity}",
+        "neutralWithIntensity": "Neutral between the two statements — {intensity}"
+      }
+    },
+    "results": {
+      "bannerTitle": "AI Readiness Check for",
+      "emailLabel": "Email:",
+      "title": "AI Readiness Summary",
+      "subtitle": "This overview shows how your organisation scores across key AI readiness categories, based on your responses to each slider.",
+      "sharedView": "Shared view",
+      "linkCopied": "Link copied",
+      "generatingLink": "Generating link...",
+      "copyLink": "Copy shareable link",
+      "emailToMe": "Email to me",
+      "downloadPdf": "Download PDF",
+      "startAgain": "Start again",
+      "overallReadiness": "Overall readiness",
+      "scale": "0-24% Critical / 25-49% At Risk / 50-74% Established / 75-100% Leading.",
+      "readinessScore": "Readiness score",
+      "footer": "LeadAI | ISO 42001 and EU AI Act aligned readiness diagnostic",
+      "logoAlt": "LeadAI logo",
+      "copyright": "LeadAI © 2025"
+    },
+    "pdf": {
+      "assessmentDetails": "Assessment details",
+      "company": "Company",
+      "name": "Name",
+      "email": "Email",
+      "dateTime": "Date & time",
+      "overallReadiness": "Overall AI Readiness",
+      "scale": "0-24% Critical / 25-49% At Risk / 50-74% Established / 75-100% Leading",
+      "table": {
+        "enabler": "Enabler",
+        "total": "Total",
+        "readiness": "Readiness %",
+        "status": "Status"
+      },
+      "footer": "LeadAI | ISO 42001 and EU AI Act aligned readiness diagnostic",
+      "copyright": "LeadAI © 2025",
+      "selectedAnswers": "Selected answers",
+      "leftStatement": "Left statement",
+      "rightStatement": "Right statement",
+      "yourSelection": "Your selection",
+      "headerTitle": "LeadAI - AI Readiness Check",
+      "headerSubtitle": "ISO 42001 and EU AI Act aligned readiness diagnostic",
+      "fileName": "leadai-ai-readiness.pdf"
+    },
+    "status": {
+      "critical": "Critical",
+      "atRisk": "At Risk",
+      "established": "Established",
+      "leading": "Leading"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "seeResults": "See Results"
+    },
+    "question": {
+      "sliderAria": "{title} alignment slider",
+      "progress": "Category {current} of {total} | {name}"
+    },
+    "enablers": {
+      "items": {
+        "item0": {
+          "name": "Strategic Vision & Value",
+          "themes": {
+            "t0": {
+              "title": "Purpose & Alignment",
+              "blue": "AI initiatives are tied to defined business outcomes and approved KPIs.",
+              "orange": "AI initiatives are launched without clear purpose or success criteria."
+            },
+            "t1": {
+              "title": "Governance of Use Cases",
+              "blue": "Clear criteria exist for what should and should not be automated.",
+              "orange": "Automation decisions are made ad hoc with no risk/benefit analysis."
+            },
+            "t2": {
+              "title": "Performance Review",
+              "blue": "AI objectives are reviewed in management meetings with KPI tracking.",
+              "orange": "AI projects operate outside performance review cycles."
+            }
+          }
+        },
+        "item1": {
+          "name": "Leadership & Accountability",
+          "themes": {
+            "t0": {
+              "title": "Roles & Ownership",
+              "blue": "Each AI system has a named owner and documented responsibility.",
+              "orange": "When AI issues arise, accountability is unclear."
+            },
+            "t1": {
+              "title": "Leadership Behaviour",
+              "blue": "Leaders fund and model responsible AI decisions.",
+              "orange": "Leadership treats AI as a tech experiment without oversight."
+            },
+            "t2": {
+              "title": "Escalation & Reporting",
+              "blue": "There is a defined path to report AI concerns or incidents.",
+              "orange": "AI incidents are handled informally or ignored."
+            }
+          }
+        },
+        "item2": {
+          "name": "Governance & Compliance (AIMS)",
+          "themes": {
+            "t0": {
+              "title": "Policy & Integration",
+              "blue": "A documented AI Management System integrates ISO and legal requirements.",
+              "orange": "No formal AI policy exists or it is not followed."
+            },
+            "t1": {
+              "title": "Auditing & Evidence",
+              "blue": "Internal audits and evidence logs are maintained for AI systems.",
+              "orange": "There is no audit trail for AI activities."
+            },
+            "t2": {
+              "title": "Compliance Alignment",
+              "blue": "Controls map to ISO and EU AI Act articles.",
+              "orange": "Compliance activities for AI are fragmented or reactive."
+            }
+          }
+        },
+        "item3": {
+          "name": "Risk & Impact Management",
+          "themes": {
+            "t0": {
+              "title": "Assessment Process",
+              "blue": "AI risk and impact assessments are performed before and after deployment.",
+              "orange": "Risk assessments are skipped or done once then forgotten."
+            },
+            "t1": {
+              "title": "Risk Coverage",
+              "blue": "Risks include individual, societal, and ethical impacts.",
+              "orange": "Only technical risks (like accuracy) are considered."
+            },
+            "t2": {
+              "title": "Monitoring & Review",
+              "blue": "Post-market monitoring detects model drift and harm.",
+              "orange": "There is no system to monitor AI impacts after release."
+            }
+          }
+        },
+        "item4": {
+          "name": "Data Stewardship & Quality",
+          "themes": {
+            "t0": {
+              "title": "Provenance & Rights",
+              "blue": "Data sources, rights and provenance are documented and verifiable.",
+              "orange": "Datasets of unknown origin or licensing are used."
+            },
+            "t1": {
+              "title": "Quality & Bias",
+              "blue": "Data is tested for bias and quality throughout the lifecycle.",
+              "orange": "Bias and quality issues go undetected until failures occur."
+            },
+            "t2": {
+              "title": "Retention & Deletion",
+              "blue": "Data retention and deletion follow policy and law.",
+              "orange": "Data is kept indefinitely without control."
+            }
+          }
+        },
+        "item5": {
+          "name": "Clarity & Transparency",
+          "themes": {
+            "t0": {
+              "title": "User Disclosure",
+              "blue": "Users are informed when interacting with AI and understand its limits.",
+              "orange": "Users are not told when AI is used or its limitations."
+            },
+            "t1": {
+              "title": "Documentation & Traceability",
+              "blue": "Technical and user documentation is complete and up-to-date.",
+              "orange": "Documentation is missing or inaccessible."
+            },
+            "t2": {
+              "title": "Logging & Explainability",
+              "blue": "Event logs support traceability and explainability.",
+              "orange": "Logs are incomplete or unavailable for investigation."
+            }
+          }
+        },
+        "item6": {
+          "name": "Human Oversight & Skills",
+          "themes": {
+            "t0": {
+              "title": "Human-in-the-Loop",
+              "blue": "Humans review AI outputs before critical decisions.",
+              "orange": "Critical decisions are fully automated."
+            },
+            "t1": {
+              "title": "Training & Competence",
+              "blue": "Teams receive training on AI risk, ethics and oversight.",
+              "orange": "No formal training on AI oversight exists."
+            },
+            "t2": {
+              "title": "Diversity of Expertise",
+              "blue": "Cross-functional skills (data, domain, ethics) involved.",
+              "orange": "AI projects run by a single technical team without input."
+            }
+          }
+        },
+        "item7": {
+          "name": "Secure & Private by Design",
+          "themes": {
+            "t0": {
+              "title": "Security Controls",
+              "blue": "Security testing covers AI-specific threats (poisoning, leaks).",
+              "orange": "AI systems use generic IT controls without AI threat testing."
+            },
+            "t1": {
+              "title": "Privacy Management",
+              "blue": "PII handling complies with data-protection roles and laws.",
+              "orange": "AI processes personal data without defined responsibility."
+            },
+            "t2": {
+              "title": "Incident Response",
+              "blue": "Security and privacy incidents are reported and analysed.",
+              "orange": "AI security breaches are under-reported or ignored."
+            }
+          }
+        },
+        "item8": {
+          "name": "Lifecycle Ops & Monitoring",
+          "themes": {
+            "t0": {
+              "title": "Process Control",
+              "blue": "The AI lifecycle is documented (design to deploy to retire).",
+              "orange": "Models are released without defined lifecycle control."
+            },
+            "t1": {
+              "title": "Rollback & Change Mgmt",
+              "blue": "Tested rollback and change procedures exist.",
+              "orange": "No rollback plans; changes made directly in production."
+            },
+            "t2": {
+              "title": "Performance Tracking",
+              "blue": "KPIs and drift metrics monitored in production.",
+              "orange": "Model performance is not tracked post-launch."
+            }
+          }
+        },
+        "item9": {
+          "name": "Third-Party & Customer Alignment",
+          "themes": {
+            "t0": {
+              "title": "Supplier Governance",
+              "blue": "Supplier AI responsibilities are defined in contracts.",
+              "orange": "Vendors provide AI without clear accountability."
+            },
+            "t1": {
+              "title": "Customer Transparency",
+              "blue": "Customers receive AI documentation and safe-use guidance.",
+              "orange": "Customers are not informed about AI functions or limits."
+            },
+            "t2": {
+              "title": "Feedback & Improvement",
+              "blue": "External feedback feeds into AI risk and improvement cycles.",
+              "orange": "Customer issues are ignored or handled off-record."
+            }
+          }
+        }
+      }
+    }
+  },
+  "GovernanceSetupLanding": {
+    "title": "AI Governance Setup",
+    "subtitle": "LeadAI · Governance Setup",
+    "signOut": "Sign Out"
+  },
+  "GovernanceJourneyCard": {
+    "kicker": "Your AI governance journey starts here.",
+    "heading": "YOUR AI GOVERNANCE JOURNEY STARTS HERE.",
+    "subheading": "6 steps to starting your AI Governance Execution",
+    "description": "Complete each step in sequence to unlock the next stage of governance readiness.",
+    "steps": {
+      "legalStanding": "1. Entity - Legal Standing",
+      "entity": "2. Entity - Onboarding",
+      "project": "3. Project - The Portfolio",
+      "system": "4. System - The Inventory",
+      "kpi": "5. KPI - The Metric",
+      "control": "6. Control - The Action"
+    },
+    "status": {
+      "done": "✓ Done",
+      "inProgress": "In progress",
+      "locked": "Locked"
+    },
+    "errors": {
+      "loadEntities": "Unable to load your entities. Please refresh and try again.",
+      "noEntityAccess": "You do not have access to an entity yet. Ask an administrator to grant access, then return to start your governance journey."
+    },
+    "completeTitle": "Your AI Governance Setup Completed,",
+    "completeBody": "you can visit AI Governance Setup when you have new projects or system changes. Now you can proceed to run your AI Governance Execution.",
+    "completeCta": "AI Governance Execution",
+    "systemStatus": {
+      "none": "Missing AI system records in one or more project.",
+      "partial": "Missing AI system records in one or more project.",
+      "complete": "Completed"
+    },
+    "kpiLockedNoSystems": "Locked, no system records were found.",
+    "requirementsStatus": {
+      "none": "Missing requirement records in one or more project.",
+      "partial": "Missing requirement records in one or more project.",
+      "complete": "Completed"
+    },
+    "controlStatus": {
+      "none": "In progress",
+      "partial": "MISSING CONTROLS IN ONE OR MORE PROJECT"
+    },
+    "controlLockedNoRequirements": "Locked, no requirement records were found.",
+    "requirementsMissingProjects": "Missing governance for: {projects}"
+  }
+}

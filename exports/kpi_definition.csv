@@ -1,0 +1,547 @@
+kpi_id,kpi_key,kpi_name,pillar_id,unit,weight,min_ideal,max_ideal,invert,description,example,definition,iso_42001_clause,eu_ai_act_clause,eu_ai_act_chapter,iso_42001_chapter,coverage_category,regulatory_link,requirement_summary
+dd5894c7-60cb-428d-9d6c-1e7b050b1145,phase_gate_ontime,Phase-gate on-time,964ac6a4-9741-41d9-b24c-c7717c9fda1a,%,1,,,f,"Share of phase‑gate milestones (e.g., design review, launch readiness) completed on or before the planned date.",88% (22 of 25 milestones completed on/before target),"Phase-gate On-time: 
+1. Core Objective
+Measures project discipline and governance health by tracking adherence to planned lifecycle milestones (phase gates).
+Prevents 'governance debt' caused by rushed compliance checks.
+2. Key Performance Indicators (KPIs)
+Definition
+- Share of phase-gate milestones completed on or before the planned date.
+Calculation & Example
+- Formula: (Milestones On-time / Total Milestones) * 100.
+- Example: '88% (22 of 25 milestones completed on/before target)'.
+3. Required Evidence
+- Project Plan: Baseline schedule with target dates.
+- Sign-off Logs: Verified actual completion dates (Jira/Minutes).
+- Variance Report: Explanations for any slippage.
+4. Ownership & Timeline
+- Owners: Project Manager, PCL.
+- Timeline: Continuous tracking; reported at every gate.",ISO42001:8.2.2,Art. 17 QMS — Lifecycle Controls,,,,,
+418b119f-c4df-4d81-ae5e-f26e3a07fec6,factsheet_completion,External Trust Factsheet completion,14893936-5bde-4978-b7ea-d0eed4a4cdf1,%,1,40,100,f,"Binary/percentage indicating completion of an externally shareable trust factsheet (e.g., security, privacy, AI transparency) for each product.",100% (5/5 products have published Trust Factsheets),"Tech Docs & Factsheet Completion: 
+1. Core Objective
+Ensures the AI system satisfies 'Gate to Launch' requirements by completing mandatory technical documentation (EU AI
+Act Annex IV) and a public-facing Trust Factsheet for transparency.
+2. Key Performance Indicators (KPIs)
+Definition
+- Internal: % completeness of Annex IV technical index.
+- External: Binary readiness of the public Trust Factsheet.
+Targets & Impact
+- Gatekeeper: Pillar score capped at 50 if docs missing (Blocks Launch).
+- Example: '100% (Factsheet published + Annex IV index complete)'.
+3. Required Evidence
+- Tech Bundle: Registry of model/data/risk docs (Annex IV).
+- Factsheet: Markdown/HTML file ready for publication.
+- Timestamps: Proof of completion before GTM date.
+4. Ownership & Timeline
+- Owners: PCL (Editor), Lead ML Eng, Legal.
+- Timeline: 2-4 weeks from zero; 2-3 days if data exists.",ISO42001:7.5,Art. 11 Technical Documentation,,,,,
+35de6d4d-0573-4309-a847-b468c5143772,audit_log_integrity,Audit log integrity,492d404f-a1f4-4764-87de-40088244a048,%,1,,,f,"Binary/score indicating cryptographic integrity and immutability guarantees for audit logs (e.g., hashing, WORM storage) across in‑scope systems.",100% (SHA-256 hash chain + S3 Object Lock WORM; daily verification passes),"Audit Log Integrity: 
+1. Core Objective
+Ensures the digital trail of AI decisions is trustworthy and tamper-evident using cryptographic guarantees, proving to
+auditors that logs are original and unaltered.
+2. Key Performance Indicators (KPIs)
+Definition
+- Score indicating cryptographic integrity/immutability of logs.
+Mechanisms & Example
+- Tech: SHA-256 hash chains, WORM storage (Write Once Read Many).
+- Formula: (Services with tamper-evident logs / Total services) * 100.
+- Example: '100% (SHA-256 hash chain + S3 Object Lock)'.
+3. Required Evidence
+- Log Schema: Documentation of log structure.
+- Crypto Proofs: Merkle proofs or hash-chains.
+- Anchor Receipts: Daily timestamped proofs stored separately.
+- Verification Reports: Auto-reports (e.g., 'zero mismatches').
+4. Ownership & Timeline
+- Owners: Platform/SRE, Security Team.
+- Timeline: 2-4 weeks setup; daily verification thereafter.",ISO42001:8.5,Art. 12 Record-keeping & Logging,,,,,
+c482b5e6-2c92-43a2-9239-1bbaaf136416,fallback_success,Safe fallback success rate,56308af8-0b67-4754-a2d6-c02d1a37e3d9,%,1,,,f,"Percentage of times the system successfully falls back to a safe, policy‑compliant path when primary AI service is unavailable or uncertain.","96% (successful policy-compliant fallbacks on 2,403 of 2,500 attempts)","Safe Fallback Modes (rate) : 
+1. Core Objective
+Ensures system resilience by verifying that the AI can degrade gracefully to a safe, policy-compliant path (rule-based or
+human) if the primary model fails or becomes uncertain.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of successful fallbacks when primary AI is unavailable.
+Calculation & Example
+- Formula: (Successful fallbacks / Total attempts) * 100.
+- Scope: Automated circuit breakers and manual kill-switches.
+- Example: '96% (successful fallbacks on 2,403 attempts)'.
+3. Required Evidence
+- Playbooks: Documentation for kill-switches/rollbacks.
+- Test Logs: Results from monthly drills or chaos testing.
+- Canary Metrics: Proof of traffic shift during incidents.
+4. Ownership & Timeline
+- Owners: SRE, Release Engineering, PCL.
+- Timeline: Monthly drills or continuous automated checks.",ISO42001:8.4,"Art. 15 Robustness, Accuracy, Cybersecurity",,,,,
+e6cba0d5-febb-4a40-9956-04b50db76ce6,findings_sla_days,Findings SLA (days),964ac6a4-9741-41d9-b24c-c7717c9fda1a,days,1,0,30,t,Average number of days to remediate audit/compliance findings from creation to closure compared against the defined SLA target.,18 (avg days to close audit findings vs SLA 30 days),"Findings remediation SLA:
+ 1. Core Objective
+Measures operational efficiency in governance by tracking the speed of fixing audit findings. Ensures 'Continuous
+Improvement' by preventing a backlog of known compliance gaps.
+From an ISO 42001 standpoint, this KPI demonstrates how effectively the organisation identifies, remediates, and closes risks or nonconformities within its AI management system, showing whether corrective actions are timely and aligned with the required governance processes. Under the EU AI Act, timely remediation of findings is essential to maintain ongoing compliance for high-risk AI systems, ensuring that risks are addressed within defined SLAs to meet conformity-assessment and post-market monitoring expectations
+
+2. Key Performance Indicators (KPIs)
+Definition
+- Average days to remediate findings from creation to closure.
+Calculation & Example
+- Unit: Days.
+- Metric: Avg days to close vs. defined SLA target.
+- Example: '18 days avg (vs SLA 30 days)'.
+3. Required Evidence
+- Findings Register: Central log of gaps (CAPA/Jira).
+- Timestamps: Creation Date vs. Closure Date.
+- Remediation Proof: Evidence of the fix (PR, Doc update).
+4. Ownership & Timeline
+- Owners: PCL (tracker), Engineering (fixers).
+- Timeline: Continuous monitoring (rolling average)..",ISO42001:10.2,Art. 17 QMS — Corrective Actions,,,,,
+5f33b003-4ec3-4f54-9cb8-e048d57315e6,dsr_sla_days,DSR/erasure SLA (days),71083a27-557a-4e54-9bf6-5a0020074a0d,days,1,0,30,t,"Average days to fulfill data subject requests (access, erasure) from receipt to completion, compared to SLA.",12 (avg completion time; SLA 30 days; n=41 DSRs),"DSR/Erasure SLA:
+1. Core Objective
+Ensures compliance with privacy regulations (GDPR/CCPA) by measuring the speed and efficiency of fulfilling Data
+Subject Requests (access, erasure) against internal safety targets.
+2. Key Performance Indicators (KPIs)
+Definition & Targets
+- Definition: Avg days to fulfill requests or % met within SLA.
+- Target: Internal SLA <= 14 days (Statutory limit often 30 days).
+Calculation
+- Formula: (Requests closed <= SLA / Total Requests) * 100.
+- Nuance: Includes 'stop-the-clock' allowance for ID checks.
+3. Required Evidence
+- Request Tracker: Start/stop timestamps for all tickets.
+- Pause Logs: Evidence of delays due to ID verification.
+- Confirmation: Proof of deletion/retrieval from systems.
+4. Ownership & Timeline
+- Owners: Privacy Ops, DPO, Data Engineering.
+- Timeline: Continuous; typical case resolution 2-14 days.",ISO42001:7.4,GDPR-linked — Acts referenced by Art. 10,,,,,
+469dd916-9d02-4e1e-8f73-2f9aa3f86ee0,hitl_coverage,Human-in-the-loop coverage,56308af8-0b67-4754-a2d6-c02d1a37e3d9,%,1,,,f,Percentage of high‑risk decisions that include a documented human review or approval step in production.,"85% (1,700 of 2,000 high-risk decisions had human approval)","Human-in-the-Loop Coverage: 
+1. Core Objective
+Ensures safety and accountability by mandating human review for high-stakes AI decisions. Prevents fully automated
+critical errors by integrating human judgment into the production workflow.
+2. Key Performance Indicators (KPIs)
+Definition & Scope
+- Percentage of high-risk decisions with documented human review.
+- Scope: Applies to 'High-Severity' or 'High-Risk' classifications.
+Calculation & Example
+- Formula: (Decisions with oversight / Total high-risk decisions) * 100.
+- Target: Often 100% for critical flows.
+- Example: '85% (1,700 of 2,000 high-risk decisions had approval)'.
+3. Required Evidence
+- Oversight Matrix: Rules defining when human review is triggered.
+- SOPs: Instructions for human reviewers.
+- Tooling: Screenshots of 'Approve/Reject' dashboards.
+- Logs: Records linking human approver IDs to decisions.
+4. Ownership & Timeline
+- Owners: Product, Ops, PCL (approves thresholds).
+- Timeline: 1-2 sprints to design; ongoing tuning.",ISO42001:8.4,Art. 14 Human Oversight,,,,,
+698c3070-ca31-4fa4-8c95-35b6d49ce44b,provenance_coverage,Provenance & licensing coverage,71083a27-557a-4e54-9bf6-5a0020074a0d,%,1,,,f,"Share of datasets/models/components with documented provenance, licenses, and usage restrictions recorded in the registry.",93% (metadata complete for 279 of 300 assets in registry),"Provenance & Licensing Coverage: 
+1. Core Objective
+Mitigates legal and ethical risks by validating the lineage and legal basis of all data. Prevents the use of stolen or
+unlicensed data by requiring verified rights for every asset.
+2. Key Performance Indicators (KPIs)
+Definition & Scope
+- Share of datasets/models with documented source and license.
+- Scope: Training data, eval sets, and prompt libraries.
+Calculation & Guardrail
+- Formula: (Verified Records / Total Records) * 100.
+- Guardrail: Pillar capped at 60 if coverage < 80%.
+- Example: '93% (metadata complete for 279 of 300 assets)'.
+3. Required Evidence
+- Inventory: Source, license terms, consent, retention rules.
+- Registry: Metadata records for all in-scope assets.
+- Legal Reviews: Verification of usage rights vs. intent.
+4. Ownership & Timeline
+- Owners: Data Steward, Legal (IP/DP), Model Owner.
+- Timeline: 2-6 weeks initial; rolling updates.",ISO42001:8.5,Art. 10 Data Governance & Management,,,,,
+55280382-7943-4b70-befc-dd5fe84f3a1d,pcl_assignment_rate,PCL assignment ,964ac6a4-9741-41d9-b24c-c7717c9fda1a,%,1,0,100,f,"Scope has a named Product Compliance Lead. Named individual + role acceptance (RACI/charter), link to ownership in your tracker (e.g., JIRA/Asana), and visibility in the project’s governance sheet.",94% (171 of 182 PCLs have owner + due date),"PCL Assignment Rate: 
+1. Core Objective
+Ensures accountability by tracking the assignment of 'Product/Control Liabilities' (PCLs). It prevents risks from sitting in a
+backlog by verifying that every identified liability has an owner and a due date.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of identified liabilities with an owner and due date.
+Calculation & Example
+- Formula: (Assigned Liabilities / Total Liabilities) * 100.
+- Condition: Must have BOTH 'Owner' and 'Due Date'.
+- Example: '94% (171 of 182 PCLs have owner + due date)'.
+3. Required Evidence
+- Liability Register: Database of identified risks/controls.
+- Completeness Check: Audit of 'Owner' and 'Due Date' fields.
+- Aging Report: List of unassigned items exceeding timeframe.
+4. Ownership & Timeline
+- Owners: Product Compliance Lead (ensures assignment).
+- Timeline: Continuous monitoring.",ISO42001:5.3,Art. 17 QMS — Roles & Responsibilities,,,,,
+c1c19fe2-be7b-445d-b6af-5cee18674de9,xai_validation_rate,XAI validation pass rate,492d404f-a1f4-4764-87de-40088244a048,%,1,,,f,"Share of explanation quality tests (fidelity, stability, consistency) that meet predefined acceptance criteria.",84% (pass rate on fidelity/stability/consistency test suite),"XAI Validation Pass Rate: 
+1. Core Objective
+Acts as the QA layer for transparency. Verifies that explanations (e.g., feature importance) are scientifically accurate
+(faithful), stable, and consistent, ensuring they can be trusted by users.
+2. Key Performance Indicators (KPIs)
+Definition
+- Share of explanation quality tests meeting acceptance criteria.
+Calculation & Example
+- Formula: (Tests passed / Total tests) * 100.
+- Dimensions: Fidelity, Stability, Consistency, Clarity.
+- Example: '84% pass rate on fidelity/stability test suite'.
+3. Required Evidence
+- Test Plan: Methodology for fidelity/sanity checks.
+- Results: Logs comparing scores vs. risk thresholds.
+- Comparisons: Sample explanations vs. ground truth.
+4. Ownership & Timeline
+- Owners: ML QA Lead, Product/UX.
+- Timeline: 1-2 weeks per model iteration.",ISO42001:8.2.4,Art. 15 Robustness & Transparency,,,,,
+fd0a6f41-0f36-43cf-b89a-fd94eb5736c0,policy_exceptions,Policy exceptions (#/release),964ac6a4-9741-41d9-b24c-c7717c9fda1a,count,1,0,10,t,Count of approved security/compliance policy exceptions in effect at the time of a product release.,"3 (active exceptions this release: logging, SAST cadence, legacy crypto)","Policy Exceptions: 
+1. Core Objective
+Tracks the number of security/compliance rules waived to allow release. High numbers indicate accumulated risk and
+'governance debt'. The score is penalized based on the severity of these waivers.
+2. Key Performance Indicators (KPIs)
+Definition & Scoring
+- Count of approved exceptions active at release.
+- Weighted Logic: 3x Critical + 2x Major + 1x Minor.
+- Score Formula: 100 * max(0, 1 - min(1, weighted/2)).
+Example
+- '3 active exceptions: logging, SAST cadence, legacy crypto'.
+- '1 Major + 2 Minor -> Weighted Score 4'.
+3. Required Evidence
+- Exception Register: Risk rating, controls, expiry, approval.
+- Risk Ratings: Classification (Critical/Major/Minor).
+- Approvals: Sign-off from Risk Committee/PCL.
+4. Ownership & Timeline
+- Owners: Risk Committee, PCL, Control Owners.
+- Timeline: 2-5 days to formalize; tracked continuously.",ISO42001:10.1,Art. 17 QMS — Compliance Controls,,,,,
+f90d588b-a5f8-400a-924a-42ab101b9ef3,explanation_latency_ms,Explanation latency (p95),492d404f-a1f4-4764-87de-40088244a048,ms,1,0,1000,t,95th percentile time to generate a human‑readable explanation for a model prediction or automated decision.,420 (p95 across API `/explain` for top 5 models),"Explanation Latency: 
+1. Core Objective
+Ensures XAI features are usable in real-time interfaces by measuring the speed of generating explanations. High latency
+renders transparency features ineffective for end-users.
+2. Key Performance Indicators (KPIs)
+Definition
+- 95th percentile (p95) time to generate a human-readable explanation.
+Unit & Example
+- Unit: Milliseconds (ms).
+- Example: '420 ms (p95 across API /explain for top 5 models)'.
+3. Required Evidence
+- APM Logs: Latency metrics from tools like Datadog/New Relic.
+- Load Test Reports: Performance stats under load.
+- SLA: Defined budget (e.g., < 500ms).
+4. Ownership & Timeline
+- Owners: ML Engineering, Product/UX.
+- Timeline: Continuous monitoring.",ISO42001:8.2.5,Art. 13 Transparency & Information for Users,,,,,
+ac3b9ddc-9d8b-41ca-9e9b-4208c0e8263a,post_incident_mttr,Post-incident MTTR,56308af8-0b67-4754-a2d6-c02d1a37e3d9,hours,1,0,24,t,"Mean time to recover service and risk posture after an incident, from detection to full restoration and control re‑hardening.",5.6 (hours to full recovery & control re-hardening; last 90 days),"Post-incident MTTR: 
+1. Core Objective
+Ensures system resilience by measuring the speed of recovery after incidents. Unlike standard DevOps metrics, this
+explicitly includes 'control re-hardening' to ensure the AI returns to a safe, compliant state, not just an active one.
+2. Key Performance Indicators (KPIs)
+Definition & Unit
+- Mean time from detection to full restoration AND control re-hardening.
+- Unit: Hours.
+Calculation & Example
+- Formula: Mean of (Restoration Time - Detection Time).
+- Example: '5.6 hours (last 90 days)'.
+- Note: 'Restoration' implies safety controls are active again.
+3. Required Evidence
+- Incident Tickets: Start/End timestamps from PagerDuty/Jira.
+- Post-Mortems: RCAs confirming safety control restoration.
+- Restoration Logs: Proof that filters/safeguards are back online.
+4. Ownership & Timeline
+- Owners: SRE, Security Ops, PCL.
+- Timeline: Continuous monitoring (rolling average).",ISO42001:10.1,Art. 17 — Incident Response,,,,,
+5eb0009f-20aa-43da-88ee-2289cb04c228,drift_mtta_hours,Drift response MTTA (hours),98965b90-a151-4ed2-89e1-a1226d51fb18,hours,1,0,8,t,Mean time to acknowledge drift alerts from first detection to human or automated triage action.,1.4 (mean time from drift alert to triage over last 60 days),"Drift Response MTTA: 
+1. Core Objective
+Ensures operational responsiveness by measuring the speed at which drift alerts are acknowledged and triaged. This
+minimizes the risk window where a model may operate with degraded performance or safety.
+2. Key Performance Indicators (KPIs)
+Definition & Unit
+- Definition: Mean time from alert detection to triage action.
+- Unit: Hours.
+Calculation & Example
+- Formula: Mean of (Triage Timestamp - Detection Timestamp).
+- Example: '1.4 hours (avg over last 60 days)'.
+3. Required Evidence
+- Alert Logs: Detection timestamps from monitoring tools.
+- Incident History: 'Acknowledge' timestamps from PagerDuty/Jira.
+- Triage Notes: Confirmation of active investigation.
+4. Ownership & Timeline
+- Owners: MLOps Team, Model Owners, SRE.
+- Timeline: Continuous rolling average (e.g., 30-60 days).",ISO42001:9.1,Art. 15 Monitoring & Risk Management,,,,,
+cc1708a8-559b-45cb-97f7-0cd057d25afa,decision_traceability,Logged decision traceability,492d404f-a1f4-4764-87de-40088244a048,%,1,,,f,"Percentage of material model/system decisions with a recorded rationale, approver, and evidence trace linked to requirements.",78% (350 of 450 material decisions with rationale + approver + evidence),"Decision Traceability & Integrity: 
+1. Core Objective
+Ensures accountability by linking every material AI decision to a specific rationale, approver, and input set. It combines
+content logging with tamper-evident security to create an unbreakable audit trail.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of material decisions with recorded rationale and approver.
+Calculation & Example
+- Formula: (Decisions with trace / Total material decisions) * 100.
+- Example: '78% (350 of 450 decisions with full trace)'.
+- Tech Note: Must be tamper-evident (hash-chained).
+3. Required Evidence
+- Log Schema: Fields for input, output, rationale, approver.
+- Crypto Proofs: Merkle proofs or hash-chains.
+- Anchor Receipts: Daily timestamped proofs.
+- Verification Reports: Confirmation of unbroken lineage.
+4. Ownership & Timeline
+- Owners: Platform/SRE, Security Team.
+- Timeline: 2-4 weeks setup; daily verification thereafter.",ISO42001:8.5,Art. 12 Logging & Traceability,,,,,
+1f463acf-a4a6-4947-a1ff-56a0cdfe137f,trust_backlog_coverage,Trust-in-backlog coverage,964ac6a4-9741-41d9-b24c-c7717c9fda1a,%,1,,,f,"Percentage of backlog items that are explicitly tagged with trust, risk, or compliance metadata (e.g., control mapping, risk ID).","74% (1,482 of 2,000 backlog items tagged with trust/risk metadata)","Trust-in-Backlog Coverage: 
+1. Core Objective
+Measures the integration of 'Trust & Risk' into the engineering workflow. Ensures compliance requirements are tracked
+as first-class backlog items, not external paperwork.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of backlog items tagged with trust/risk/compliance metadata.
+Calculation & Example
+- Formula: (Tagged Items / Total Items) * 100.
+- Example: '74% (1,482 of 2,000 items tagged)'.
+3. Required Evidence
+- Jira/DevOps Query: Filter showing active backlog.
+- Tagging Schema: List of mandatory tags (e.g., 'Risk-ID').
+- Traceability: Links between stories and the Risk Register.
+4. Ownership & Timeline
+- Owners: Product Owners, Scrum Masters, PCL.
+- Timeline: Continuous (Sprint Planning/Grooming).",ISO42001:10.2,Art. 17 QMS Continuous Improvement,,,,,
+079b79b6-0e8f-4a56-9a36-b240e61a7fdf,cert_lead_time_days,Certification lead time,14893936-5bde-4978-b7ea-d0eed4a4cdf1,days,1,0,60,t,"Elapsed calendar days to achieve a new/renewed external certification (e.g., ISO, SOC) from project kickoff to award.","92 ((ISO 42001, certification/recertification from kick-off to award). Faster times indicate higher maturity.","Cert Lead Time / Evidence Readiness: 
+1. Core Objective
+Measures operational efficiency by tracking the elapsed time from project kickoff to 'submission-ready' status for external
+audits (ISO 42001, SOC 2). Faster times indicate higher maturity.
+2. Key Performance Indicators (KPIs)
+Definition
+- Elapsed calendar days from Kickoff to Readiness/Award.
+Calculation & Target
+- Metric: Days = (Time_Ready - Time_Kickoff).
+- Target: Benchmark is often 30 days for evidence preparation.
+- Score Formula: min(100, 100 * (30 / Actual Days)).
+- Example: 'Kickoff Sep 1 -> Ready Sep 27 = 26 days'.
+3. Required Evidence
+- Timestamps: Dates for Kickoff and Evidence Acceptance.
+- Artifacts: Project Charter or Gantt chart.
+- Completion Proof: Auditor acceptance or GRC sign-off.
+4. Ownership & Timeline
+- Owners: Product Compliance Lead (PCL), PMO.
+- Timeline: Duration based (Start to Finish).",ISO42001:8.6,Art. 43 Conformity Assessment,,,,,
+147a2acf-8ddb-407c-b65f-39ffeb5a5ff5,data_quality_index,Data quality index,71083a27-557a-4e54-9bf6-5a0020074a0d,%,1,,,f,"Composite score of critical data quality dimensions (completeness, accuracy, timeliness, uniqueness) weighted and expressed as a percentage.","91% (weighted: completeness 0.95, accuracy 0.92, timeliness 0.88, uniqueness 0.89)","Data Quality Index:
+1. Core Objective
+Ensures the reliability and usability of data feeding AI models by measuring critical dimensions like completeness and
+accuracy, preventing 'garbage in, garbage out' scenarios.
+2. Key Performance Indicators (KPIs)
+Definition & Dimensions
+- Definition: Composite score of weighted data quality dimensions.
+- Dimensions: Completeness, Accuracy, Timeliness, Uniqueness.
+Calculation & Example
+- Formula: Sum of (Dimension Score * Weight).
+- Example: '91% (Completeness 0.95, Accuracy 0.92, etc.)'.
+3. Required Evidence
+- Data Quality Reports: Automated profiling from observability tools.
+- Profiling Logs: Execution records of quality checks.
+- Remediation Trackers: Records of fixed quality issues.
+4. Ownership & Timeline
+- Owners: Data Stewards, Data Engineers.
+- Timeline: Continuous monitoring (daily/weekly).",ISO42001:8.2.2,Art. 10 Training & Test Data Quality,,,,,
+88caeaca-70f2-476b-ac55-1107acdca47a,xai_ui_coverage,UI XAI coverage,492d404f-a1f4-4764-87de-40088244a048,%,1,,,f,Percentage of end‑user surfaces that provide explanations or transparency widgets for model outputs where applicable.,72% (13 of 18 user surfaces show explanations/transparency widgets),"UI XAI Coverage: 
+1. Core Objective
+Ensures transparency is surfaced to the end-user by measuring the presence of explanations (e.g., 'Why' tooltips) at
+impactful decision points in the user interface.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of impactful decision points/surfaces with XAI widgets.
+Calculation & Guardrails
+- Formula: (Points with XAI UX / Total impactful points) * 100.
+- Guardrail: Cap score at 60 if coverage < 70% (High-Risk).
+- Example: '72% (13 of 18 user surfaces show explanations)'.
+3. Required Evidence
+- UX Route Map: List of all decision points requiring transparency.
+- Screenshots/Specs: Figma/designs showing the explanation UI.
+- Telemetry: Data showing user engagement with 'Why' features.
+4. Ownership & Timeline
+- Owners: Product, UX, ML Engineering.
+- Timeline: 1-3 sprints to design and ship.",ISO42001:8.4,Art. 13 Transparency Obligations,,,,,
+ed7d495d-7346-4eb1-ab22-65091f037937,compliance_scorecard,Compliance Scorecard,964ac6a4-9741-41d9-b24c-c7717c9fda1a,%,1,,,f,Overall compliance adherence expressed as a percentage of mandatory controls passed vs. total applicable controls during the reporting period.,87% (65 of 75 mandatory controls passed this quarter),"Compliance Scorecard: 
+1. Core Objective
+Serves as the central 'health check' for the Governance pillar, translating qualitative requirements (ISO 42001, EU AI
+Act) into a quantitative percentage to track overall project adherence.
+2. Key Performance Indicators (KPIs)
+Definition & Scope
+- Definition: Percentage of mandatory controls passed vs. applicable.
+- Scope: Maps to ISO 42001 and EU AI Act obligations.
+Calculation & Example
+- Formula: (Controls Met / Total Applicable Controls) * 100.
+- Example: '87% (65 of 75 mandatory controls passed)'.
+- Example: '82% met (41/50). Gaps: DSR restore test'.
+3. Required Evidence
+- Filled Scorecard: Checklist with Pass/Fail status for each item.
+- Control Catalog: Mapping of checklist items to regulations.
+- Gap Analysis: Record of specific findings for failed controls.
+4. Ownership & Timeline
+- Owners: Product Compliance Lead (PCL), GRC Analyst.
+- Timeline: 1-2 weeks (initial pass); 1-2 days (updates).",ISO42001:9.2,Art. 17 Internal Controls,,,,,
+e8657c9e-27a0-46d5-b661-77e94ca7e456,appeal_time_hours,Appeal/override time,56308af8-0b67-4754-a2d6-c02d1a37e3d9,hours,1,0,48,t,"Average time to process end‑user appeals or human overrides of automated decisions, from submission to resolution.",36 (avg hours over last 30 days; n=58 appeals),"Appeals Workflow MTTR: 
+1. Core Objective
+Ensures Human-Centered Resilience by providing users a quick path to redress (appeals) when AI decisions are
+contested. Measures operational efficiency in correcting potential machine errors.
+2. Key Performance Indicators (KPIs)
+Definition
+- Average hours to process appeals from submission to resolution.
+Calculation & Target
+- Target: <= 48 hours.
+- Formula: Score = min(100, 100 * (48 / Actual Hours)).
+- Example: '36 hours average (n=58 appeals) -> Score 100'.
+3. Required Evidence
+- Queue Logs: Start/End timestamps for every appeal case.
+- Pause Rules: Documentation of valid delay reasons.
+- Outcome Record: Log of upheld vs. overturned decisions.
+4. Ownership & Timeline
+- Owners: Customer Ops, PCL.
+- Timeline: Continuous monitoring (rolling average).",ISO42001:8.4,Art. 14 Human Oversight (User Redress),,,,,
+32ec5ff4-8eea-47d4-9ba8-8971180d9448,horizon_scan_days,Horizon-scan cadence (days),98965b90-a151-4ed2-89e1-a1226d51fb18,days,1,0,30,t,"Planned cycle time in days between regulatory/standards horizon‑scanning reviews (e.g., AI Act updates, ISO changes).",30 (monthly horizon-scan cadence is maintained),"Horizon-scan Cadence:
+1. Core Objective
+Prevents compliance drift by ensuring a systematic, monthly review of the external regulatory environment (e.g., AI Act
+updates, ISO changes) to identify new obligations early.
+2. Key Performance Indicators (KPIs)
+Definition & Target
+- Definition: Cycle time (days) between regulatory scans.
+- Target: 30 days (Monthly).
+Calculation & Example
+- Formula: Score = min(100, 100 * (30 / Actual Days)).
+- Example: 'Scans on Sep 1, Sep 29 -> 29 days -> Score 100'.
+3. Required Evidence
+- Scan Schedule: Calendar invites/process definition.
+- Minutes/Logs: Records of the review and detected changes.
+- Distribution: Proof findings were sent to owners.
+4. Ownership & Timeline
+- Owners: Regulatory Affairs / Compliance Intelligence.
+- Timeline: Standing monthly rhythm.",ISO42001:4.2,Art. 17 QMS — Regulatory Updates,,,,,
+7e61ce91-5a6f-4858-bf1d-db7f03881c95,preaudit_nc_closure,Pre-audit nonconformities (closure rate),14893936-5bde-4978-b7ea-d0eed4a4cdf1,%,1,,,f,Percentage of pre‑audit nonconformities closed before the formal audit window begins.,81% (26 of 32 pre-audit nonconformities closed before audit),"Pre-audit NC Closure:  
+1. Core Objective
+Ensures audit readiness by measuring the effectiveness of remediating known compliance gaps (nonconformities)
+identified during internal mock audits before the formal external audit begins.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of pre-audit nonconformities closed before the formal audit window.
+Calculation & Example
+- Formula: (Closed Pre-audit NCs / Total Pre-audit NCs) * 100.
+- Example: '81% (26 of 32 pre-audit NCs closed before audit)'.
+3. Required Evidence
+- Internal Audit Report: List of findings from readiness assessment.
+- CAPA Log/Tracker: Register showing status of each finding.
+- Closure Proof: Evidence of fix + timestamp before audit start.
+4. Ownership & Timeline
+- Owners: Compliance Lead, Internal Audit.
+- Timeline: 3-8 weeks prior to external certification.",ISO42001:10.2,Art. 17 QMS — Non-conformities,,,,,
+aab8e0a5-9ae5-4618-9a85-2667586c2b65,control_ux_csat,Control UX satisfaction (0–10→%),56308af8-0b67-4754-a2d6-c02d1a37e3d9,%,1,,,f,"User‑reported satisfaction with control workflows (e.g., reviewers, approvers) converted from 0–10 scale to a percentage.",82% (mean 8.2/10 from 124 reviewer responses → 82%),"Control UX Satisfaction: 
+1. Core Objective
+Measures the usability of governance workflows for internal human reviewers. Ensures that 'Human-in-the-Loop' tools
+are efficient and easy to use, preventing 'rubber-stamping' due to poor UX.
+2. Key Performance Indicators (KPIs)
+Definition
+- User-reported satisfaction with control workflows (reviewers/approvers).
+Calculation & Example
+- Formula: Mean score (0-10) converted to percentage.
+- Example: '82% (Mean 8.2/10 from 124 responses)'.
+3. Required Evidence
+- Survey Results: CSAT scores from internal reviewer surveys.
+- Feedback Logs: Qualitative issues reported by compliance staff.
+- Usage Metrics: Time-on-task or abandonment rates (optional).
+4. Ownership & Timeline
+- Owners: Product Design (UX), Compliance Ops, Tooling.
+- Timeline: Continuous (micro-surveys) or Quarterly.",ISO42001:7.3,Art. 13 & Art. 14 User Experience & Clarity,,,,,
+c5e99f02-01c6-461e-9e9c-aff8e52c9330,pii_minimisation,PII minimisation,71083a27-557a-4e54-9bf6-5a0020074a0d,%,1,,,f,"Percentage reduction or proportion of PII elements removed, masked, or not collected relative to baseline design.",67% (reduced collected PII fields from 12 to 4),"PII Minimisation (Privacy-by-design): 
+1. Core Objective
+Quantifies 'Privacy-by-Design' effectiveness by measuring the reduction of PII collection relative to a baseline design,
+reducing privacy risks.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage reduction of PII elements removed, masked, or not collected.
+Calculation & Example
+- Formula: ((Baseline Fields - Current Fields) / Baseline Fields) * 100.
+- Example: '67% (Reduced collected PII fields from 12 to 4)'.
+3. Required Evidence
+- Design Specs: Comparison of initial vs. final data schema.
+- Data Dictionary: Catalog flagging PII and masked fields.
+- Privacy Reviews: Approval logs for the reduced data scope.
+4. Ownership & Timeline
+- Owners: Privacy Ops, Data Stewards.
+- Timeline: Assessed during design phase (Pre-GTM).",ISO42001:8.2.2,GDPR Art.5 + referenced in EU AI Act Art. 10,,,,,
+5d6afe9a-5b2f-4a23-948a-7dcd948f6ed5,revalidation_coverage,Re-validation coverage,98965b90-a151-4ed2-89e1-a1226d51fb18,%,1,,,f,Percentage of models/systems that completed scheduled periodic re‑validation within the defined cycle.,90% (9 of 10 in-scope models re-validated this cycle),"Re-validation Coverage: 
+1. Core Objective
+Ensures long-term compliance and performance by tracking the percentage of models that undergo formal, scheduled
+re-assessments (re-certification) to catch 'model rot' or regulatory misalignment.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of models/systems that completed periodic re-validation.
+Calculation & Example
+- Formula: (Models re-validated / Models due) * 100.
+- Example: '90% (9 of 10 in-scope models re-validated this cycle)'.
+3. Required Evidence
+- Schedule: Master calendar of due dates for model re-checks.
+- Reports: Formal validation results (bias, performance checks).
+- Sign-off: Approval records from Risk or Product leadership.
+4. Ownership & Timeline
+- Owners: Model Owners, Risk/Compliance Team.
+- Timeline: Periodic (e.g., quarterly/annually per policy).",ISO42001:8.2.4,Art. 15 Continuous Validation,,,,,
+83dd782a-528e-488f-ae7a-d1456e0daef5,vta_coverage,Vendor Trust Assessment coverage,14893936-5bde-4978-b7ea-d0eed4a4cdf1,%,1,,,f,"Share of in‑scope third‑party vendors with a completed, current trust assessment (security, privacy, AI risk).",95% (57 of 60 in-scope vendors have current VTAs),"Vendor Trust Assessment Coverage: 
+1. Core Objective
+Mitigates supply chain risk by ensuring third-party vendors (data, models, infra) undergo rigorous security, privacy, and
+AI risk reviews. Mandatory for reaching 'Level 2 (Managed)' maturity.
+2. Key Performance Indicators (KPIs)
+Definition & Scope
+- Definition: Share of vendors with completed, current assessments.
+- Scope: Must cover Security, Privacy, and AI Risk.
+Calculation & Example
+- Formula: (Vendors with current VTAs / Total vendors) * 100.
+- Example: '95% (57 of 60 in-scope vendors have current VTAs)'.
+3. Required Evidence
+- Vendor Inventory: Master list of in-scope suppliers.
+- Assessment Records: Completed questionnaires or SOC2 reviews.
+- Risk Register: Risk ratings (H/M/L) assigned post-assessment.
+- Renewal Tracker: Monitoring for expired assessments.
+4. Ownership & Timeline
+- Owners: Procurement, InfoSec, Product Compliance Lead (PCL).
+- Timeline: Onboarding + Annual Review.",ISO42001:8.2.2,Art. 10 Data Suitability,,,,,
+02dace7b-e39e-4b33-9a91-6356c8e475b5,ip_cleanliness,IP/Copyright cleanliness,71083a27-557a-4e54-9bf6-5a0020074a0d,%,1,,,f,"Percentage of assets (data, models, code) with verified provenance/licensing and no copyright/IP violations detected.",98% (all datasets/models licensed; 1 flagged library remediated),"IP/Copyright Cleanliness (%):
+1. Core Objective
+Mitigates legal risks by ensuring all components (data, models, code) have verified provenance and are free from
+copyright infringements or incompatible licenses.
+2. Key Performance Indicators (KPIs)
+Definition & Calculation
+- Metric: Percentage of assets with verified provenance/licensing.
+- Formula: (Components with cleared rights / Total components) * 100.
+Targets & Benchmarks
+- Expectation: Near 100% adherence.
+- Example: '98% clean; 1 flagged library remediated.'
+3. Required Evidence
+- IP Review Reports: Scans of training data, prompts, and artifacts.
+- Clean-Room Logs: Proof of isolated generation environments.
+- Remediation Records: Confirmation that flagged violations were fixed.
+4. Ownership & Timeline
+- Owners: Legal (IP), Data Steward, Engineering.
+- Timeline: Typically 1-3 weeks for a full audit sweep.",ISO42001:8.2.2,Art. 10 Data Legality & Licensing,,,,,
+5a9a4a15-21f3-4ebf-8af8-cf5d29b7131b,reg_delta_rate,Reg-delta implementation rate,98965b90-a151-4ed2-89e1-a1226d51fb18,%,1,,,f,Percentage of identified regulatory deltas (new/changed obligations) implemented by the target due date.,88% (28 of 32 identified regulatory deltas implemented on time),"Reg-delta Implementation Rate: 
+1. Core Objective
+Ensures the AI system adapts to the changing regulatory landscape by measuring how effectively new obligations
+(deltas) identified in horizon scans are implemented within required timeframes.
+2. Key Performance Indicators (KPIs)
+Definition
+- Percentage of regulatory changes implemented by their due date.
+Calculation & Example
+- Formula: (Deltas implemented on time / Total applicable deltas) * 100.
+- Option: Can be impact-weighted (Critical vs. Minor).
+- Example: '88% (28 of 32 identified deltas implemented on time)'.
+3. Required Evidence
+- Delta Register: Log of changes with Impact Tier and SLA.
+- Timestamps: 'Target Date' vs. 'Actual Verified Date'.
+- Proof: Link to closed engineering tickets or policy updates.
+4. Ownership & Timeline
+- Owners: Regulatory Affairs (identify), PCL (track), Eng (fix).
+- Timeline: Ongoing; typical SLAs 30/60/90 days.",ISO42001:6.3,Art. 17 QMS — Updating Procedures,,,,,
+62aaf169-f037-45d8-9599-ef95c11c53fc,drift_monitor_coverage,Drift monitor coverage,98965b90-a151-4ed2-89e1-a1226d51fb18,%,1,,,f,Percentage of production models with active data/performance drift monitors configured and reporting.,92% (23 of 25 production models monitored),"Drift Monitor Coverage: 
+1. Core Objective
+Ensures AI systems maintain safety and compliance post-deployment by continuously monitoring for 'drift' (deviations in
+data or behavior) to prevent silent failures.
+2. Key Performance Indicators (KPIs)
+Definition & Scope
+- Definition: % of production models with active drift monitors.
+- Scope: Data drift (inputs), model drift (outputs), behavioral drift.
+Calculation & Target
+- Formula: (Models with active monitors / Total models) * 100.
+- Target: >= 80% coverage (achieved within 2-4 weeks).
+- Example: '92% (23 of 25 production models monitored)'.
+3. Required Evidence
+- Active Monitors: Configs for data/model drift detection.
+- Thresholds: Defined statistical limits (e.g., KL divergence).
+- Dashboards: Real-time visibility into model health.
+4. Ownership & Timeline
+- Owners: ML Platform, Model Owners.
+- Timeline: Continuous monitoring post-deployment.",ISO42001:9.1,Art. 15 Performance Monitoring,,,,,

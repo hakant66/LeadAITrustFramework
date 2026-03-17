@@ -1,0 +1,1230 @@
+{
+  "Common": {
+    "languages": {
+      "english": "İngilizce",
+      "turkish": "Türkçe"
+    }
+  },
+  "DataManagerModal": {
+    "retireSystem": "Arşivle"
+  },
+  "Auth": {
+    "register": {
+      "kicker": "LeadAI Erişim",
+      "title": "Kayıt / Giriş",
+      "subtitle": "Size güvenli bir tek kullanımlık kod e-posta ile gönderilecek. Şifre gerekmez.",
+      "emailLabel": "E-posta",
+      "emailPlaceholder": "ornek@kurum.com",
+      "submit": "Giriş kodunu gönder",
+      "sending": "Gönderiliyor...",
+      "sent": "Tek kullanımlık kod e-postanıza gönderildi.",
+      "codeLabel": "Tek kullanımlık kod",
+      "codePlaceholder": "6 haneli kodu girin",
+      "verify": "Doğrula ve giriş yap",
+      "error": "Bir şeyler ters gitti. Tekrar deneyin."
+    }
+  },
+  "GovernanceDashboard": {
+    "title": "YZ Projeleri Yönetişim Panosu",
+    "subtitle": "LeadAI · Güven Skor Kartı",
+    "viewingEntity": "Görüntülenen: {name}",
+    "switchEntity": "Kuruluş değiştir",
+    "signOut": "Çıkış Yap",
+    "mainMenu": "Ana Menü",
+    "executiveReport": {
+      "title": "Yönetici Portföy Özeti",
+      "coverageTitle": "YZ Yönetişim Kapsamı — {count} Proje",
+      "summary": "Risk, öncelik, durum, güven seviyesi, sahiplik ve uyarıların portföy görünümü.",
+      "entityLabel": "Kurum: {name}",
+      "subtitle": "Tüm YZ projeleri için yönetim seviyesi görünüm.",
+      "note": "Durum, her projenin hedef eşiğine göre ölçülür.",
+      "stats": {
+        "total": "Toplam Proje",
+        "onTarget": "Hedefte",
+        "belowTarget": "Hedef Altı",
+        "noData": "Veri Yok",
+        "avgTrust": "Ortalama Güven",
+        "highRisk": "Yüksek Risk"
+      },
+      "table": {
+        "project": "Proje",
+        "risk": "Risk",
+        "priority": "Öncelik",
+        "sponsor": "Sponsor",
+        "owner": "Sorumlu",
+        "projectStatus": "Proje Durumu",
+        "trust": "Genel Güven",
+        "alerts": "Uyarılar",
+        "target": "Hedef",
+        "status": "Durum"
+      },
+      "status": {
+        "onTarget": "Hedefte",
+        "belowTarget": "Hedefin altında",
+        "noData": "Veri yok"
+      },
+      "alertsActive": "{count} aktif",
+      "alertsNone": "Yok",
+      "empty": "Henüz proje yok."
+    },
+    "projectCard": {
+      "na": "yok",
+      "risk": "Risk",
+      "priority": "Öncelik",
+      "status": "Durum",
+      "sponsor": "Sponsor",
+      "owner": "Sorumlu",
+      "targetThreshold": "Hedef Eşik",
+      "openDashboard": "Pano'yu aç",
+      "openTitle": "{name} panosunu aç"
+    },
+    "trustLabels": {
+      "strong": "Güçlü",
+      "moderate": "Orta",
+      "weak": "Zayıf",
+      "critical": "Kritik"
+    },
+    "alerts": {
+      "title": "Politika Uyarıları",
+      "subtitle": "Aktif politikalara bağlı açık yönetişim riskleri ve uyum uyarıları.",
+      "empty": "Aktif politika uyarısı yok.",
+      "countLabel": "{count} açık",
+      "columns": {
+        "policy": "Politika",
+        "project": "Proje",
+        "severity": "Öncelik",
+        "type": "Uyarı",
+        "message": "Mesaj",
+        "created": "Oluşturulma"
+      }
+    },
+    "dashboardMenu": {
+      "title": "Üst Yönetim Raporlaması",
+      "subtitle": "Üst düzey raporlama ekranları arası geçiş",
+      "highLevel": {
+        "title": "Üst Düzey Rapor",
+        "summary": "Kurum genelinde yönetişim özeti."
+      },
+      "portfolio": {
+        "title": "Proje Portföy Özeti",
+        "summaryTitle": "Yönetici Portföy Özeti",
+        "coverage": "YZ Yönetişim Kapsamı — {count} Proje",
+        "summary": "Risk, öncelik, durum, güven seviyesi, sahiplik ve uyarılar görünümü."
+      },
+      "scorecards": {
+        "title": "YZ Hazırlık",
+        "summary": "Proje bazlı güven, risk ve hazırlık skor kartları."
+      },
+      "presentation": {
+        "title": "Sunum Dosyası",
+        "summary": "Yönetici özeti temelinde oluşturulmuş sunum."
+      }
+    }
+  },
+  "MasterTranslationPage": {
+    "title": "Ana Çeviri",
+    "subtitle": "Tüm kurumlar, projeler ve raporlar için tek çeviri sayfası.",
+    "summary": "Benzersiz İngilizce metin: {count}",
+    "columns": {
+      "english": "İngilizce Metin",
+      "turkish": "Türkçe Metin",
+      "actions": "İşlemler"
+    },
+    "searchPlaceholder": "İngilizce veya Türkçe metin ara...",
+    "loading": "Çeviriler yükleniyor...",
+    "baseLabel": "Temel",
+    "actions": {
+      "save": "Kaydet",
+      "saving": "Kaydediliyor…",
+      "reset": "Sıfırla"
+    },
+    "errors": {
+      "loadFailed": "Çeviri verileri yüklenemedi.",
+      "saveFailed": "Çeviri kaydedilemedi.",
+      "resetFailed": "Çeviri sıfırlanamadı."
+    },
+    "empty": "Çeviri girdisi bulunamadı."
+  },
+  "ModelProvidersPage": {
+    "title": "Model Sağlayıcılar",
+    "subtitle": "Sistem Yöneticisi",
+    "refresh": "Yenile",
+    "add": "Ekle",
+    "addPlaceholder": "Yeni sağlayıcı adı",
+    "providerName": "Sağlayıcı adı",
+    "actions": "İşlemler",
+    "empty": "Model sağlayıcı yok. Yukarıdan ekleyin.",
+    "edit": "Düzenle",
+    "editLabel": "Sağlayıcı adı",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "remove": "Kaldır",
+    "confirmRemove": "Kaldırılsın mı?",
+    "yes": "Evet"
+  },
+  "MasterAdminPage": {
+    "title": "Sistem Yöneticisi",
+    "subtitle": "Tüm kurumları görüntüleyin, güncelleyin ve arşivleyin",
+    "errors": {
+      "accessDenied": "Sistem Yöneticisi sayfasına erişim izniniz yok. Yalnızca sistem yöneticisi olarak yapılandırılan kullanıcılar bu sayfayı görüntüleyebilir.",
+      "accessRestrictedTitle": "Erişim kısıtlı",
+      "errorTitle": "Hata",
+      "loadFailed": "Kurumlar yüklenemedi. Lütfen tekrar deneyin.",
+      "archiveFailed": "Kurum arşivlenemedi. Lütfen tekrar deneyin."
+    },
+    "allEntities": "Kurum Seç",
+    "refresh": "Yenile",
+    "noEntities": "Kurum bulunamadı.",
+    "archiveConfirmTitle": "Kurumu arşivle?",
+    "archiveConfirmMessage": "\"{name}\" arşivlenince arşive kopyalanır ve ardından sistemden ve tüm ilişkili verilerden (projeler, kanıtlar, kontroller vb.) kaldırılır. Bu işlem geri alınamaz.",
+    "switchConfirmTitle": "Kurumu değiştir",
+    "switchConfirmMessage": "{name} kurumuna geçmek istediğinizden emin misiniz?",
+    "yes": "Evet",
+    "no": "Hayır",
+    "cancel": "İptal",
+    "archive": "arşivle",
+    "archiving": "Arşivleniyor...",
+    "edit": "düzenle",
+    "name": "Kurum Adı",
+    "slug": "Kısa-Ad",
+    "status": "Durum",
+    "updated": "Güncelleme",
+    "actions": "İşlemler"
+  },
+  "AdminSidebar": {
+    "title": "YZ YÖNETİMİ",
+    "aria": {
+      "expand": "Kenar çubuğunu genişlet",
+      "collapse": "Kenar çubuğunu daralt"
+    },
+    "sections": {
+      "trustOps": "Güven Operasyonları",
+      "dataManager": "Veri Yöneticisi",
+      "governanceDashboard": "Üst Yönetim Raporlaması",
+      "governanceSetup": "Yönetim Dizayn",
+      "governanceExecution": "Yönetim Yürütme",
+      "controlAudit": "Denetim",
+      "dataRegister": "Veri Kaynağı Kaydı",
+      "knowledgeBase": "Bilgi Kütüphanesi",
+      "trustScore": "GÜVEN & SKOR",
+      "iso42001": "ISO 42001 (YZ Yönetim Sistemi)",
+      "reportAdmin": "RAPOR YÖNETİMİ",
+      "masterAdmin": "Sistem Yöneticisi",
+      "aiReportSetup": "AI Rapor Ayarları"
+    },
+    "items": {
+      "trustOverview": "Güven Genel Bakış",
+      "aiSystemRegistry": "YZ Sistem Kaydı",
+      "requirementRegister": "Gereksinim Kaydı",
+      "entityLegalStanding": "1. Kurum - Yasal Statü",
+      "entitySetup": "1. Kurum - Sisteme Katılım",
+      "scope": "Kapsam - Uygulama Alanı",
+      "policyManager": "Politika Yöneticisi",
+      "trustAxes": "Güven Eksenleri",
+      "safety": "Güvenlik",
+      "compliance": "Uyum",
+      "provenance": "Köken",
+      "evidenceVault": "Kanıt Kasası",
+      "provenanceLineage": "Veri Kaynağı ve İzlenebilirlik",
+      "trustMonitoring": "Güven İzleme",
+      "driftExpiry": "Sapma ve Süre Sonu",
+      "scoreDecayEvents": "Skor Azalma Olayları",
+      "remediation": "İyileştirme",
+      "trustSnapshots": "Güven Anlık Görüntüleri",
+      "auditLog": "Denetim Günlüğü",
+      "dataSources": "Veri Kaynakları",
+      "dataClassification": "Veri Sınıflandırma",
+      "retentionDeletion": "Saklama ve Silme",
+      "interfaces": "Arayüzler",
+      "dataQuality": "Veri Kalitesi",
+      "aiProjectsDashboard": "Projeler",
+      "boardLevelReport": "Yönetici Özeti Raporu",
+      "portfolioSummary": "Proje Portföy Özeti",
+      "aiReadinessScorecards": "YZ Hazırlık Skorları",
+      "presentationDeck": "Sunum Dosyası",
+      "intelligentAlerts": "Akıllı Uyarılar ve Trendler",
+      "aiProjectsRegister": "YZ Projeleri Kaydı",
+      "aiProjectRegister": "2. Proje - Portföy",
+      "aiSystemRegister": "3. Sistem - Envanter",
+      "aiRequirementsRegister": "4. KPI - Metrik",
+      "aiKpiRegister": "5. Kontrol - Aksiyon",
+      "aiPolicyRegister": "Politika - Yetki",
+      "actionAssignment": "2. Atama - Eylem",
+      "actionAssignmentProject": "Aksiyon Atama",
+      "policyExecution": "Politika Uygulama",
+      "modelCards": "YZ Model Kartları",
+      "pillarAdmin": "Temel Esasların Yönetimi",
+      "evidenceCapture": "3. Kanıt - Delil",
+      "kpiList": "KPI Listesi",
+      "reportSetup": "Rapor Ayarları",
+      "kpiSchedule": "KPI Çalıştırma",
+      "provenanceSchedule": "Kaynak İzleme Takvimi",
+      "govReqPrompt": "Proje Yönetim Raporu İstemi (Prompt)",
+      "executiveReportPrompt": "Yönetici Raporu İstemi",
+      "boardLevelReportPrompt": "Yönetim Kurulu Rapor İstemi (Prompt)",
+      "boardLevelDeckPrompt": "Yönetim Kurulu Sunum İstemi (Prompt)",
+      "manageKpisControls": "KPI ve Denetim Yönetimi",
+      "knowledgeVault": "Bilgi Kasası",
+      "knowhow": "Know-how",
+      "aiProjectManagement": "1. Proje - İş",
+      "allEntities": "Kurum Seç",
+      "manageAccess": "Yetkileri Yönet",
+      "emailSettings": "E-posta Ayarları",
+      "masterTranslation": "Çeviri Ayarları",
+      "modelProviders": "YZ Model Sağlayıcıları",
+      "systemHealth": "Sistem Durumu"
+    }
+  },
+  "ProjectRegisterPage": {
+    "title": "YZ Proje Envanteri",
+    "subtitle": "LeadAI · Yapay Zeka Yönetişim Uygulaması",
+    "stepNote": "Adım: 3 / 6",
+    "viewProject": "Görüntüle"
+  },
+  "ModelCardsPage": {
+    "title": "Model Kartları",
+    "subtitle": "LeadAI · Yönetişim Yürütme",
+    "loading": "Model kartları yükleniyor...",
+    "empty": "Bu kurum için yapay zekâ sistemi bulunamadı.",
+    "loadError": "Model kartları yüklenemedi.",
+    "syncLangfuse": "Langfuse Senkronla",
+    "syncing": "Senkronlanıyor...",
+    "syncSuccess": "Langfuse kanıtları güncellendi.",
+  "syncFailed": "Langfuse senkronu başarısız.",
+  "createDraft": "Taslak Oluştur",
+  "actionFailed": "İşlem başarısız.",
+  "promptLoadError": "Prompt sürümleri yüklenemedi.",
+  "noCard": "Henüz model kartı taslağı yok.",
+  "noEvidence": "Langfuse kanıtı bulunamadı.",
+  "metrics": {
+    "title": "Metrik Özeti",
+    "avgLatency": "Ortalama gecikme",
+    "p95Latency": "P95 gecikme",
+    "totalTokens": "Toplam token",
+    "inputTokens": "Girdi tokenları",
+    "outputTokens": "Çıktı tokenları",
+    "requests": "İstekler",
+    "noMetrics": "Langfuse metriği yok"
+  },
+  "promptChecklist": {
+    "title": "Prompt Anahtar Kontrol Listesi",
+    "subtitle": "Model kartları için Langfuse prompt anahtarları",
+    "configured": "Ayarlı",
+    "missing": "Eksik",
+    "error": "Hata",
+    "unknown": "Kontrol ediliyor"
+  },
+  "promptVersions": {
+    "title": "Prompt Sürümleri",
+    "subtitle": "Langfuse AI Summary promptu",
+    "envHint": "{envVar} ayarlayın",
+    "helperNote": "Langfuse Prompt Management içinde adı {envVar} olan bir prompt oluşturun ve {label} etiketi verin.",
+    "viewPrompt": "Langfuse’da promptu görüntüle",
+    "empty": "Prompt sürümü bulunamadı.",
+    "noPrompt": "Prompt metni bulunamadı."
+  },
+  "langfuseStatus": {
+    "reachable": "Langfuse erişilebilir",
+    "unreachable": "Langfuse erişilemiyor",
+    "notConfigured": "Langfuse yapılandırılmamış"
+  },
+  "modelMetaNote": "Sağlayıcı/sürüm Langfuse metadata’sından alındı.",
+  "fields": {
+    "modelProvider": "Model Sağlayıcı",
+      "modelType": "Model Türü",
+      "modelVersion": "Model Sürümü",
+      "lifecycle": "Yaşam Döngüsü Aşaması",
+      "intendedUse": "Kullanım Amacı",
+      "intendedUsers": "Hedef Kullanıcılar",
+      "riskTier": "Risk Seviyesi",
+      "systemStatus": "Sistem Durumu",
+      "modelCard": "Model Kartı Özeti",
+      "cardStatus": "Kart Durumu",
+      "reviewCadence": "Gözden Geçirme Sıklığı",
+      "lastUpdated": "Son Güncelleme",
+      "evidence": "Langfuse Kanıtı"
+    }
+  },
+  "ActionAssignmentPage": {
+    "title": "Aksiyon Atama",
+    "subtitle": "LeadAI · YZ Yönetişim Yürütme",
+    "titleNote": "Her proje için KPI ve kontrol aksiyonlarını atayın.",
+    "projectLabel": "Proje",
+    "projectSlugLabel": "Proje kısa adı",
+    "backToList": "Listeye dön",
+    "setupPendingTitle": "YZ Yönetişim Kurulumu henüz tamamlanmadı.",
+    "setupPendingBody": "Aksiyon Atama projelerini açmak için kurulumu tamamlayın.",
+    "projectNotReadyTitle": "Bu proje YZ Yönetişim Kurulumunu tamamlamadı.",
+    "projectNotReadyBody": "Bu projede sistem, gereksinim ve kontrol adımlarının tamamlandığından emin olun.",
+    "emptyTitle": "Henüz uygun proje yok",
+    "emptyBody": "Projeler, kurum kurulumu tamamlandıktan ve proje için sistem, gereksinim ve kontrol kayıtları hazır olduğunda burada görünür.",
+    "projectListTitle": "Yönetişim Tasarımı Hazır Projeler",
+    "projectListBody": "Atamaları doğrulamak için bir proje seçin.",
+    "openProject": "Aksiyon Atamayı Aç",
+    "summary": {
+      "total": "Toplam kontrol",
+      "ownerAssigned": "Sorumlu atanmış",
+      "targetDefined": "Hedef tanımlı",
+      "measurementActivated": "Ölçüm aktif",
+      "evidenceField": "Kanıt"
+    },
+    "tableTitle": "KPI ve Kontrol Hazırlığı",
+    "tableSubtitle": "Her KPI/kontrol için aksiyon atama hazırlığını gözden geçirin.",
+    "table": {
+      "metric": "Metrik (KPI)",
+      "control": "Kontrol",
+      "owner": "Sorumlu atanmış",
+      "target": "Hedef",
+      "mechanism": "Ölçüm mekanizması aktif",
+      "evidence": "Kanıt durumu",
+      "missing": "Tanımlı değil",
+      "forwardEnabled": "Yönlendirme aktif"
+    },
+    "tableEmpty": "Henüz kontrol ataması bulunamadı.",
+    "modal": {
+      "title": "Kontrol detayları",
+      "close": "Kapat",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor…",
+      "saveFailed": "Kaydetme başarısız.",
+      "kpiName": "KPI adı",
+      "controlName": "Kontrol adı",
+      "evidenceSource": "Kanıt kaynağı",
+      "targetText": "Hedef metni",
+      "evidenceStatus": "Kanıt durumu",
+      "ownerRole": "Sahip rolü",
+      "designatedOwner": "Atanmış sorumlu",
+      "ownerEmail": "Sorumlu e‑postası",
+      "dueDate": "Son tarih",
+      "frequency": "Sıklık",
+      "reminderDay": "Hatırlatma günü",
+      "reminderCount": "Hatırlatma sayısı",
+      "manager": "Yönetici",
+      "managerEmail": "Yönetici e‑postası",
+      "provideUrl": "URL sağla"
+    }
+  },
+  "PolicyExecutionPage": {
+    "title": "Politika Yürütme",
+    "subtitle": "LeadAI · YZ Yönetişim Yürütme",
+    "titleNote": "Politikaları kontrollere bağlayın ve kanıt hazırlığını izleyin.",
+    "setupPendingTitle": "YZ Yönetişim kurulumu henüz tamamlanmadı.",
+    "setupPendingBody": "Politika yürütmeyi ve gözden geçirme görevlerini açmak için kurulumu tamamlayın.",
+    "loading": "Politika yürütme verileri yükleniyor…",
+    "loadError": "Politika yürütme verileri yüklenemedi.",
+    "summary": {
+      "policies": "Politikalar",
+      "mappedControls": "Eşlenen kontroller",
+      "evidenceReady": "Kanıt hazır",
+      "openReviews": "Açık gözden geçirmeler"
+    },
+    "tableTitle": "Politika Yürütme Durumu",
+    "tableSubtitle": "Politikaları kontrollere bağlayın ve kanıt hazırlığını izleyin.",
+    "table": {
+      "policy": "Politika",
+      "controls": "Bağlı kontroller",
+      "evidence": "Kanıt durumu",
+      "reviewDue": "Gözden geçirme tarihi",
+      "reviewStatus": "Gözden geçirme durumu",
+      "manage": "Yönet",
+      "manageButton": "Yönet"
+    },
+    "tableEmpty": "Politika bulunamadı.",
+    "badges": {
+      "noControls": "Kontrol bağlı değil",
+      "evidenceReady": "Kanıt hazır",
+      "evidencePartial": "{ready}/{total} kanıt",
+      "notScheduled": "Planlanmadı",
+      "scheduled": "Planlandı",
+      "completed": "Tamamlandı",
+      "overdue": "{days}g gecikmiş",
+      "dueSoon": "{days}g içinde",
+      "dueLater": "{days}g içinde"
+    },
+    "manage": {
+      "title": "Kontrolleri yönet",
+      "close": "Kapat",
+      "project": "Proje",
+      "noProject": "Henüz proje bulunamadı.",
+      "selected": "Seçilen kontroller",
+      "selectedCount": "seçili",
+      "controls": "Kontroller",
+      "noControls": "Bu proje için henüz kontrol yok.",
+      "noPolicyKpis": "Bu politika için henüz KPI eşlemesi yok. Kontrolleri filtrelemek için entity_policy_register.kpi_keys alanını güncelleyin.",
+      "autoMap": "KPI'lara gore otomatik esle",
+      "save": "Eşlemeyi kaydet",
+      "saving": "Kaydediliyor…",
+      "saveFailed": "Kaydetme başarısız.",
+      "saved": "Eşleme kaydedildi.",
+      "evidenceReady": "Kanıt hazır",
+      "evidenceMissing": "Kanıt eksik",
+      "helper": "Bu politikanın yönettiği kontrolleri seçin."
+    },
+    "tasks": {
+      "title": "Politika Gözden Geçirme Görevleri",
+      "subtitle": "Politika vade tarihlerine göre otomatik hatırlatmalar.",
+      "dueLabel": "Vade",
+      "markReviewed": "Gözden geçirildi",
+      "completed": "Gözden geçirme tamamlandı.",
+      "completeFailed": "Gözden geçirme tamamlanamadı.",
+      "empty": "Henüz görev yok."
+    }
+  },
+  "Home": {
+    "hero": {
+      "aria": {
+        "openLeadAi": "LeadAI sitesini yeni pencerede aç"
+      },
+      "logoAlt": "LeadAI",
+      "badge": "Trust & Innovation (T&I) Uyum Çerçevesi",
+      "title": "Yapay zeka altyapınızı denetime hazır tutan yönetim sistemi.",
+      "description": "LeadAI, süreçlerinizi uçtan uca izler; telemetriyi yaşayan uyum skor kartlarına dönüştürür. Daha hızlı ve daha güvenli teslim edin ve denetçilere ihtiyaç duydukları kayıt izlerini sağlayın."
+    },
+    "buttons": {
+      "governanceDashboard": "Yapay Zeka Yönetim Sistemi Panosu",
+      "governanceSetup": "Yapay Zeka Yönetim Sistemi Kurulumu",
+      "governanceExecution": "Yapay Zeka Yönetim Sistemi Yürütme",
+      "controlAudit": "Yapay Zeka Kontrol ve Denetim",
+      "dataRegister": "Yapay Zeka Veri Kaydı",
+      "aiReadinessCheck": "Şirketiniz Yapay Zeka kullanmaya hazır mı?",
+      "aiLegalStanding": "Kuruluşunuzun AB Yapay Zeka Yasası'na (EU AI Act) göre hukuki konumunu netleştirin."
+    },
+    "highlights": {
+      "proactiveCompliance": {
+        "title": "Proaktif uyum",
+        "description": "Düzenleyiciler veya müşterilerden önce boşlukları ortaya çıkaran koruyucular."
+      },
+      "liveRiskScorecards": {
+        "title": "Canlı risk skor kartları",
+        "description": "Altyapı duruşu, veri soy zinciri ve sapma için tek tık özetler."
+      },
+      "aiInformedWorkflows": {
+        "title": "Yapay Zeka destekli iş akışları",
+        "description": "LLM'ler olayları özetler ve düzeltmeleri ilgili ekiplere eşler."
+      },
+      "centralizedGovernance": {
+        "title": "Merkezi Yapay Zeka Ürün Yönetim Sistemi",
+        "description": "Uyumu yalnızca Hukuk/Risk değil, Ürün ekibinin merkezine koyar. Verimlilik ve pazar odaklı güven sinyallerine odaklanır."
+      }
+    },
+    "console": {
+      "title": "LeadAI Konsolu",
+      "subtitle": "Sahte konsol önizlemesini açmak için ekip kimlik bilgilerini kullanın.",
+      "labels": {
+        "workEmail": "İş e-postası",
+        "password": "Şifre"
+      },
+      "placeholders": {
+        "workEmail": "alex@lead.ai",
+        "password": "hunter2!",
+        "otp": "123456"
+      },
+      "errors": {
+        "missingCredentials": "Devam etmek için e-posta ve şifreyi girin.",
+        "invalidOtp": "Gelen kutunuza gönderilen 6 haneli kodu girin."
+      },
+      "actions": {
+        "checking": "Kontrol ediliyor...",
+        "continue": "Devam et",
+        "signingIn": "Giriş yapılıyor...",
+        "verifyLaunch": "Doğrula ve Başlat",
+        "startOver": "Baştan başla"
+      },
+      "otp": {
+        "title": "OTP doğrulama",
+        "subtitle": "Az önce {email} adresine \"gönderdiğimiz\" 6 haneli kodu girin.",
+        "fallback": "gelen kutunuz"
+      }
+    },
+    "chat": {
+      "title": "LeadAI Sohbet",
+      "status": "Canlı",
+      "iframeTitle": "LeadAI Sohbet Botu",
+      "missingConfig": "LeadAI ortamında {origin} ve {path} değişkenlerini ayarlayın ve sohbeti buraya gömmek için web uygulamasını yeniden derleyin.",
+      "toggleOpen": "Sohbeti Aç",
+      "toggleClose": "Sohbeti Kapat"
+    },
+    "sidebar": {
+      "mainTitle": "ANA",
+      "accountTitle": "ÜCRETSİZ HESAP OLUŞTUR",
+      "main": {
+        "overview": "Genel Bakış",
+        "aiDashboard": "YZ Yönetim Sistemi",
+        "aiGovernance": "Yapay Zeka Yönetim Sistemi",
+        "aiCertification": "Yapay Zeka Sertifikasyonu",
+        "about": "Hakkında"
+      },
+      "account": {
+        "create": "Hesap oluştur",
+        "signIn": "Giriş yap"
+      }
+    }
+  },
+  "AiLegalStanding": {
+    "header": {
+      "aria": {
+        "home": "LeadAI sitesine git"
+      },
+      "logoAlt": "LeadAI",
+      "subtitle": "LEADAI | EU Yapay Zeka ACT",
+      "title": "Yapay Zeka Hukuki Konumu",
+      "returnTitle": "LeadAI sitesine dön",
+      "returnHome": "Ana sayfaya dön",
+      "description": "Değerlendirmeye başlamadan önce operatör rollerini ve risk sınıflandırmasını belirleyin."
+    },
+    "intro": {
+      "title": "Hukuki konum kontrolüne başlamadan önce",
+      "subtitle": "Sonuçlarınızı kişiselleştirmek ve gerekirse özet paylaşabilmek için lütfen birkaç bilgi paylaşın."
+    },
+    "share": {
+      "label": "Anketi paylaş",
+      "linkCopied": "Bağlantı kopyalandı",
+      "title": "LeadAI - AB Yapay Zeka Act Hukuki Konum",
+      "text": "LeadAI AB Yapay Zeka Act Hukuki Konum anketine katılın.",
+      "emailBody": "AB Yapay Zeka Act Hukuki Konum anketine buradan katılabilirsiniz:\n\n{url}"
+    },
+    "form": {
+      "name": "Ad",
+      "surname": "Soyad",
+      "email": "E-posta",
+      "company": "Şirket",
+      "disclaimer": "Bu bilgileri yalnızca bu değerlendirme ile bağlantılı olarak kullanacağız.",
+      "start": "Ankete başla",
+      "redo": "Anketi yeniden başlat"
+    },
+    "survey": {
+      "title": "AB Yapay Zeka Act Hukuki Konum",
+      "description": "Aşağıdaki soruları yanıtlayarak (AB) 2024/1689 sayılı Tüzük kapsamında operatör rol(ler)inizi ve risk sınıflandırmanızı belirleyin.",
+      "sections": {
+        "role": "Operatör Rolü Belirleme",
+        "risk": "Risk Sınıflandırması"
+      }
+    },
+    "labels": {
+      "yes": "Evet",
+      "no": "Hayır"
+    },
+    "validation": {
+      "warning": "Değerlendirmeyi oluşturmadan önce lütfen tüm soruları yanıtlayın."
+    },
+    "errors": {
+      "assessmentFailed": "Değerlendirme başarısız ({status})",
+      "assessmentFailedDetail": "Değerlendirme başarısız ({status}): {detail}",
+      "assessmentFailedFallback": "Değerlendirme başarısız",
+      "copyDetails": "Hata ayrıntılarını kopyala",
+      "detailsCopied": "Hata ayrıntıları kopyalandı"
+    },
+    "buttons": {
+      "assessing": "Değerlendiriliyor...",
+      "generate": "Değerlendirme oluştur",
+      "generateAndSave": "Değerlendirme Oluştur ve Kaydet",
+      "generateAndGoNext": "Değerlendirme Oluştur ve Sonraki Adıma Geç",
+      "saveEntityInformation": "Varlık Bilgisini Kaydet",
+      "goNextStep": "Sonraki Adım: Varlık Kurulumu"
+    },
+    "summary": {
+      "title": "Değerlendirme Özeti",
+      "completeIndicator": "Anket tamamlandı",
+      "empty": "Operatör rolünüzü ve risk sınıflandırmanızı görmek için anketi gönderin.",
+      "primaryRole": "Birincil Rol",
+      "roles": "Roller: {roles}",
+      "riskClassification": "Risk Sınıflandırması",
+      "keyResponsibilities": "Temel Sorumluluklar",
+      "obligations": "Yükümlülükler",
+      "responsibilitySummary": "Sorumluluk Özeti",
+      "decisionTrace": "Karar İzleri"
+    },
+    "questions": {
+      "provider": {
+        "label": "Kuruluşunuz, bir Yapay Zeka sistemini kendi adınız veya markanızla piyasaya sunmak ya da hizmete almak amacıyla geliştirdi mi (veya geliştirilmesini sağladı mı)?",
+        "description": "Madde 3(3)",
+        "purpose": "Amaç: Sağlayıcı olup olmadığınızı belirlemek.",
+        "explanation": "Kendi markanızla geliştiriyor veya geliştirtiyorsanız ve piyasaya sunuyorsanız, Sağlayıcısınız ve ana uyumluluk yükümlülüklerini üstlenirsiniz."
+      },
+      "deployer": {
+        "label": "Kuruluşunuz bir Yapay Zeka sistemini işinizi yürütmek veya profesyonel görevleri yerine getirmek için kullanıyor mu?",
+        "description": "Madde 3(4)",
+        "purpose": "Amaç: Dağıtıcı (kullanıcı) rolünü belirlemek.",
+        "explanation": "AI sistemini iş süreçlerinde kullanıyorsanız Uygulayıcı sayılırsınız ve doğru kullanım, izleme ve kayıt yükümlülükleriniz vardır."
+      },
+      "importer": {
+        "label": "AB'de yerleşik misiniz ve AB dışındaki bir kişi tarafından markalanmış bir Yapay Zeka sistemini Birlik pazarına mı sunuyorsunuz?",
+        "description": "Madde 3(6)",
+        "purpose": "Amaç: İthalatçı olup olmadığınızı belirlemek.",
+        "explanation": "AB dışı bir sağlayıcının markasıyla sistemi AB pazarına sunuyorsanız İthalatçısınız."
+      },
+      "distributor": {
+        "label": "Sağlayıcı veya ithalatçı dışında tedarik zincirinde bir Yapay Zeka sistemini özelliklerini etkilemeden Birlik pazarında mı sunuyorsunuz?",
+        "description": "Madde 3(7)",
+        "purpose": "Amaç: Distribütör olup olmadığınızı belirlemek.",
+        "explanation": "Sistemi değiştirmeden tedarik zincirinde sunuyorsanız Distribütörsünüz; CE işareti ve dokümantasyon kontrolleri gerekir."
+      },
+      "authorized_representative": {
+        "label": "AB dışı bir sağlayıcıdan, bu Tüzük kapsamındaki belirli görevler için onların adına hareket etmek üzere yazılı bir yetki aldınız mı?",
+        "description": "Madde 3(8)",
+        "purpose": "Amaç: Yetkili Temsilci rolünü belirlemek.",
+        "explanation": "AB dışı sağlayıcı adına resmi yetkiniz varsa Yetkili Temsilcisiniz."
+      },
+      "product_manufacturer": {
+        "label": "Başka biri tarafından geliştirilen bir Yapay Zeka sistemini içeren bir ürünü (örn. akıllı araç veya tıbbi cihaz) piyasaya süren bir üretici misiniz?",
+        "description": "Madde 25(3)",
+        "purpose": "Amaç: AI entegre ürün üreticisini belirlemek.",
+        "explanation": "Ürününüz üçüncü taraf AI içeriyorsa sağlayıcı benzeri sorumluluklar doğabilir."
+      },
+      "non_eu_rep_appointed": {
+        "label": "AB dışı bir sağlayıcıysanız, düzenleyici talepler için AB merkezli bir temsilci atadınız mı?",
+        "description": "Madde 22",
+        "purpose": "Amaç: AB dışı sağlayıcı için temsilci şartını kontrol etmek.",
+        "explanation": "AB dışı sağlayıcılar AB'de bir temsilci atamak zorundadır."
+      },
+      "distributor_access": {
+        "label": "AB içinde zaten mevcut bir Yapay Zeka sistemini satın alıyor, satıyor veya erişim sağlıyor musunuz?",
+        "description": "Distribütör rolü + CE işareti/dokümantasyon kontrolleri",
+        "purpose": "Amaç: AB içindeki Distribütör faaliyetini doğrulamak.",
+        "explanation": "AB'de mevcut bir sistemi satıyor veya erişim sağlıyorsanız CE işareti ve dokümantasyon kontrolleri gerekir."
+      },
+      "importer_non_original": {
+        "label": "Orijinal geliştirici (Sağlayıcı) veya AB'ye ilk ithal eden kuruluş (İthalatçı) dışındaki biri misiniz?",
+        "description": "İthalatçı rolü + uygunluk değerlendirmesi doğrulaması",
+        "purpose": "Amaç: Sağlayıcı/İthalatçı dışı rolü netleştirmek.",
+        "explanation": "Sağlayıcı veya İthalatçı değilseniz genellikle Distribütör ya da Uygulayıcı olursunuz."
+      },
+      "provide_as_is": {
+        "label": "Yapay Zeka sistemini, amaç, talimat veya performansını değiştirmeden olduğu gibi mi sağlıyorsunuz?",
+        "description": "Madde 25 / Gerekçe 84",
+        "purpose": "Amaç: Değişiklik yapmadan sağladığınızı doğrulamak.",
+        "explanation": "Değişiklik yoksa Distribütör kalırsınız; değişiklikler sağlayıcı sorumluluğu doğurabilir."
+      },
+      "substantial_modifier": {
+        "label": "Halihazırda piyasada veya kullanımda olan bir Yapay Zeka sisteminde önemli bir değişiklik mi yapıyorsunuz (örn. amaç, işlev veya performans değişikliği)?",
+        "description": "Madde 25 / Gerekçe 84",
+        "purpose": "Amaç: Önemli değişiklikle sağlayıcı sorumluluğunu tespit etmek.",
+        "explanation": "Amaç veya performans değişirse sağlayıcı sorumlulukları size geçebilir."
+      },
+      "in_scope_ai": {
+        "label": "Sistem, dağıtımdan sonra değişken özerklik düzeyleriyle çalışıyor ve uyarlanabilirlik gösteriyor mu (katı kural tabanlı bir 'if-then' betiği değil mi)?",
+        "description": "Madde 3(1)",
+        "purpose": "Amaç: Sistemin AI Act kapsamına girip girmediğini belirlemek.",
+        "explanation": "Özerklik veya uyarlanabilirlik varsa sistem AI Act kapsamına girebilir."
+      },
+      "prohibited_practices": {
+        "label": "Sistem, davranışı saptırmak için bilinçaltı teknikler kullanıyor mu, kırılganlıkları (yaş/engellilik) istismar ediyor mu, sosyal puanlama yapıyor mu veya hedeflenmemiş yüz görüntüsü kazıma gerçekleştiriyor mu?",
+        "description": "Madde 5",
+        "purpose": "Amaç: Yasaklı AI uygulamalarını kontrol etmek.",
+        "explanation": "Evet ise sistem yasaktır ve piyasaya sunulamaz."
+      },
+      "safety_component": {
+        "label": "Yapay Zeka sistemi, üçüncü taraf uygunluk değerlendirmesi gerektiren bir ürünün güvenlik bileşeni mi (örn. tıbbi cihazlar, makineler, oyuncaklar)?",
+        "description": "Madde 6(1) / Ek I",
+        "purpose": "Amaç: Güvenlik bileşeni AI'ı belirlemek.",
+        "explanation": "Güvenlik bileşenleri genellikle yüksek risk kapsamına girer ve sıkı uygunluk değerlendirmesi gerektirir."
+      },
+      "annex_iii_sensitive": {
+        "label": "Yapay Zeka sistemi biyometri, kritik altyapı, eğitim, istihdam, kolluk, göç/iltica veya adalet gibi hassas alanlarda mı kullanılıyor?",
+        "description": "Madde 6(2) / Ek III",
+        "purpose": "Amaç: Ek III yüksek risk kullanım alanlarını tespit etmek.",
+        "explanation": "Ek III alanlarında kullanım genellikle yüksek risk sınıflandırmasına girer."
+      },
+      "narrow_procedural": {
+        "label": "Sistem yalnızca dar prosedürel görevler mi yürütüyor veya karar vermeden/etkilemeden insan faaliyetini mi iyileştiriyor?",
+        "description": "Madde 6(3)",
+        "purpose": "Amaç: Dar prosedürel istisnayı kontrol etmek.",
+        "explanation": "Sistem sadece yardımcı prosedürel işler yapıyorsa yüksek risk dışında kalabilir."
+      },
+      "profiling": {
+        "label": "Sistem gerçek kişilerin profillemesini yapıyor mu?",
+        "description": "Madde 6(3)",
+        "purpose": "Amaç: Profiling'in risk sınıflandırmasına etkisini kontrol etmek.",
+        "explanation": "Profiling yüksek risk koşullarını tetikleyebilir ve istisnayı geçersiz kılabilir."
+      }
+    }
+  },
+  "EntityProfile": {
+    "header": {
+      "aria": {
+        "home": "LeadAI sitesine git"
+      },
+      "logoAlt": "LeadAI",
+      "subtitle": "LEADAI | KURULUŞ PROFİLİ",
+      "title": "Kuruluş Giriş Sayfası",
+      "returnTitle": "LeadAI sitesine dön",
+      "returnHome": "Ana sayfaya dön",
+      "description": "Uyumluluk değerlendirmesi için kuruluş profili bilgilerinizi girin."
+    },
+    "sections": {
+      "coreIdentifiers": {
+        "title": "1. Temel Kuruluş Tanımlayıcıları",
+        "description": "Uygunluk Beyanı ve yasal dosyalamalar için kullanılan temel bilgiler.",
+        "fullLegalName": "Tam Yasal Ad ve Yasal Şekil",
+        "legalForm": "Yasal Şekil",
+        "legalFormPlaceholder": "örn. GmbH, Ltd., Inc., SA",
+        "companyRegistrationNumber": "Şirket Kayıt Numarası",
+        "companyRegistrationNumberPlaceholder": "örn. KDV No, LEI veya yerel Ticaret Sicil numarası",
+        "headquartersCountry": "Genel Merkez Ülkesi",
+        "capturedBy": "Kaydı alan",
+        "website": "Web Sitesi / Dijital Varlık"
+      },
+      "operationalScope": {
+        "title": "2. Operasyonel Kapsam ve Varlık",
+        "description": "Bu, hangi bölgesel yasaların geçerli olduğunu belirlemeye yardımcı olur.",
+        "regionsOfOperation": "Operasyon Bölgeleri",
+        "regionsOfOperationHint": "AI sisteminin piyasaya sunulduğu veya hizmete alındığı tüm ülkeleri seçin.",
+        "other": "Diğer",
+        "otherRegionsLabel": "Diğer (lütfen belirtin)",
+        "otherRegionsPlaceholder": "örn. Ülke veya bölge adları",
+        "sector": "Sektör / Endüstri",
+        "sectorHint": "Belirli sektörler (Finans veya Kritik Altyapı gibi) AB AI Act Ek III kapsamında otomatik olarak \"Yüksek Risk\" statüsünü tetikler. Birden fazla seçebilirsiniz.",
+        "selectSector": "Bir veya daha fazla sektör seçin",
+        "otherSectorLabel": "Diğer sektör (lütfen belirtin)",
+        "otherSectorPlaceholder": "örn. Perakende, Üretim",
+        "sectors": {
+          "automotive": "Otomotiv",
+          "biometrics": "Biyometri",
+          "consumerServices": "Tüketici Hizmetleri",
+          "criticalInfrastructure": "Kritik Altyapı",
+          "cybersecurity": "Siber Güvenlik",
+          "education": "Eğitim",
+          "energy": "Enerji",
+          "finance": "Finans",
+          "governmentPublicService": "Kamu Hizmetleri",
+          "healthcare": "Sağlık",
+          "hiring": "İşe Alım",
+          "insurance": "Sigorta",
+          "justice": "Adalet",
+          "lawEnforcement": "Kolluk Kuvvetleri",
+          "manufacturing": "Üretim",
+          "migrationBorderControl": "Göç ve Sınır Kontrolü",
+          "retail": "Perakende",
+          "software": "Yazılım",
+          "technology": "Teknoloji",
+          "transport": "Ulaştırma",
+          "other": "Diğer"
+        }
+      },
+      "companySize": {
+        "title": "3. Şirket Büyüklüğü ve Sınıflandırma",
+        "description": "AB AI Act \"KOBİ (Küçük ve Orta Ölçekli İşletme) muafiyeti\" sağlar, bu nedenle büyüklüğünüz uyumluluk maliyetlerinizi ve zaman çizelgelerinizi belirler.",
+        "employeeCount": "Çalışan Sayısı",
+        "selectEmployeeCount": "Çalışan sayısını seçin",
+        "ranges": {
+          "micro": "1-9 (Mikro işletme)",
+          "small": "10-49 (Küçük)",
+          "medium": "50-249 (Orta)",
+          "large": "250-999 (Büyük)",
+          "enterprise": "1000+ (Kurumsal)"
+        },
+        "annualTurnover": "Yıllık Ciro (Gelir)",
+        "annualTurnoverPlaceholder": "örn. €1M, $5M",
+        "marketRole": "Piyasa Rolü",
+        "marketRoleHint": "AB AI Act kapsamındaki rolünüz bir sonraki adımda belirlenecektir.",
+        "selectMarketRole": "Piyasa rolünü seçin",
+        "roles": {
+          "provider": "Sağlayıcı (siz geliştiriyorsunuz)",
+          "deployer": "Dağıtıcı (üçüncü taraf bir araç kullanıyorsunuz)",
+          "importer": "İthalatçı",
+          "distributor": "Dağıtıcı"
+        }
+      },
+      "compliancePersonnel": {
+        "title": "4. Temel Uyumluluk Personeli",
+        "description": "Denetçilerin Kanıt Kasası için bir \"İnsan-Döngüde\" iletişim kişisine ihtiyacı vardır.",
+        "authorizedRepresentative": {
+          "title": "Yetkili Temsilci",
+          "description": "AB'de ikamet eden yasal iletişim kişisi (AB dışı şirketler için zorunlu)."
+        },
+        "aiComplianceOfficer": {
+          "title": "AI Uyumluluk Sorumlusu / DPO",
+          "description": "AI Yönetim Sistemi için iç lider (ISO 42001)."
+        },
+        "executiveSponsor": {
+          "title": "Yönetici Sponsor",
+          "description": "AI riskinden sorumlu C-seviyesi lider (NIST AI RMF gereksinimi)."
+        },
+        "name": "Ad",
+        "email": "E-posta",
+        "phone": "Telefon"
+      }
+    },
+    "validation": {
+      "required": "Bu alan zorunludur",
+      "invalidEmail": "Lütfen geçerli bir e-posta adresi girin",
+      "invalidUrl": "Lütfen geçerli bir URL girin (http:// veya https:// ile başlayan)"
+    },
+    "buttons": {
+      "search": "Ara",
+      "searching": "Aranıyor...",
+      "nextToLegalStanding": "İleri: AI Hukuki Konum Değerlendirmesi",
+      "save": "Profili Kaydet",
+      "saving": "Kaydediliyor..."
+    }
+  },
+  "AiReadiness": {
+    "header": {
+      "aria": {
+        "home": "LeadAI sitesine git"
+      },
+      "logoAlt": "LeadAI",
+      "subtitle": "LEADAI | TRUST SCORECARD",
+      "title": "Yapay Zeka Hazırlık Kontrolü",
+      "returnTitle": "LeadAI sitesine dön",
+      "returnHome": "Ana sayfaya dön"
+    },
+    "intro": {
+      "title": "Yapay Zeka Hazırlık Kontrolüne başlamadan önce",
+      "subtitle": "Sonuçlarınızı kişiselleştirmek ve gerekirse özet paylaşabilmek için lütfen birkaç bilgi paylaşın."
+    },
+    "share": {
+      "title": "LeadAI - Yapay Zeka Hazırlık Kontrolü",
+      "text": "LeadAI - Yapay Zeka Hazırlık Kontrolü anketine katılın.",
+      "emailBody": "Yapay Zeka Hazırlık Kontrolüne buradan katılabilirsiniz:\n\n{url}",
+      "label": "Anketi paylaş",
+      "linkCopied": "Bağlantı kopyalandı",
+      "reportTitle": "LeadAI - Yapay Zeka Hazırlık Raporu",
+      "emailBodyLine1": "LeadAI - Yapay Zeka Hazırlık Kontrolü raporunuz burada.",
+      "emailBodyLine2": "PDF'i buradan indirebilirsiniz:"
+    },
+    "form": {
+      "name": "Ad",
+      "surname": "Soyad",
+      "email": "E-posta",
+      "company": "Şirket",
+      "disclaimer": "Bu bilgileri yalnızca bu değerlendirme ile bağlantılı olarak kullanacağız.",
+      "start": "Ankete başla"
+    },
+    "intensity": {
+      "alwaysTrue": "Her zaman doğru",
+      "sometimesTrue": "Bazen doğru",
+      "neutral": "Nötr / Bilmiyorum",
+      "neutralShort": "Nötr"
+    },
+    "review": {
+      "title": "Yanıtlarınızı gözden geçirin",
+      "subtitle": "Her soru için yaptığınız seçimlerin bir özetini burada görebilirsiniz. Herhangi bir kategoriye geri dönüp düzenleyebilir veya Yapay Zeka Hazırlık puanlarınızı görüntülemeye devam edebilirsiniz.",
+      "leftStatement": "Sol ifade",
+      "rightStatement": "Sağ ifade",
+      "yourSelection": "Seçiminiz",
+      "backToLastCategory": "Son kategoriye geri dön",
+      "continueToResults": "Sonuçlara devam et",
+      "selection": {
+        "left": "Sol ifadeye daha yakın",
+        "right": "Sağ ifadeye daha yakın",
+        "neutral": "İki ifade arasında nötr",
+        "neutralSummary": "İki ifade arasında nötr bir konum belirttiniz.",
+        "leftWithIntensity": "Sol ifadeye daha yakın — {intensity}",
+        "rightWithIntensity": "Sağ ifadeye daha yakın — {intensity}",
+        "neutralWithIntensity": "İki ifade arasında nötr — {intensity}"
+      }
+    },
+    "results": {
+      "bannerTitle": "Yapay Zeka Hazırlık Kontrolü için",
+      "emailLabel": "E-posta:",
+      "title": "Yapay Zeka Hazırlık Özeti",
+      "subtitle": "Bu özet, her kaydırıcıya verdiğiniz yanıtlara göre kuruluşunuzun temel Yapay Zeka hazırlık kategorilerindeki puanlarını gösterir.",
+      "sharedView": "Paylaşılan görünüm",
+      "linkCopied": "Bağlantı kopyalandı",
+      "generatingLink": "Bağlantı hazırlanıyor...",
+      "copyLink": "Paylaşılabilir bağlantıyı kopyala",
+      "emailToMe": "Bana e-posta gönder",
+      "downloadPdf": "PDF indir",
+      "startAgain": "Yeniden başla",
+      "overallReadiness": "Genel hazırlık",
+      "scale": "0-24% Kritik / 25-49% Riskli / 50-74% Yerleşik / 75-100% Lider.",
+      "readinessScore": "Hazırlık puanı",
+      "footer": "LeadAI | ISO 42001 ve AB Yapay Zeka Act uyumlu hazırlık teşhisi",
+      "logoAlt": "LeadAI logo",
+      "copyright": "LeadAI © 2025"
+    },
+    "pdf": {
+      "assessmentDetails": "Değerlendirme detayları",
+      "company": "Şirket",
+      "name": "Ad",
+      "email": "E-posta",
+      "dateTime": "Tarih ve saat",
+      "overallReadiness": "Genel Yapay Zeka Hazırlığı",
+      "scale": "0-24% Kritik / 25-49% Riskli / 50-74% Yerleşik / 75-100% Lider",
+      "table": {
+        "enabler": "Etkinleştirici",
+        "total": "Toplam",
+        "readiness": "Hazırlık %",
+        "status": "Durum"
+      },
+      "footer": "LeadAI | ISO 42001 ve AB Yapay Zeka Act uyumlu hazırlık teşhisi",
+      "copyright": "LeadAI © 2025",
+      "selectedAnswers": "Seçilen yanıtlar",
+      "leftStatement": "Sol ifade",
+      "rightStatement": "Sağ ifade",
+      "yourSelection": "Seçiminiz",
+      "headerTitle": "LeadAI - Yapay Zeka Hazırlık Kontrolü",
+      "headerSubtitle": "ISO 42001 ve AB Yapay Zeka Act uyumlu hazırlık teşhisi",
+      "fileName": "leadai-ai-hazirlik.pdf"
+    },
+    "status": {
+      "critical": "Kritik",
+      "atRisk": "Riskli",
+      "established": "Yerleşik",
+      "leading": "Lider"
+    },
+    "navigation": {
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "seeResults": "Sonuçları gör"
+    },
+    "question": {
+      "sliderAria": "{title} hizalama kaydırıcısı",
+      "progress": "Kategori {current} / {total} | {name}"
+    },
+    "enablers": {
+      "items": {
+        "item0": {
+          "name": "Stratejik Vizyon ve Değer",
+          "themes": {
+            "t0": {
+              "title": "Amaç ve Uyum",
+              "blue": "Yapay Zeka girişimleri, tanımlı iş sonuçlarına ve onaylı KPI'lara bağlıdır.",
+              "orange": "Yapay Zeka girişimleri, net amaç veya başarı ölçütleri olmadan başlatılır."
+            },
+            "t1": {
+              "title": "Kullanım Senaryosu Yönetim Sistemi",
+              "blue": "Neyin otomatikleştirilmesi gerektiğine ve gerekmediğine dair net kriterler vardır.",
+              "orange": "Otomasyon kararları, risk/fayda analizi olmadan anlık alınır."
+            },
+            "t2": {
+              "title": "Performans Gözden Geçirme",
+              "blue": "Yapay Zeka hedefleri, KPI takibiyle yönetim toplantılarında gözden geçirilir.",
+              "orange": "Yapay Zeka projeleri performans gözden geçirme döngülerinin dışında yürütülür."
+            }
+          }
+        },
+        "item1": {
+          "name": "Liderlik ve Hesap Verebilirlik",
+          "themes": {
+            "t0": {
+              "title": "Roller ve Sahiplik",
+              "blue": "Her Yapay Zeka sisteminin isimlendirilmiş bir sahibi ve belgelenmiş sorumluluğu vardır.",
+              "orange": "Yapay Zeka sorunları ortaya çıktığında sorumluluk belirsizdir."
+            },
+            "t1": {
+              "title": "Liderlik Davranışı",
+              "blue": "Liderler sorumlu Yapay Zeka kararlarını finanse eder ve örnek olur.",
+              "orange": "Liderlik, Yapay Zeka'ı gözetim olmadan bir teknoloji deneyi olarak görür."
+            },
+            "t2": {
+              "title": "Tırmanma ve Raporlama",
+              "blue": "Yapay Zeka endişelerini veya olaylarını raporlamak için tanımlı bir yol vardır.",
+              "orange": "Yapay Zeka olayları gayri resmi şekilde ele alınır veya göz ardı edilir."
+            }
+          }
+        },
+        "item2": {
+          "name": "Yönetim Sistemi ve Uyum (AIMS)",
+          "themes": {
+            "t0": {
+              "title": "Politika ve Entegrasyon",
+              "blue": "Dokümante bir Yapay Zeka Yönetim Sistemi ISO ve yasal gereklilikleri entegre eder.",
+              "orange": "Resmi bir Yapay Zeka politikası yoktur veya uygulanmaz."
+            },
+            "t1": {
+              "title": "Denetim ve Kanıt",
+              "blue": "Yapay Zeka sistemleri için iç denetimler ve kanıt kayıtları tutulur.",
+              "orange": "Yapay Zeka faaliyetleri için denetim izi yoktur."
+            },
+            "t2": {
+              "title": "Uyum Hizalama",
+              "blue": "Kontroller ISO ve AB Yapay Zeka Act maddeleriyle eşleştirilir.",
+              "orange": "Yapay Zeka uyum faaliyetleri parçalı veya reaktiftir."
+            }
+          }
+        },
+        "item3": {
+          "name": "Risk ve Etki Yönetimi",
+          "themes": {
+            "t0": {
+              "title": "Değerlendirme Süreci",
+              "blue": "Yapay Zeka risk ve etki değerlendirmeleri dağıtımdan önce ve sonra yapılır.",
+              "orange": "Risk değerlendirmeleri atlanır veya bir kez yapılıp unutulur."
+            },
+            "t1": {
+              "title": "Risk Kapsamı",
+              "blue": "Riskler bireysel, toplumsal ve etik etkileri içerir.",
+              "orange": "Yalnızca teknik riskler (doğruluk gibi) dikkate alınır."
+            },
+            "t2": {
+              "title": "İzleme ve Gözden Geçirme",
+              "blue": "Pazara çıktıktan sonra izleme, model sapmasını ve zararı tespit eder.",
+              "orange": "Yapay Zeka etkilerini yayın sonrası izlemek için sistem yoktur."
+            }
+          }
+        },
+        "item4": {
+          "name": "Veri Yönetim Sistemi ve Kalite",
+          "themes": {
+            "t0": {
+              "title": "Kaynak ve Haklar",
+              "blue": "Veri kaynakları, hakları ve kökeni belgelenmiş ve doğrulanabilir.",
+              "orange": "Kaynağı veya lisansı belirsiz veri setleri kullanılır."
+            },
+            "t1": {
+              "title": "Kalite ve Önyargı",
+              "blue": "Veri, yaşam döngüsü boyunca önyargı ve kalite açısından test edilir.",
+              "orange": "Önyargı ve kalite sorunları, hatalar oluşana kadar fark edilmez."
+            },
+            "t2": {
+              "title": "Saklama ve Silme",
+              "blue": "Veri saklama ve silme, politika ve yasalara uygundur.",
+              "orange": "Veriler kontrolsüz biçimde süresiz tutulur."
+            }
+          }
+        },
+        "item5": {
+          "name": "Açıklık ve Şeffaflık",
+          "themes": {
+            "t0": {
+              "title": "Kullanıcıya Bildirim",
+              "blue": "Kullanıcılar Yapay Zeka ile etkileşimde olduklarını ve sınırlarını bilir.",
+              "orange": "Kullanıcılara Yapay Zeka kullanıldığı veya sınırlamalar bildirilmiyor."
+            },
+            "t1": {
+              "title": "Dokümantasyon ve İzlenebilirlik",
+              "blue": "Teknik ve kullanıcı dokümantasyonu eksiksiz ve günceldir.",
+              "orange": "Dokümantasyon eksik veya erişilemez."
+            },
+            "t2": {
+              "title": "Kayıt ve Açıklanabilirlik",
+              "blue": "Olay kayıtları izlenebilirlik ve açıklanabilirliği destekler.",
+              "orange": "Kayıtlar eksik veya soruşturma için erişilemez."
+            }
+          }
+        },
+        "item6": {
+          "name": "İnsan Gözetimi ve Yetkinlikler",
+          "themes": {
+            "t0": {
+              "title": "İnsan Döngüsü",
+              "blue": "Kritik kararlar öncesinde insanlar Yapay Zeka çıktılarını inceler.",
+              "orange": "Kritik kararlar tamamen otomatikleştirilir."
+            },
+            "t1": {
+              "title": "Eğitim ve Yetkinlik",
+              "blue": "Ekipler Yapay Zeka riskleri, etik ve gözetim konusunda eğitim alır.",
+              "orange": "Yapay Zeka gözetimi için resmi eğitim yoktur."
+            },
+            "t2": {
+              "title": "Uzmanlık Çeşitliliği",
+              "blue": "Çapraz fonksiyonel beceriler (veri, alan, etik) dahil edilir.",
+              "orange": "Yapay Zeka projeleri tek bir teknik ekip tarafından, katkı olmadan yürütülür."
+            }
+          }
+        },
+        "item7": {
+          "name": "Tasarımda Güvenli ve Mahrem",
+          "themes": {
+            "t0": {
+              "title": "Güvenlik Kontrolleri",
+              "blue": "Güvenlik testleri Yapay Zeka'ya özgü tehditleri (zehirleme, sızıntı) kapsar.",
+              "orange": "Yapay Zeka sistemleri, Yapay Zeka tehdit testleri olmadan genel IT kontrolleri kullanır."
+            },
+            "t1": {
+              "title": "Gizlilik Yönetimi",
+              "blue": "KVK (PII) işlemleri, veri koruma rolleri ve yasalara uygundur.",
+              "orange": "Yapay Zeka kişisel veriyi, tanımlı sorumluluk olmadan işler."
+            },
+            "t2": {
+              "title": "Olay Müdahalesi",
+              "blue": "Güvenlik ve gizlilik olayları raporlanır ve analiz edilir.",
+              "orange": "Yapay Zeka güvenlik ihlalleri eksik raporlanır veya görmezden gelinir."
+            }
+          }
+        },
+        "item8": {
+          "name": "Yaşam Döngüsü Operasyonları ve İzleme",
+          "themes": {
+            "t0": {
+              "title": "Süreç Kontrolü",
+              "blue": "Yapay Zeka yaşam döngüsü belgelenmiştir (tasarım -> dağıtım -> emeklilik).",
+              "orange": "Modeller, tanımlı yaşam döngüsü kontrolü olmadan yayınlanır."
+            },
+            "t1": {
+              "title": "Geri Alma ve Değişiklik Yönetimi",
+              "blue": "Test edilmiş geri alma ve değişiklik prosedürleri vardır.",
+              "orange": "Geri alma planı yoktur; değişiklikler doğrudan üretimde yapılır."
+            },
+            "t2": {
+              "title": "Performans Takibi",
+              "blue": "KPI ve sapma metrikleri üretimde izlenir.",
+              "orange": "Model performansı yayından sonra takip edilmez."
+            }
+          }
+        },
+        "item9": {
+          "name": "Üçüncü Taraf ve Müşteri Uyumu",
+          "themes": {
+            "t0": {
+              "title": "Tedarikçi Yönetim Sistemi",
+              "blue": "Tedarikçi Yapay Zeka sorumlulukları sözleşmelerde tanımlıdır.",
+              "orange": "Tedarikçiler net hesap verebilirlik olmadan Yapay Zeka sağlar."
+            },
+            "t1": {
+              "title": "Müşteri Şeffaflığı",
+              "blue": "Müşterilere Yapay Zeka dokümantasyonu ve güvenli kullanım rehberi verilir.",
+              "orange": "Müşteriler Yapay Zeka işlevleri veya sınırları hakkında bilgilendirilmez."
+            },
+            "t2": {
+              "title": "Geri Bildirim ve İyileştirme",
+              "blue": "Dış geri bildirim, Yapay Zeka risk ve iyileştirme döngülerine beslenir.",
+              "orange": "Müşteri sorunları göz ardı edilir veya kayıt dışı ele alınır."
+            }
+          }
+        }
+      }
+    }
+  },
+  "GovernanceSetupLanding": {
+    "title": "YZ Yönetişim Kurulumu",
+    "subtitle": "LeadAI · YZ Yönetişim Kurulumu",
+    "signOut": "Çıkış Yap"
+  },
+  "GovernanceJourneyCard": {
+    "kicker": "YZ yönetişim yolculuğunuz burada başlıyor.",
+    "heading": "YZ YÖNETİŞİM YOLCULUĞUNUZ BURADA BAŞLAR.",
+    "subheading": "YZ Yönetişim Yürütmeye başlamak için 6 adım",
+    "description": "Her adımı sırasıyla tamamlayarak bir sonraki yönetişim hazırlığı aşamasının kilidini açın.",
+    "steps": {
+      "legalStanding": "1. Kurum - Yasal Statü",
+      "entity": "2. Kurum - Onboarding",
+      "project": "3. Proje - Portföy",
+      "system": "4. Sistem - Envanter",
+      "kpi": "5. KPI - Metrik",
+      "control": "6. Kontrol - Eylem"
+    },
+    "status": {
+      "done": "✓ Tamamlandı",
+      "inProgress": "Devam ediyor",
+      "locked": "Kilitli"
+    },
+    "errors": {
+      "loadEntities": "Kuruluşlarınız yüklenemedi. Lütfen yenileyip tekrar deneyin.",
+      "noEntityAccess": "Henüz bir kuruluşa erişiminiz yok. Yönetişim yolculuğunuza başlamak için yöneticinizden erişim isteyin."
+    },
+    "completeTitle": "YZ Yönetişim Kurulumu tamamlandı,",
+    "completeBody": "yeni proje veya sistem değişikliği olduğunda YZ Yönetişim Kurulumunu ziyaret edebilirsiniz. Şimdi YZ Yönetişim Yürütmeye geçebilirsiniz.",
+    "completeCta": "YZ Yönetişim Yürütme",
+    "systemStatus": {
+      "none": "Bir veya daha fazla projede AI sistem kaydı eksik.",
+      "partial": "Bir veya daha fazla projede AI sistem kaydı eksik.",
+      "complete": "Tamamlandı"
+    },
+    "kpiLockedNoSystems": "Kilitli, hiç sistem kaydı bulunamamıştır",
+    "requirementsStatus": {
+      "none": "Bir veya daha fazla projede gereksinim kaydı eksik.",
+      "partial": "Bir veya daha fazla projede gereksinim kaydı eksik.",
+      "complete": "Tamamlandı"
+    },
+    "controlStatus": {
+      "none": "Devam ediyor",
+      "partial": "Bir veya daha fazla projede kontrol eksik"
+    },
+    "controlLockedNoRequirements": "Kilitli, hiç gereksinim kaydı bulunamamıştır",
+    "requirementsMissingProjects": "Eksik yönetişim gereken projeler: {projects}"
+  }
+}

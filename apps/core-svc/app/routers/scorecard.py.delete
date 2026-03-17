@@ -1,0 +1,145 @@
+# apps/core-svc/app/routers/scorecard.py
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import text
+from app.db import get_db
+from app.services.scorecard_read import fetch_project_pillars
+
+print(">>> IMPORTED: app.routers.scorecard")
+
+router = APIRouter()
+
+def _resolve_project(db, p: str):
+    row = db.execute(
+        text("""
+            select id, coalesce(name, id) as name, coalesce(slug, id) as slug
+            from public.projects
+            where id = :p or slug = :p
+            limit 1
+        """),
+        {"p": p},
+    ).mappings().first()
+    if not row:
+        raise HTTPException(status_code=404, detail="project not found")
+    return row
+
+@router.get("/__who_routers_scorecard")
+def who():
+    return {"who": "routers/scorecard.py"}
+    
+@router.get("/scorecard/{project}")
+def get_scorecard(project: str, db = Depends(get_db)):
+    proj = _resolve_project(db, project)
+
+    # IMPORTANT: pass slug to the service (it queries control_values.project_slug)
+    pillars = fetch_project_pillars(db, proj["slug"])
+
+    # Weighted overall
+    sum_w = sum(float(p.get("weight") or 0.0) for p in pillars)
+    sum_ws = sum(float(p.get("weight") or 0.0) * float(p.get("score_pct") or 0.0) for p in pillars)
+    overall_pct = round(sum_ws / sum_w, 2) if sum_w > 0 else 0.0
+
+    return {
+        "project": {"id": proj["id"], "name": proj["name"], "slug": proj["slug"]},
+        "overall": {"score_pct": overall_pct},
+        "pillars": pillars,
+        "kpis": [],
+    }
+
+@router.get("/scorecard/{project}/pillars")
+def get_pillars(project: str, db = Depends(get_db)):
+    proj = _resolve_project(db, project)
+    return fetch_project_pillars(db, proj["slug"])
+
+@router.get("/scorecard/{project}/controls")
+def get_controls(project: str, db = Depends(get_db)):
+    """
+    Return each control with the latest value for this project, joining controls for display fields.
+    """
+    proj = _resolve_project(db, project)
+    q = text("""
+        with latest as (
+          select
+            v.control_id,
+            v.project_slug,
+            v.kpi_key,
+            v.raw_value,
+            v.normalized_pct,
+            v.kpi_score,
+            v.owner_role,
+            v.evidence_source,
+            v.target_numeric,
+            v.target_text,
+            v.current_value,
+            v.updated_at,
+            v.observed_at,
+            row_number() over (
+              partition by v.control_id, v.project_slug
+              order by coalesce(v.observed_at, v.updated_at) desc, v.updated_at desc
+            ) rn
+          from public.control_values v
+          where v.project_slug = :slug
+        )
+        select
+          c.id                                  as control_id,
+          coalesce(nullif(c.name,''), c.kpi_key) as control_name,
+          c.pillar_key                           as pillar_key,
+          c.kpi_key                              as kpi_key,
+          c.kpi_name                             as kpi_name,
+          c.unit                                 as unit,
+          c.higher_is_better                     as higher_is_better,
+
+          l.raw_value,
+          l.normalized_pct,
+          l.kpi_score,
+          l.owner_role,
+          l.evidence_source,
+          l.target_numeric,
+          l.target_text,
+          l.current_value,
+          l.updated_at,
+          l.observed_at
+        from public.controls c
+        left join latest l on l.control_id = c.id and l.rn = 1
+        where c.project_id is null or c.project_id = :pid
+        order by c.pillar_key, c.kpi_key
+    """)
+    rows = db.execute(q, {"slug": proj["slug"], "pid": proj["id"]}).mappings().all()
+    items = []
+    for r in rows:
+        as_of = r["observed_at"] or r["updated_at"]
+        if r["target_text"] and str(r["target_text"]).strip():
+            target = r["target_text"]
+        else:
+            target = float(r["target_numeric"]) if r["target_numeric"] is not None else None
+
+        if r["current_value"] is not None and str(r["current_value"]).strip():
+            cur_val = r["current_value"]
+        elif r["raw_value"] is not None:
+            cur_val = float(r["raw_value"])
+        elif r["normalized_pct"] is not None:
+            cur_val = float(r["normalized_pct"])
+        else:
+            cur_val = None
+
+        items.append({
+            "kpi_key": r["kpi_key"],
+            "control_id": str(r["control_id"]) if r["control_id"] else None,
+            "control_name": r["control_name"] or "",
+            "pillar": r["pillar_key"],
+            "unit": r["unit"],
+            "owner": r["owner_role"],
+            "target": target,
+            "current_value": cur_val,
+            "as_of": as_of.isoformat() if as_of else None,
+
+            # extras
+            "evidence_source": r["evidence_source"],
+            "kpi_score": float(r["kpi_score"]) if r["kpi_score"] is not None else None,
+            "raw_value": float(r["raw_value"]) if r["raw_value"] is not None else None,
+            "normalized_pct": float(r["normalized_pct"]) if r["normalized_pct"] is not None else None,
+            "updated_at": r["updated_at"].isoformat() if r["updated_at"] else None,
+            "observed_at": r["observed_at"].isoformat() if r["observed_at"] else None,
+            "target_text": r["target_text"],
+            "target_numeric": float(r["target_numeric"]) if r["target_numeric"] is not None else None,
+        })
+    return {"items": items}

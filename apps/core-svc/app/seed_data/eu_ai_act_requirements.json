@@ -1,0 +1,884 @@
+[
+  {
+    "chapter": "Chapter I: General Provisions",
+    "section": null,
+    "article": "Article 1",
+    "content": "Subject matter",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-1"
+  },
+  {
+    "chapter": "Chapter I: General Provisions",
+    "section": null,
+    "article": "Article 2",
+    "content": "Scope",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-2"
+  },
+  {
+    "chapter": "Chapter I: General Provisions",
+    "section": null,
+    "article": "Article 3",
+    "content": "Definitions",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-3"
+  },
+  {
+    "chapter": "Chapter I: General Provisions",
+    "section": null,
+    "article": "Article 4",
+    "content": "AI literacy",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-4"
+  },
+  {
+    "chapter": "Chapter II: Prohibited AI Practices",
+    "section": null,
+    "article": "Article 5",
+    "content": "Prohibited AI practices",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-5"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 1: Classification of AI Systems as High-Risk",
+    "article": "Article 6",
+    "content": "Classification rules for high-risk AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-6"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 1: Classification of AI Systems as High-Risk",
+    "article": "Article 7",
+    "content": "Amendments to Annex III",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-7"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 8",
+    "content": "Compliance with the requirements",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-8"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 9",
+    "content": "Risk management system",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-9"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 10",
+    "content": "Data and data governance",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-10"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 11",
+    "content": "Technical documentation",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-11"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 12",
+    "content": "Record-keeping",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-12"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 13",
+    "content": "Transparency and provision of information to deployers",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-13"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 14",
+    "content": "Human oversight",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-14"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 2: Requirements for High-Risk AI Systems",
+    "article": "Article 15",
+    "content": "Accuracy, robustness and cybersecurity",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-15"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 16",
+    "content": "Obligations of providers of high-risk AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-16"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 17",
+    "content": "Quality management system",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-17"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 18",
+    "content": "Documentation keeping",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-18"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 19",
+    "content": "Automatically generated logs",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-19"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 20",
+    "content": "Corrective actions and duty of information",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-20"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 21",
+    "content": "Cooperation with competent authorities",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-21"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 22",
+    "content": "Authorised representatives of providers of high-risk AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-22"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 23",
+    "content": "Obligations of importers",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-23"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 24",
+    "content": "Obligations of distributors",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-24"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 25",
+    "content": "Responsibilities along the AI value chain",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-25"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 26",
+    "content": "Obligations of deployers of high-risk AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-26"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 3: Obligations of Providers and Deployers of High-Risk AI Systems and Other Parties",
+    "article": "Article 27",
+    "content": "Fundamental rights impact assessment for high-risk AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-27"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 28",
+    "content": "Notifying authorities",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-28"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 29",
+    "content": "Application of a conformity assessment body for notification",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-29"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 30",
+    "content": "Notification procedure",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-30"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 31",
+    "content": "Requirements relating to notified bodies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-31"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 32",
+    "content": "Presumption of conformity with requirements relating to notified bodies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-32"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 33",
+    "content": "Subsidiaries of notified bodies and subcontracting",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-33"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 34",
+    "content": "Operational obligations of notified bodies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-34"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 35",
+    "content": "Identification numbers and lists of notified bodies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-35"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 36",
+    "content": "Changes to notifications",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-36"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 37",
+    "content": "Challenge to the competence of notified bodies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-37"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 38",
+    "content": "Coordination of notified bodies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-38"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 4: Notifying Authorities and Notified Bodies",
+    "article": "Article 39",
+    "content": "Conformity assessment bodies of third countries",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-39"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 40",
+    "content": "Harmonised standards and standardisation deliverables",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-40"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 41",
+    "content": "Common specifications",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-41"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 42",
+    "content": "Presumption of conformity with certain requirements",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-42"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 43",
+    "content": "Conformity assessment",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-43"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 44",
+    "content": "Certificates",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-44"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 45",
+    "content": "Information obligations of notified bodies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-45"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 46",
+    "content": "Derogation from conformity assessment procedure",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-46"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 47",
+    "content": "EU declaration of conformity",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-47"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 48",
+    "content": "CE marking",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-48"
+  },
+  {
+    "chapter": "Chapter III: High-Risk AI Systems",
+    "section": "Section 5: Standards, Conformity Assessment, Certificates, Registration",
+    "article": "Article 49",
+    "content": "Registration",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-49"
+  },
+  {
+    "chapter": "Chapter IV: Transparency Obligations for Providers and Deployers of Certain AI Systems",
+    "section": null,
+    "article": "Article 50",
+    "content": "Transparency obligations for providers and deployers of certain AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50"
+  },
+  {
+    "chapter": "Chapter V: General-Purpose AI Models",
+    "section": "Section 1: Classification Rules",
+    "article": "Article 51",
+    "content": "Classification of general-purpose AI models as general-purpose AI models with systemic risk",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-51"
+  },
+  {
+    "chapter": "Chapter V: General-Purpose AI Models",
+    "section": "Section 1: Classification Rules",
+    "article": "Article 52",
+    "content": "Procedure",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-52"
+  },
+  {
+    "chapter": "Chapter V: General-Purpose AI Models",
+    "section": "Section 2: Obligations for Providers of General-Purpose AI Models",
+    "article": "Article 53",
+    "content": "Obligations for providers of general-purpose AI models",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-53"
+  },
+  {
+    "chapter": "Chapter V: General-Purpose AI Models",
+    "section": "Section 2: Obligations for Providers of General-Purpose AI Models",
+    "article": "Article 54",
+    "content": "Authorised representatives of providers of general-purpose AI models",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-54"
+  },
+  {
+    "chapter": "Chapter V: General-Purpose AI Models",
+    "section": "Section 3: Obligations of Providers of General-Purpose AI Models with Systemic Risk",
+    "article": "Article 55",
+    "content": "Obligations of providers of general-purpose AI models with systemic risk",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-55"
+  },
+  {
+    "chapter": "Chapter V: General-Purpose AI Models",
+    "section": "Section 4: Codes of Practice",
+    "article": "Article 56",
+    "content": "Codes of practice",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-56"
+  },
+  {
+    "chapter": "Chapter VI: Measures in Support of Innovation",
+    "section": null,
+    "article": "Article 57",
+    "content": "AI regulatory sandboxes",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-57"
+  },
+  {
+    "chapter": "Chapter VI: Measures in Support of Innovation",
+    "section": null,
+    "article": "Article 58",
+    "content": "Detailed arrangements for, and functioning of, AI regulatory sandboxes",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-58"
+  },
+  {
+    "chapter": "Chapter VI: Measures in Support of Innovation",
+    "section": null,
+    "article": "Article 59",
+    "content": "Further processing of personal data for developing certain AI systems in the public interest in the AI regulatory sandbox",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-59"
+  },
+  {
+    "chapter": "Chapter VI: Measures in Support of Innovation",
+    "section": null,
+    "article": "Article 60",
+    "content": "Testing of high-risk AI systems in real world conditions outside AI regulatory sandboxes",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-60"
+  },
+  {
+    "chapter": "Chapter VI: Measures in Support of Innovation",
+    "section": null,
+    "article": "Article 61",
+    "content": "Informed consent to participate in testing in real world conditions outside AI regulatory sandboxes",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-61"
+  },
+  {
+    "chapter": "Chapter VI: Measures in Support of Innovation",
+    "section": null,
+    "article": "Article 62",
+    "content": "Measures for providers and deployers, in particular SMEs, including start-ups",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-62"
+  },
+  {
+    "chapter": "Chapter VI: Measures in Support of Innovation",
+    "section": null,
+    "article": "Article 63",
+    "content": "Derogations for specific operators",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-63"
+  },
+  {
+    "chapter": "Chapter VII: Governance",
+    "section": "Section 1: Governance at Union Level",
+    "article": "Article 64",
+    "content": "AI Office",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-64"
+  },
+  {
+    "chapter": "Chapter VII: Governance",
+    "section": "Section 1: Governance at Union Level",
+    "article": "Article 65",
+    "content": "Establishment and structure of the European Artificial Intelligence Board",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-65"
+  },
+  {
+    "chapter": "Chapter VII: Governance",
+    "section": "Section 1: Governance at Union Level",
+    "article": "Article 66",
+    "content": "Tasks of the Board",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-66"
+  },
+  {
+    "chapter": "Chapter VII: Governance",
+    "section": "Section 1: Governance at Union Level",
+    "article": "Article 67",
+    "content": "Advisory forum",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-67"
+  },
+  {
+    "chapter": "Chapter VII: Governance",
+    "section": "Section 1: Governance at Union Level",
+    "article": "Article 68",
+    "content": "Scientific panel of independent experts",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-68"
+  },
+  {
+    "chapter": "Chapter VII: Governance",
+    "section": "Section 1: Governance at Union Level",
+    "article": "Article 69",
+    "content": "Access to the pool of experts by the Member States",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-69"
+  },
+  {
+    "chapter": "Chapter VII: Governance",
+    "section": "Section 2: National competent authorities",
+    "article": "Article 70",
+    "content": "Designation of national competent authorities and a single point of contact",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-70"
+  },
+  {
+    "chapter": "Chapter VIII: EU Database for High-Risk AI Systems",
+    "section": null,
+    "article": "Article 71",
+    "content": "EU database for high-risk AI systems listed in Annex III",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-71"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 1: Post-Market Monitoring",
+    "article": "Article 72",
+    "content": "Post-market monitoring by providers and post-market monitoring plan for high-risk AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-72"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 2: Sharing of Information on Serious Incidents",
+    "article": "Article 73",
+    "content": "Reporting of serious incidents",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-73"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 74",
+    "content": "Market surveillance and control of AI systems in the Union market",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-74"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 75",
+    "content": "Mutual assistance, market surveillance and control of general-purpose AI systems",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-75"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 76",
+    "content": "Supervision of testing in real world conditions by market surveillance authorities",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-76"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 77",
+    "content": "Powers of authorities protecting fundamental rights",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-77"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 78",
+    "content": "Confidentiality",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-78"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 79",
+    "content": "Procedure at national level for dealing with AI systems presenting a risk",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-79"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 80",
+    "content": "Procedure for dealing with AI systems classified by the provider as non-high-risk in application of Annex III",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-80"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 81",
+    "content": "Union safeguard procedure",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-81"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 82",
+    "content": "Compliant AI systems which present a risk",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-82"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 83",
+    "content": "Formal non-compliance",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-83"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 3: Enforcement",
+    "article": "Article 84",
+    "content": "Union AI testing support structures",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-84"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 4: Remedies",
+    "article": "Article 85",
+    "content": "Right to lodge a complaint with a market surveillance authority",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-85"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 4: Remedies",
+    "article": "Article 86",
+    "content": "Right to explanation of individual decision-making",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-86"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 4: Remedies",
+    "article": "Article 87",
+    "content": "Reporting of infringements and protection of reporting persons",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-87"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 5: Supervision, Investigation, Enforcement and Monitoring in Respect of Providers of General-Purpose AI Models",
+    "article": "Article 88",
+    "content": "Enforcement of the obligations of providers of general-purpose AI models",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-88"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 5: Supervision, Investigation, Enforcement and Monitoring in Respect of Providers of General-Purpose AI Models",
+    "article": "Article 89",
+    "content": "Monitoring actions",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-89"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 5: Supervision, Investigation, Enforcement and Monitoring in Respect of Providers of General-Purpose AI Models",
+    "article": "Article 90",
+    "content": "Alerts of systemic risks by the scientific panel",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-90"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 5: Supervision, Investigation, Enforcement and Monitoring in Respect of Providers of General-Purpose AI Models",
+    "article": "Article 91",
+    "content": "Power to request documentation and information",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-91"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 5: Supervision, Investigation, Enforcement and Monitoring in Respect of Providers of General-Purpose AI Models",
+    "article": "Article 92",
+    "content": "Power to conduct evaluations",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-92"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 5: Supervision, Investigation, Enforcement and Monitoring in Respect of Providers of General-Purpose AI Models",
+    "article": "Article 93",
+    "content": "Power to request measures",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-93"
+  },
+  {
+    "chapter": "Chapter IX: Post-Market Monitoring, Information Sharing and Market Surveillance",
+    "section": "Section 5: Supervision, Investigation, Enforcement and Monitoring in Respect of Providers of General-Purpose AI Models",
+    "article": "Article 94",
+    "content": "Procedural rights of economic operators of the general-purpose AI model",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-94"
+  },
+  {
+    "chapter": "Chapter X: Codes of Conduct and Guidelines",
+    "section": null,
+    "article": "Article 95",
+    "content": "Codes of conduct for voluntary application of specific requirements",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-95"
+  },
+  {
+    "chapter": "Chapter X: Codes of Conduct and Guidelines",
+    "section": null,
+    "article": "Article 96",
+    "content": "Guidelines from the Commission on the implementation of this Regulation",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-96"
+  },
+  {
+    "chapter": "Chapter XI: Delegation of Power and Committee Procedure",
+    "section": null,
+    "article": "Article 97",
+    "content": "Exercise of the delegation",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-97"
+  },
+  {
+    "chapter": "Chapter XI: Delegation of Power and Committee Procedure",
+    "section": null,
+    "article": "Article 98",
+    "content": "Committee procedure",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-98"
+  },
+  {
+    "chapter": "Chapter XII: Penalties",
+    "section": null,
+    "article": "Article 99",
+    "content": "Penalties",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-99"
+  },
+  {
+    "chapter": "Chapter XII: Penalties",
+    "section": null,
+    "article": "Article 100",
+    "content": "Administrative fines on Union institutions, bodies, offices and agencies",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-100"
+  },
+  {
+    "chapter": "Chapter XII: Penalties",
+    "section": null,
+    "article": "Article 101",
+    "content": "Fines for providers of general-purpose AI models",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-101"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 102",
+    "content": "Amendment to Regulation (EC) No 300/2008",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-102"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 103",
+    "content": "Amendment to Regulation (EU) No 167/2013",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-103"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 104",
+    "content": "Amendment to Regulation (EU) No 168/2013",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-104"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 105",
+    "content": "Amendment to Directive 2014/90/EU",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-105"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 106",
+    "content": "Amendment to Directive (EU) 2016/797",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-106"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 107",
+    "content": "Amendment to Regulation (EU) 2018/858",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-107"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 108",
+    "content": "Amendments to Regulation (EU) 2018/1139",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-108"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 109",
+    "content": "Amendment to Regulation (EU) 2019/2144",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-109"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 110",
+    "content": "Amendment to Directive (EU) 2020/1828",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-110"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 111",
+    "content": "AI systems already placed on the market or put into service and general-purpose AI models already placed on the market",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-111"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 112",
+    "content": "Evaluation and review",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-112"
+  },
+  {
+    "chapter": "Chapter XIII: Final Provisions",
+    "section": null,
+    "article": "Article 113",
+    "content": "Entry into force and application",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-113"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex I",
+    "content": "Section A. List of Union harmonisation legislation based on the New Legislative Framework",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-1"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex II",
+    "content": "Criminal offences referred to in Article 5(1), first subparagraph, point (h)(iii):",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-2"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex III",
+    "content": "High-risk AI systems pursuant to Article 6(2) are the AI systems listed in any of the following areas:",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-3"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex IV",
+    "content": "The technical documentation referred to in Article 11(1) shall contain at least the following information, as applicable to the relevant AI system:",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-4"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex V",
+    "content": "The EU declaration of conformity referred to in Article 47, shall contain all of the following information:",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-5"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex VI",
+    "content": "1. The conformity assessment procedure based on internal control is the conformity assessment procedure based on points 2, 3 and 4.",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-6"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex VII",
+    "content": "1. Introduction",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-7"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex VIII",
+    "content": "Section A - Information to be submitted by providers of high-risk AI systems in accordance with Article 49(1)",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-8"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex IX",
+    "content": "The following information shall be provided and thereafter kept up to date with regard to testing in real world conditions to be registered in accordance with Article 60:",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-9"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex X",
+    "content": "1. Schengen Information System",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-10"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex XI",
+    "content": "Section 1",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-11"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex XII",
+    "content": "The information referred to in Article 53(1), point (b) shall contain at least the following:",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-12"
+  },
+  {
+    "chapter": "Annexes",
+    "section": null,
+    "article": "Annex XIII",
+    "content": "For the purpose of determining that a general-purpose AI model has capabilities or an impact equivalent to those set out in Article 51(1), point (a), the Commission shall take into account the following criteria:",
+    "links": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/annex-13"
+  }
+]

@@ -1,0 +1,31 @@
+chapter,section,article,content,link,coverage,eu_ai_act_articles,eu_ai_act_alignment_note
+4,4.1,Context of the organisation,Determine internal and external issues relevant to AI objectives and outcomes,ISO overview,ISO-only,N/A,No equivalent in EU AI Act
+4,4.2,Stakeholders,Identify interested parties and their AI-related expectations,ISO overview,ISO-only,N/A,EU AI Act does not require stakeholder analysis
+4,4.3,Scope of AIMS,Define and document scope of the AI Management System,ISO overview,ISO-only,N/A,No scoping obligation in EU AI Act
+4,4.4,AIMS establishment,"Establish, implement, maintain, and improve an AI Management System",ISO overview,ISO-only,N/A,EU AI Act does not mandate management systems
+5,5.1,Leadership & commitment,Top management must demonstrate leadership and accountability for AI governance,ISO overview,ISO-only,N/A,"EU AI Act assigns liability, not leadership duties"
+5,5.2,AI policy,Establish and maintain an AI policy aligned with organisational goals,ISO overview,ISO-only,N/A,No AI policy requirement in EU AI Act
+5,5.3,Roles & responsibilities,"Assign AI governance roles, authorities, and responsibilities",ISO overview,Shared,"Art. 16, 26",EU AI Act implies roles but not governance structure
+6,6.1,Risk & opportunity planning,Identify and address AI risks and opportunities,ISO overview,Shared,Art. 9,EU AI Act requires risk mgmt for high-risk AI
+6,6.2,AI objectives,Define measurable AI objectives and plans to achieve them,ISO overview,ISO-only,N/A,No objective-setting requirement
+7,7.1,Resources,Provide resources necessary for AI governance,ISO overview,ISO-only,N/A,Not required by EU AI Act
+7,7.2,Competence,Ensure personnel involved in AI are competent,ISO overview,Partial,"Art. 14(4), 29",EU AI Act limits this to oversight contexts
+7,7.3,Awareness,"Ensure awareness of AI risks, policies, and responsibilities",ISO overview,ISO-only,N/A,No organisation-wide awareness duty
+7,7.4,Communication,Establish internal and external AI communication processes,ISO overview,ISO-only,N/A,EU AI Act focuses on external transparency only
+7,7.5,Documented information,Control AI-related documentation,ISO overview,ISO-only,N/A,"EU AI Act requires docs, not doc control"
+8,8.1,Operational planning,Plan and control AI lifecycle processes,ISO overview,Shared,Art. 9,EU AI Act covers lifecycle for high-risk AI
+8,8.2,Data governance,"Ensure quality, relevance, and bias controls in data",ISO overview,Shared,Art. 10,Substantively identical
+8,8.3,AI system design & development,Govern design and development of AI systems,ISO overview,Shared,Art. 11,EU AI Act focuses on documentation outcome
+8,8.4,Intended purpose,Define and control intended use of AI systems,ISO overview,Shared,"Art. 5, 9, 13",Embedded throughout EU AI Act
+8,8.5,Transparency,Ensure appropriate AI transparency,ISO overview,Shared,Art. 13,Equivalent for high-risk AI
+8,8.6,Human oversight,Implement human oversight measures,ISO overview,Shared,Art. 14,Equivalent
+8,8.7,Accuracy & robustness,"Ensure accuracy, robustness, reliability",ISO overview,Shared,Art. 15,Equivalent
+8,8.8,Cybersecurity,Protect AI systems from attacks and misuse,ISO overview,Shared,Art. 15,Equivalent
+8,8.9,Supplier & third parties,Manage AI-related supplier risks,ISO overview,Partial,"Art. 25, 28","EU AI Act defines roles, not governance"
+8,8.10,Monitoring,Monitor AI performance and behaviour,ISO overview,Shared,Art. 61,Equivalent
+8,8.11,Incident handling,"Detect, investigate, and respond to AI incidents",ISO overview,Shared,Art. 62,EU AI Act focuses on serious incidents
+9,9.1,Measurement & evaluation,Measure AI governance effectiveness,ISO overview,ISO-only,N/A,No evaluation obligation
+9,9.2,Internal audit,Conduct internal audits of AIMS,ISO overview,ISO-only,N/A,No audit requirement
+9,9.3,Management review,Top management reviews AIMS performance,ISO overview,ISO-only,N/A,No governance review obligation
+10,10.1,Nonconformity & corrective action,Address AI governance failures systematically,ISO overview,ISO-only,N/A,"EU AI Act requires fixes, not CAPA systems"
+10,10.2,Continual improvement,Continually improve AI governance,ISO overview,ISO-only,N/A,"Compliance law, not improvement framework"

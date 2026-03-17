@@ -1,0 +1,13 @@
+import { expect, afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+});
+
+// Mock window.fetch globally
+global.fetch = global.fetch || (() => {
+  throw new Error('fetch is not available');
+});

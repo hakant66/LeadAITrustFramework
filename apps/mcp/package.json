@@ -1,0 +1,38 @@
+{
+  "name": "mcp-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@qdrant/js-client-rest": "^1.15.1",
+    "@types/glob": "^8.1.0",
+    "chokidar": "^3.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "fastmcp": "^3.20.2",
+    "globby": "^13.2.2",
+    "mammoth": "^1.11.0",
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^3.11.174",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.2.2",
+    "string-strip-html": "^13.4.7",
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.19.21",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

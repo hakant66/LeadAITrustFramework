@@ -1,0 +1,478 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: leadai-postgres
+    environment:
+      POSTGRES_USER: leadai
+      POSTGRES_PASSWORD: leadai
+      POSTGRES_DB: leadai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: leadai-redis
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: leadai-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio:/data
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: leadai-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant:/qdrant/storage
+
+  core-svc:
+    build:
+      context: .
+      dockerfile: apps/core-svc/Dockerfile
+    image: theleadai/core-svc
+    environment:
+      DATABASE_URL: postgresql+psycopg://leadai:leadai@postgres:5432/leadai
+      PGHOST: postgres
+      # Optional test bypass (dev-only)
+      TEST_BYPASS_ENABLED: ${TEST_BYPASS_ENABLED:-0}
+      TEST_BYPASS_USER_ID: ${TEST_BYPASS_USER_ID:-}
+      PGPORT: 5432
+      PGUSER: leadai
+      PGPASSWORD: leadai
+      PGDATABASE: leadai
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_S3_ENDPOINT_URL: http://minio:9000
+      AWS_S3_BUCKET: evidence
+      AWS_S3_REGION: us-east-1
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://127.0.0.1:9000}
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: evidence
+      S3_REGION: us-east-1
+      EVIDENCE_FILE_ROOT: /data/leadai-evidence
+      EVIDENCE_FILE_PREFIX: ${EVIDENCE_FILE_PREFIX:-/data/leadai-evidence}
+      # Corrected Syntax for Host Ollama
+      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: llama3.1:8b
+      # Master admin: comma-separated backend user UUIDs (from user_mapping) who can list/update/archive all entities
+      MASTER_ADMIN_USER_IDS: ${MASTER_ADMIN_USER_IDS:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-3-5-sonnet-20241022}
+      ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      SERPER_API_KEY: ${SERPER_API_KEY:-}
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+      LLM_FALLBACK_PROVIDER: ${LLM_FALLBACK_PROVIDER:-}
+      LLM_REPORT_CACHE_TTL_HOURS: ${LLM_REPORT_CACHE_TTL_HOURS:-24}
+      LLM_REPORT_BATCH_SCHEDULER: ${LLM_REPORT_BATCH_SCHEDULER:-on}
+      LLM_REPORT_BATCH_DAILY_HOUR: ${LLM_REPORT_BATCH_DAILY_HOUR:-3}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-http://langfuse-web:3000}
+      LANGFUSE_PROMPT_AI_SUMMARY_LLM: ${LANGFUSE_PROMPT_AI_SUMMARY_LLM:-}
+      LANGFUSE_PROMPT_AI_SUMMARY_LLM_LABEL: ${LANGFUSE_PROMPT_AI_SUMMARY_LLM_LABEL:-production}
+      LANGFUSE_PROMPT_AI_SUMMARY_LLM_VERSION: ${LANGFUSE_PROMPT_AI_SUMMARY_LLM_VERSION:-}
+      LANGFUSE_PROMPT_CACHE_TTL: ${LANGFUSE_PROMPT_CACHE_TTL:-}
+      KPI_RECOMPUTE_BATCH_SCHEDULER: ${KPI_RECOMPUTE_BATCH_SCHEDULER:-on}
+      KPI_RECOMPUTE_DAILY_HOUR: ${KPI_RECOMPUTE_DAILY_HOUR:-3}
+      PROVENANCE_MANIFEST_BATCH_SCHEDULER: ${PROVENANCE_MANIFEST_BATCH_SCHEDULER:-on}
+      PROVENANCE_MANIFEST_DAILY_HOUR: ${PROVENANCE_MANIFEST_DAILY_HOUR:-3}
+      JIRA_BASE_URL: ${JIRA_BASE_URL:-http://mock-jira:8080}
+      JIRA_AUTH_TYPE: ${JIRA_AUTH_TYPE:-api_token}
+      JIRA_EMAIL: ${JIRA_EMAIL:-mock@leadai.co.uk}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN:-mock-token}
+      # Email notifications (control assignment)
+      EMAIL_SERVER: ${EMAIL_SERVER:-}
+      EMAIL_FROM: ${EMAIL_FROM:-LeadAI <no-reply@localhost>}
+      SMTP_SETTINGS_ENCRYPTION_KEY: ${SMTP_SETTINGS_ENCRYPTION_KEY:-}
+      APP_BASE_URL: ${APP_BASE_URL:-}
+      AUTH_URL: ${AUTH_URL:-http://localhost:3000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - postgres
+      - minio
+      - mock-jira
+    ports:
+      - "8001:8001"
+    volumes:
+      - "${EVIDENCE_HOST_DIR:-./data/leadai-evidence}:/data/leadai-evidence"
+
+  reg-svc:
+    build:
+      context: .
+      dockerfile: apps/reg-svc/Dockerfile
+    image: theleadai/reg-svc
+    environment:
+      DATABASE_URL: postgresql+psycopg://leadai:leadai@postgres:5432/leadai
+      REDIS_URL: redis://redis:6379/0
+      TRUST_DECAY_QUEUE: trust_decay
+      CORE_SVC_URL: http://core-svc:8001
+    depends_on:
+      - postgres
+      - redis
+      - core-svc
+    ports:
+      - "8002:8002"
+
+  reg-worker:
+    image: theleadai/reg-svc
+    environment:
+      DATABASE_URL: postgresql+psycopg://leadai:leadai@postgres:5432/leadai
+      REDIS_URL: redis://redis:6379/0
+      TRUST_DECAY_QUEUE: trust_decay
+      CORE_SVC_URL: http://core-svc:8001
+    depends_on:
+      - postgres
+      - redis
+      - reg-svc
+    command: ["celery", "-A", "app.celery_app", "worker", "-l", "info", "-Q", "trust_decay"]
+
+  alert_worker:
+    image: theleadai/core-svc
+    environment:
+      DATABASE_URL: postgresql+psycopg://leadai:leadai@postgres:5432/leadai
+      ALERT_WORKER_INTERVAL_SECONDS: 300
+      ALERT_WORKER_REFRESH_GOVERNANCE: "true"
+    depends_on:
+      - postgres
+    command: ["python", "-m", "app.workers.alert_worker"]
+
+  cert-svc:
+    build:
+      context: .
+      dockerfile: apps/cert-svc/Dockerfile
+    image: theleadai/cert-svc
+    environment:
+      DATABASE_URL: postgresql+psycopg://leadai:leadai@postgres:5432/leadai
+      CORE_SVC_URL: http://core-svc:8001
+      TRUSTMARK_PRIVATE_KEY: ${TRUSTMARK_PRIVATE_KEY:-}
+      TRUSTMARK_PUBLIC_KEY: ${TRUSTMARK_PUBLIC_KEY:-}
+      TRUSTMARK_KEY_ID: ${TRUSTMARK_KEY_ID:-default}
+      TRUSTMARK_AUDITOR_TOKEN: ${TRUSTMARK_AUDITOR_TOKEN:-}
+    depends_on:
+      - postgres
+      - core-svc
+    ports:
+      - "8003:8003"
+
+  leadai-chatbot:
+    image: leadai/chatbot
+    environment:
+      DOC_ROOT: ${LEADAI_DOC_ROOT:-/data/leadai}
+      FILE_EXTS: ${LEADAI_CHATBOT_FILE_EXTS:-.txt,.md,.csv}
+      MAX_FILE_BYTES: ${LEADAI_CHATBOT_MAX_FILE_BYTES:-300000}
+      MAX_CHUNK_CHARS: ${LEADAI_CHATBOT_MAX_CHUNK_CHARS:-1200}
+      MCP_URL: ${LEADAI_CHATBOT_MCP_URL:-http://mcp:8787}
+      MCP_TIMEOUT_SECONDS: ${LEADAI_CHATBOT_MCP_TIMEOUT_SECONDS:-6}
+      MCP_K: ${LEADAI_CHATBOT_MCP_K:-8}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_EMBED_MODEL: ${OPENAI_EMBED_MODEL:-text-embedding-3-small}
+      PII_DETECTION: ${LEADAI_CHATBOT_PII_DETECTION:-true}
+      PII_MODE: ${LEADAI_CHATBOT_PII_MODE:-full}
+      PII_OPENAI_MAX_CHARS: ${LEADAI_CHATBOT_PII_OPENAI_MAX_CHARS:-800}
+      API_KEY: ${LEADAI_CHATBOT_API_KEY:-}
+      PG_DSN: ${LEADAI_CHATBOT_PG_DSN:-postgresql+psycopg://leadai_ro:leadai_ro@postgres:5432/leadai}
+      PGVECTOR_ENABLED: ${LEADAI_CHATBOT_PGVECTOR_ENABLED:-true}
+      PGVECTOR_SCHEMA: ${LEADAI_CHATBOT_PGVECTOR_SCHEMA:-rag}
+      PGVECTOR_TOP_K: ${LEADAI_CHATBOT_PGVECTOR_TOP_K:-8}
+      PGVECTOR_ALPHA: ${LEADAI_CHATBOT_PGVECTOR_ALPHA:-0.6}
+      PGVECTOR_VEC_K: ${LEADAI_CHATBOT_PGVECTOR_VEC_K:-16}
+      PGVECTOR_FTS_K: ${LEADAI_CHATBOT_PGVECTOR_FTS_K:-16}
+      PG_SEARCH_QUERIES: ${LEADAI_CHATBOT_PG_SEARCH_QUERIES:-[]}
+      PG_SEARCH_SCHEMAS: ${LEADAI_CHATBOT_PG_SEARCH_SCHEMAS:-public}
+      PG_SEARCH_TEXT_TYPES: ${LEADAI_CHATBOT_PG_SEARCH_TEXT_TYPES:-text,character varying,character,citext}
+      PG_SEARCH_MAX_COLUMNS: ${LEADAI_CHATBOT_PG_SEARCH_MAX_COLUMNS:-20}
+      PG_SEARCH_MAX_TABLES: ${LEADAI_CHATBOT_PG_SEARCH_MAX_TABLES:-80}
+      PG_SEARCH_MAX_ROWS: ${LEADAI_CHATBOT_PG_SEARCH_MAX_ROWS:-100}
+      PG_SEARCH_MAX_RESULTS: ${LEADAI_CHATBOT_PG_SEARCH_MAX_RESULTS:-200}
+      PG_SEARCH_STATEMENT_TIMEOUT_MS: ${LEADAI_CHATBOT_PG_SEARCH_STATEMENT_TIMEOUT_MS:-1500}
+      PG_SEARCH_ALL: ${LEADAI_CHATBOT_PG_SEARCH_ALL:-true}
+    volumes:
+      - ./data:/data:ro
+    depends_on:
+      - mcp
+      - postgres
+    ports:
+      - "8005:8000"
+    command: ["uvicorn", "app.main:APP", "--host", "0.0.0.0", "--port", "8000"]
+
+  leadai-chatbot-ingest:
+    image: leadai/chatbot
+    environment:
+      PGVECTOR_INGEST_DSN: ${LEADAI_CHATBOT_INGEST_DSN:-postgresql+psycopg://leadai:leadai@postgres:5432/leadai}
+      PGVECTOR_SAFE_SCHEMA: ${LEADAI_CHATBOT_PGVECTOR_SAFE_SCHEMA:-rag}
+      PGVECTOR_EMBED_MODEL: ${OPENAI_EMBED_MODEL:-text-embedding-3-small}
+      PGVECTOR_EMBED_BATCH_SIZE: ${LEADAI_CHATBOT_PGVECTOR_EMBED_BATCH_SIZE:-64}
+      PGVECTOR_MAX_EMBED_CHARS: ${LEADAI_CHATBOT_PGVECTOR_MAX_EMBED_CHARS:-4000}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      PG_DSN: ${LEADAI_CHATBOT_PG_DSN:-postgresql+psycopg://leadai_ro:leadai_ro@postgres:5432/leadai}
+    depends_on:
+      - postgres
+    command: ["sh", "-lc", "while true; do python /app/scripts/ingest_pgvector.py; sleep 3600; done"]
+
+  pii-regex-worker:
+    image: leadai/pii-regex-worker
+    environment:
+      PII_WORKER_DOC_ROOT: ${LEADAI_DOC_ROOT:-/data/leadai}
+      PII_WORKER_EVENT_TYPE: ${PII_WORKER_EVENT_TYPE:-pii.detected}
+      PII_WORKER_MAX_FILE_BYTES: ${PII_WORKER_MAX_FILE_BYTES:-300000}
+      PII_WORKER_SOURCE_SERVICE: ${PII_WORKER_SOURCE_SERVICE:-pii-regex-worker}
+      PII_DETECTION: ${LEADAI_CHATBOT_PII_DETECTION:-true}
+      MCP_URL: ${LEADAI_CHATBOT_MCP_URL:-http://mcp:8787}
+      PII_MODE: ${LEADAI_CHATBOT_PII_MODE:-full}
+      PII_WORKER_MAX_FILES_PER_RUN: ${PII_WORKER_MAX_FILES_PER_RUN:-50}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      PII_WORKER_FILE_EXTS: ${PII_WORKER_FILE_EXTS:-.txt,.md,.csv}
+      PII_WORKER_PROJECT_SLUG: ${PII_WORKER_PROJECT_SLUG:-leadai}
+      PII_WORKER_INTERVAL_SECONDS: ${PII_WORKER_INTERVAL_SECONDS:-300}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      PII_WORKER_MAX_CHARS: ${PII_WORKER_MAX_CHARS:-1200}
+      PII_OPENAI_MAX_CHARS: ${LEADAI_CHATBOT_PII_OPENAI_MAX_CHARS:-800}
+      PII_WORKER_CACHE_PATH: ${PII_WORKER_CACHE_PATH:-/cache/pii_cache.json}
+    volumes:
+      - pii-cache:/cache
+      - ./data:/data:ro
+    depends_on:
+      - mcp
+    command: ["python", "/app/worker.py"]
+
+  mcp:
+    build:
+      context: .
+      dockerfile: apps/mcp/Dockerfile
+    image: theleadai/mcp
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_COLLECTION: leadai_docs
+      EMB_MODEL: nomic-embed-text
+      ALLOW_DIRS: /data
+      TRUST_CORE_URL: http://core-svc:8001
+      # Corrected Syntax
+      OLLAMA_URL: http://host.docker.internal:11434
+      CHAT_MODEL: llama3.1:8b
+      LLM_PROVIDER: ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/data
+    depends_on:
+      - qdrant
+      # Removed 'ollama' dependency as it's running on Host
+    ports:
+      - "8787:8787"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_DOC_ROOT: ${NEXT_PUBLIC_DOC_ROOT:-}
+        NEXT_PUBLIC_MCP_SERVER_URL: ${NEXT_PUBLIC_MCP_SERVER_URL:-http://localhost:8787}
+        NEXT_PUBLIC_DIFY_WEBAPP_ORIGIN: ${DIFY_WEBAPP_ORIGIN:-http://host.docker.internal:8080}
+        NEXT_PUBLIC_DIFY_WEBAPP_PATH: ${DIFY_WEBAPP_PATH:-/apps}
+        MINIO_BUCKET: ${MINIO_BUCKET:-evidence}
+        MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+        MINIO_REGION: ${MINIO_REGION:-us-east-1}
+        MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+        MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+    image: theleadai/web
+    environment:
+      CORE_SVC_URL: http://core-svc:8001
+      REG_SVC_URL: http://reg-svc:8002
+      CERT_SVC_URL: http://cert-svc:8003
+      MCP_SERVER_URL: http://mcp:8787
+      AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-me}
+      AUTH_URL: ${AUTH_URL:-http://localhost:3000}
+      # Server-side self-fetch (e.g. projects) — use same container to avoid DNS/TLS issues
+      INTERNAL_APP_URL: ${INTERNAL_APP_URL:-http://localhost:3000}
+      AUTH_DATABASE_URL: ${AUTH_DATABASE_URL:-postgresql://leadai:leadai@postgres:5432/leadai?schema=auth}
+      # Email (NextAuth sign-in code); set in .env (e.g. Resend SMTP)
+      EMAIL_SERVER: ${EMAIL_SERVER:-}
+      EMAIL_FROM: ${EMAIL_FROM:-LeadAI <no-reply@localhost>}
+      DIFY_WEBAPP_ORIGIN: ${DIFY_WEBAPP_ORIGIN:-http://host.docker.internal:8080}
+      DIFY_WEBAPP_PATH: ${DIFY_WEBAPP_PATH:-/apps}
+      DIFY_HEALTH_URL: ${DIFY_HEALTH_URL:-http://host.docker.internal:8080/apps}
+      LEADAI_CHATBOT_ADAPTER_URL: ${LEADAI_CHATBOT_ADAPTER_URL:-http://leadai-chatbot:8000}
+      NEXT_PUBLIC_MCP_SERVER_URL: http://localhost:8787
+      PGHOST: postgres
+      PGPORT: 5432
+      PGUSER: leadai
+      PGPASSWORD: leadai
+      PGDATABASE: leadai
+      REDIS_URL: redis://redis:6379/0
+      MINIO_BUCKET: evidence
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_REGION: us-east-1
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+      S3_BUCKET: evidence
+      S3_REGION: us-east-1
+      QDRANT_URL: http://qdrant:6333
+      # Corrected Syntax
+      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: llama3.1:8b
+      LLM_PROVIDER: ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - core-svc
+      - mcp
+      - postgres
+      - redis
+      - minio
+      - qdrant
+      - mock-jira
+    ports:
+      - "3000:3000"
+
+  mock-jira:
+    build:
+      context: .
+      dockerfile: apps/mock-jira/Dockerfile
+    image: theleadai/mock-jira
+    ports:
+      - "18080:8080"
+
+  # ---------- Langfuse (LLM observability) ----------
+  # Uses same Postgres (db=langfuse), same MinIO (buckets langfuse/), dedicated Redis + ClickHouse
+  langfuse-clickhouse:
+    image: clickhouse/clickhouse-server:24
+    container_name: leadai-langfuse-clickhouse
+    user: "101:101"
+    cap_add:
+      - SYS_NICE
+      - IPC_LOCK
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+    volumes:
+      - langfuse_clickhouse_data:/var/lib/clickhouse
+      - langfuse_clickhouse_logs:/var/log/clickhouse-server
+    ports:
+      - "127.0.0.1:18123:8123"
+      - "127.0.0.1:19002:9000"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 8gb
+
+  langfuse-redis:
+    image: redis:7
+    container_name: leadai-langfuse-redis
+    command: ["redis-server", "--requirepass", "langfuseredis", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "127.0.0.1:6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "langfuseredis", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+  langfuse-worker:
+    image: docker.io/langfuse/langfuse-worker:3
+    container_name: leadai-langfuse-worker
+    restart: unless-stopped
+    depends_on:
+      langfuse-clickhouse:
+        condition: service_healthy
+      langfuse-redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3030:3030"
+    environment: &langfuse-env
+      NEXTAUTH_URL: ${LANGFUSE_NEXTAUTH_URL:-http://localhost:4000}
+      DATABASE_URL: postgresql://leadai:leadai@postgres:5432/langfuse
+      SALT: ${LANGFUSE_SALT:-langfusesalt}
+      ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-3faa4e7c124f271eb1b3f948266b4cfaf35e925c63287ffe4ea2fa4ca4805759}
+      TELEMETRY_ENABLED: ${LANGFUSE_TELEMETRY_ENABLED:-true}
+      CLICKHOUSE_MIGRATION_URL: clickhouse://langfuse-clickhouse:9000
+      CLICKHOUSE_URL: http://langfuse-clickhouse:8123
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+      CLICKHOUSE_CLUSTER_ENABLED: "false"
+      LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+      LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
+      LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: minioadmin
+      LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: minioadmin
+      LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
+      LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+      LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+      LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+      LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
+      LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: minioadmin
+      LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: minioadmin
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
+      LANGFUSE_S3_MEDIA_UPLOAD_EXTERNAL_ENDPOINT: http://localhost:9000
+      LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+      LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+      REDIS_HOST: langfuse-redis
+      REDIS_PORT: 6379
+      REDIS_AUTH: langfuseredis
+    deploy:
+      resources:
+        limits:
+          memory: 2gb
+
+  langfuse-web:
+    image: docker.io/langfuse/langfuse:3
+    container_name: leadai-langfuse-web
+    restart: unless-stopped
+    depends_on:
+      langfuse-clickhouse:
+        condition: service_healthy
+      langfuse-redis:
+        condition: service_healthy
+    ports:
+      - "4000:3000"
+    environment:
+      <<: *langfuse-env
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-langfusesecret}
+    deploy:
+      resources:
+        limits:
+          memory: 4gb
+
+volumes:
+  pgdata:
+  minio:
+  qdrant:
+  pii-cache: # Removed ollama volume
+  langfuse_clickhouse_data:
+  langfuse_clickhouse_logs:

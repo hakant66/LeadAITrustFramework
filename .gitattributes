@@ -1,0 +1,8 @@
+# Default: store text files as LF in the repo, convert as needed on checkout
+* text=auto eol=lf
+
+
+# Windows scripts (if you have them)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf

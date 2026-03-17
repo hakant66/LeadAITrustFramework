@@ -1,0 +1,47 @@
+# Mac System Files
+.DS_Store
+**/.DS_Store
+
+# IDE and Environment
+.vscode/
+.env*
+
+/apps/core-svc/app/__pycache__
+/docs
+/data/*
+/tools
+!/data/.gitkeep
+.env
+/apps/core-svc/.env
+/apps/core-svc/app/.env
+/apps/web/.env.local
+*.sql
+*.dump
+*.backup
+*.pyc
+
+.pnpm-store/
+node_modules/
+.next/
+
+# Ignore all node_modules everywhere
+**/node_modules/
+**/.pnpm-store/
+
+# Ignore Next.js build folders in all apps
+**/.next/
+
+# Ignore Python virtual envs in all services
+**/.venv/
+**/venv/
+**/__pycache__/
+
+
+# Allow specific docs to be tracked
+!/docs/
+!/docs/TECH_STACK_AND_WORKFLOW.md
+!/docs/GUI_WORKFLOW.md
+!/docs/LeadAI_Process_Presentation.md
+!/docs/LeadAI_Process_Presentation.pdf
+.env
+.env

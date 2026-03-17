@@ -1,0 +1,345 @@
+version: 1
+levels:
+  P0: 0
+  P1: 1
+  P2: 2
+  P3: 3
+hard_gates:
+  - id: evidence_hash_mismatch
+    description: Evidence hash mismatch detected
+    when:
+      path: evidence.integrity.any_hash_mismatch
+      op: eq
+      value: true
+    effect:
+      overall_level: P0
+      reasons:
+        - code: EVIDENCE_HASH_MISMATCH
+          message: Evidence hash mismatch detected in linked evidence.
+  - id: missing_dpia_when_personal_data
+    description: DPIA missing/expired/invalid for personal data
+    when:
+      all:
+        - path: personal_data.present
+          op: eq
+          value: true
+        - any:
+            - path: evidence.status.DPIA
+              op: in
+              value: [missing, expired, invalid]
+            - path: evidence.status.DPIA
+              op: is_null
+            - path: evidence.status.DPIA
+              op: is_empty
+    effect:
+      overall_level: P0
+      reasons:
+        - code: DPIA_MISSING_OR_INVALID
+          message: DPIA is missing, expired, or invalid for personal data.
+  - id: sensitive_data_included
+    description: Excluded sensitive data detected
+    when:
+      path: data_categories.findings.sensitive_included
+      op: eq
+      value: true
+    effect:
+      overall_level: P0
+      reasons:
+        - code: SENSITIVE_DATA_INCLUDED
+          message: Sensitive data was detected in included categories.
+fields:
+  source_system:
+    rules:
+      - id: source_system.present
+        level: P1
+        when:
+          path: source.system_name
+          op: not_empty
+        reasons:
+          - code: SOURCE_SYSTEM_PRESENT
+            message: Source system is documented.
+      - id: source_system.identified
+        level: P2
+        when:
+          all:
+            - path: source.system_name
+              op: not_empty
+            - path: source.system_name
+              op: ne
+              value: "unknown"
+        reasons:
+          - code: SOURCE_SYSTEM_IDENTIFIED
+            message: Source system is identified.
+      - id: source_system.attested
+        level: P3
+        when:
+          path: signals.attestation.source_system_within_days
+          op: lte
+          value: 180
+        reasons:
+          - code: SOURCE_SYSTEM_ATTESTED
+            message: Source system attested within 180 days.
+  data_categories:
+    rules:
+      - id: data_categories.present
+        level: P1
+        when:
+          path: data_categories.included
+          op: not_empty_list
+        reasons:
+          - code: DATA_CATEGORIES_PRESENT
+            message: Included data categories are documented.
+      - id: data_categories.exclusions_listed
+        level: P2
+        when:
+          all:
+            - path: data_categories.included
+              op: not_empty_list
+            - path: data_categories.excluded
+              op: not_empty_list
+        reasons:
+          - code: DATA_CATEGORIES_EXCLUSIONS
+            message: Included and excluded categories are documented.
+      - id: data_categories.reviewed
+        level: P3
+        when:
+          path: signals.attestation.data_categories_within_days
+          op: lte
+          value: 180
+        reasons:
+          - code: DATA_CATEGORIES_REVIEWED
+            message: Data categories reviewed within 180 days.
+  personal_data:
+    rules:
+      - id: personal_data.classified
+        level: P1
+        when:
+          path: personal_data.present
+          op: is_bool
+        reasons:
+          - code: PERSONAL_DATA_CLASSIFIED
+            message: Personal data presence is classified.
+      - id: personal_data.treatment_defined
+        level: P2
+        when:
+          any:
+            - path: personal_data.present
+              op: eq
+              value: false
+            - all:
+                - path: personal_data.present
+                  op: eq
+                  value: true
+                - path: personal_data.treatment
+                  op: not_empty
+        reasons:
+          - code: PERSONAL_DATA_TREATMENT
+            message: Personal data treatment is defined.
+      - id: personal_data.controls_verified
+        level: P3
+        when:
+          all:
+            - path: personal_data.present
+              op: eq
+              value: true
+            - path: signals.pseudonymisation_control_verified
+              op: eq
+              value: true
+        reasons:
+          - code: PERSONAL_DATA_CONTROLS
+            message: Personal data controls verified.
+  legal_basis:
+    rules:
+      - id: legal_basis.present
+        level: P1
+        when:
+          path: legal_basis.basis
+          op: not_empty_list
+        reasons:
+          - code: LEGAL_BASIS_PRESENT
+            message: Legal basis is documented.
+      - id: legal_basis.valid
+        level: P2
+        when:
+          path: legal_basis.basis
+          op: contains_any
+          value: [consent, contract, legal_obligation, legitimate_interest, public_task, vital_interest]
+        reasons:
+          - code: LEGAL_BASIS_VALID
+            message: Legal basis aligns with approved options.
+      - id: legal_basis.attested
+        level: P3
+        when:
+          path: signals.attestation.legal_basis_within_days
+          op: lte
+          value: 180
+        reasons:
+          - code: LEGAL_BASIS_ATTESTED
+            message: Legal basis attested within 180 days.
+  purpose:
+    rules:
+      - id: purpose.present
+        level: P1
+        when:
+          path: purpose.intended_use
+          op: not_empty
+        reasons:
+          - code: PURPOSE_PRESENT
+            message: Intended use is documented.
+      - id: purpose.aligned
+        level: P2
+        when:
+          path: signals.dataset_usage_outside_purpose_detected
+          op: eq
+          value: false
+        reasons:
+          - code: PURPOSE_ALIGNED
+            message: No evidence of usage outside stated purpose.
+      - id: purpose.attested
+        level: P3
+        when:
+          path: signals.attestation.purpose_within_days
+          op: lte
+          value: 365
+        reasons:
+          - code: PURPOSE_ATTESTED
+            message: Purpose attested within 365 days.
+  geography:
+    rules:
+      - id: geography.present
+        level: P1
+        when:
+          path: geography.regions
+          op: not_empty_list
+        reasons:
+          - code: GEOGRAPHY_PRESENT
+            message: Geography regions are documented.
+      - id: geography.reviewed
+        level: P2
+        when:
+          path: signals.attestation.geography_within_days
+          op: lte
+          value: 365
+        reasons:
+          - code: GEOGRAPHY_REVIEWED
+            message: Geography reviewed within 365 days.
+      - id: geography.attested
+        level: P3
+        when:
+          path: signals.attestation.geography_within_days
+          op: lte
+          value: 180
+        reasons:
+          - code: GEOGRAPHY_ATTESTED
+            message: Geography attested within 180 days.
+  retention:
+    rules:
+      - id: retention.present
+        level: P1
+        when:
+          path: retention.period_months
+          op: is_number
+        reasons:
+          - code: RETENTION_PRESENT
+            message: Retention period is documented.
+      - id: retention.aligned
+        level: P2
+        when:
+          path: retention.period_months
+          op: lte
+          value: 60
+        reasons:
+          - code: RETENTION_ALIGNED
+            message: Retention period within acceptable bounds.
+      - id: retention.attested
+        level: P3
+        when:
+          all:
+            - path: signals.retention_violations_detected
+              op: eq
+              value: false
+            - path: signals.attestation.retention_within_days
+              op: lte
+              value: 365
+        reasons:
+          - code: RETENTION_ATTESTED
+            message: Retention attested with no violations.
+  evidence_links_integrity:
+    rules:
+      - id: evidence_links.present
+        level: P1
+        when:
+          path: evidence.present
+          op: not_empty_list
+        reasons:
+          - code: EVIDENCE_PRESENT
+            message: Evidence links are documented.
+      - id: evidence_links.valid
+        level: P2
+        when:
+          path: evidence.integrity.all_linked_valid
+          op: eq
+          value: true
+        reasons:
+          - code: EVIDENCE_LINKS_VALID
+            message: Evidence links are valid.
+      - id: evidence_links.fresh
+        level: P3
+        when:
+          path: signals.evidence_integrity_checks_within_days
+          op: lte
+          value: 30
+        reasons:
+          - code: EVIDENCE_LINKS_FRESH
+            message: Evidence integrity checked within 30 days.
+  manifest_integrity:
+    rules:
+      - id: manifest_hash.present
+        level: P1
+        when:
+          path: versioning.manifest_hash
+          op: not_empty
+        reasons:
+          - code: MANIFEST_HASH_PRESENT
+            message: Manifest hash is recorded.
+      - id: manifest_hash.verified
+        level: P2
+        when:
+          all:
+            - path: versioning.manifest_hash
+              op: not_empty
+            - path: signals.manifest_hash_verified
+              op: eq
+              value: true
+        reasons:
+          - code: MANIFEST_HASH_VERIFIED
+            message: Manifest hash verified.
+      - id: manifest_change.controlled
+        level: P3
+        when:
+          all:
+            - path: versioning.manifest_hash
+              op: not_empty
+            - path: signals.manifest_change_requires_approval
+              op: eq
+              value: true
+        reasons:
+          - code: MANIFEST_CHANGE_CONTROLLED
+            message: Manifest changes require approval.
+rollup:
+  mode: gated_floor
+  mandatory_fields:
+    - source_system
+    - data_categories
+    - personal_data
+    - legal_basis
+    - purpose
+    - geography
+    - retention
+    - evidence_links_integrity
+    - manifest_integrity
+  thresholds:
+    p1_fraction: 0.6
+    p3_fraction: 0.6
+  require_continuous_ok: true
+  continuous_ok_path: signals.continuous_ok

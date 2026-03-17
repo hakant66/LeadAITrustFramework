@@ -1,0 +1,12 @@
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - core-js
+  - unrs-resolver
+
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - prisma
+  - sharp
