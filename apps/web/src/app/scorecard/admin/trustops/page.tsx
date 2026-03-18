@@ -31,7 +31,7 @@ export default async function TrustOpsOverviewPage() {
   const controlBase = isLegacy
     ? "/scorecard/admin/trustops"
     : "/scorecard/admin/control-audit";
-  const subtitle = isLegacy ? "LeadAI · TrustOps" : "LeadAI · Control & Audit";
+  const subtitle = isLegacy ? "LeadAI · TrustOps" : "Control & Audit";
   const appUrl = toBase(
     process.env.INTERNAL_APP_URL ??
       process.env.AUTH_URL ??

@@ -183,7 +183,7 @@ export default async function BoardLevelReportPage({
     const text = await reportRes.text();
     return (
       <div className="space-y-6">
-        <Header title="High-Level Report" subtitle="LeadAI · Governance Dashboard">
+        <Header title="High-Level Report" subtitle="Executive Reporting">
           <BackButton />
         </Header>
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-900">
@@ -209,7 +209,7 @@ export default async function BoardLevelReportPage({
 
   return (
     <div className="min-h-screen flex flex-col gap-6">
-      <Header title="High-Level Report" subtitle="LeadAI · Governance Dashboard">
+      <Header title="High-Level Report" subtitle="Executive Reporting">
         <div className="flex w-full flex-wrap items-start gap-3">
           <BackButton />
           <div className="ml-auto flex flex-col items-end self-start">

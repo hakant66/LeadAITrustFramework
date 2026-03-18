@@ -25,8 +25,7 @@ export default function AuditLogPageClient({
 }: {
   navMode?: NavMode;
 }) {
-  const subtitle =
-    navMode === "legacy" ? "LeadAI · TrustOps" : "LeadAI · Control & Audit";
+  const subtitle = navMode === "legacy" ? "LeadAI · TrustOps" : "Control & Audit";
   const [items, setItems] = useState<AuditEvent[]>([]);
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(25);

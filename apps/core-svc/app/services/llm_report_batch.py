@@ -182,7 +182,7 @@ def fetch_project_kpis(project_slug: str) -> tuple[Optional[dict], list[KpiRow]]
     """
     sql_proj = """
       SELECT slug, name
-      FROM public.projects
+      FROM public.entity_projects
       WHERE slug = %s
       LIMIT 1;
     """

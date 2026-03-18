@@ -49,6 +49,10 @@ export default async function EntityGovernanceExecutionPage({
       entities={entities}
       showAlerts={false}
       showProjectCards={false}
+      titleOverride="AI Governance Operation"
+      subtitleOverride="Governance Execution"
+      hideEntityBadge
+      hideSignOut
       executionMenuItems={executionMenuItems}
     />
   );

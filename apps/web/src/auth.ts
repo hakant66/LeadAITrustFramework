@@ -33,6 +33,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
   ],
   session: { strategy: "database" },
+  callbacks: {
+    session: async ({ session, user }) => {
+      if (session.user) {
+        session.user.id = user.id;
+      }
+      return session;
+    },
+  },
   pages: {
     signIn: "/register",
     verifyRequest: "/register?check=1",

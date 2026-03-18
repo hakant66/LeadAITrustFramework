@@ -9,6 +9,7 @@ type EntityProfile = {
   id: string;
   slug?: string | null;
   fullLegalName: string;
+  logoUrl?: string | null;
   legalForm?: string | null;
   companyRegistrationNumber?: string | null;
   headquartersCountry?: string | null;
@@ -83,55 +84,109 @@ export default function EntitySetupPage() {
   const [onboarding, setOnboarding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<EntityProfile>>({});
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+
+  const applyEntityData = useCallback((data: EntityProfile) => {
+    setEntity(data);
+    setForm({
+      fullLegalName: data.fullLegalName ?? "",
+      companyRegistrationNumber: data.companyRegistrationNumber ?? "",
+      headquartersCountry: data.headquartersCountry ?? "",
+      regionsOfOperation: data.regionsOfOperation ?? [],
+      regionsOther: data.regionsOther ?? "",
+      sectors: data.sectors ?? [],
+      sectorOther: data.sectorOther ?? "",
+      employeeCount: data.employeeCount ?? "",
+      annualTurnover: data.annualTurnover ?? "",
+      primaryRole: data.primaryRole ?? "",
+      riskClassification: data.riskClassification ?? "",
+      decisionTrace: data.decisionTrace ?? "",
+      authorizedRepresentativeName: data.authorizedRepresentativeName ?? "",
+      authorizedRepresentativeEmail: data.authorizedRepresentativeEmail ?? "",
+      authorizedRepresentativePhone: data.authorizedRepresentativePhone ?? "",
+      aiComplianceOfficerName: data.aiComplianceOfficerName ?? "",
+      aiComplianceOfficerEmail: data.aiComplianceOfficerEmail ?? "",
+      executiveSponsorName: data.executiveSponsorName ?? "",
+      executiveSponsorEmail: data.executiveSponsorEmail ?? "",
+    });
+    setLogoPreviewUrl(data.logoUrl ?? null);
+    setLogoFile(null);
+  }, []);
 
   const loadEntity = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // If entitySlug is provided, fetch by slug, otherwise fetch latest
-      const url = entitySlug 
-        ? `/api/core/entity/by-slug/${encodeURIComponent(entitySlug)}`
-        : "/api/core/entity/latest";
-      
-      const res = await fetch(url);
-      if (res.status === 404) {
+      const storedEntityId =
+        typeof window !== "undefined" ? sessionStorage.getItem("entityId") : null;
+
+      const candidateUrls = [
+        storedEntityId ? `/api/core/entity/${encodeURIComponent(storedEntityId)}` : null,
+        entitySlug ? `/api/core/entity/by-slug/${encodeURIComponent(entitySlug)}` : null,
+        "/api/core/entity/latest",
+      ].filter(Boolean) as string[];
+
+      let data: EntityProfile | null = null;
+      for (const url of candidateUrls) {
+        const res = await fetch(url, { cache: "no-store" });
+        if (res.status === 404) {
+          continue;
+        }
+        if (!res.ok) throw new Error("Failed to load entity");
+        data = (await res.json()) as EntityProfile;
+        break;
+      }
+      if (!data) {
         setEntity(null);
         setError("No entity found. Complete the Entity form and Save Entity Information from the AI Legal Standing assessment first.");
         return;
       }
-      if (!res.ok) throw new Error("Failed to load entity");
-      const data = await res.json();
-      setEntity(data);
-      setForm({
-        companyRegistrationNumber: data.companyRegistrationNumber ?? "",
-        headquartersCountry: data.headquartersCountry ?? "",
-        regionsOfOperation: data.regionsOfOperation ?? [],
-        regionsOther: data.regionsOther ?? "",
-        sectors: data.sectors ?? [],
-        sectorOther: data.sectorOther ?? "",
-        employeeCount: data.employeeCount ?? "",
-        annualTurnover: data.annualTurnover ?? "",
-        primaryRole: data.primaryRole ?? "",
-        riskClassification: data.riskClassification ?? "",
-        decisionTrace: data.decisionTrace ?? "",
-        authorizedRepresentativeName: data.authorizedRepresentativeName ?? "",
-        authorizedRepresentativeEmail: data.authorizedRepresentativeEmail ?? "",
-        authorizedRepresentativePhone: data.authorizedRepresentativePhone ?? "",
-        aiComplianceOfficerName: data.aiComplianceOfficerName ?? "",
-        aiComplianceOfficerEmail: data.aiComplianceOfficerEmail ?? "",
-        executiveSponsorName: data.executiveSponsorName ?? "",
-        executiveSponsorEmail: data.executiveSponsorEmail ?? "",
-      });
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("entityId", data.id);
+        if (data.slug) {
+          sessionStorage.setItem("entitySlug", data.slug);
+        }
+        if (data.logoUrl) {
+          sessionStorage.setItem("entityLogoUrl", data.logoUrl);
+        } else {
+          sessionStorage.removeItem("entityLogoUrl");
+        }
+      }
+      applyEntityData(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load entity");
     } finally {
       setLoading(false);
     }
-  }, [entitySlug]);
+  }, [applyEntityData, entitySlug]);
 
   useEffect(() => {
     loadEntity();
   }, [loadEntity]);
+
+  useEffect(() => {
+    return () => {
+      if (logoPreviewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(logoPreviewUrl);
+      }
+    };
+  }, [logoPreviewUrl]);
+
+  const uploadLogo = useCallback(async (entityId: string) => {
+    if (!logoFile) return null;
+    const body = new FormData();
+    body.append("file", logoFile);
+    const res = await fetch(`/api/core/entity/${entityId}/logo`, {
+      method: "POST",
+      body,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(typeof err.detail === "string" ? err.detail : "Failed to upload logo");
+    }
+    return res.json();
+  }, [logoFile]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,6 +198,7 @@ export default function EntitySetupPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          fullLegalName: form.fullLegalName || null,
           companyRegistrationNumber: form.companyRegistrationNumber || null,
           headquartersCountry: form.headquartersCountry || null,
           regionsOfOperation: form.regionsOfOperation ?? [],
@@ -166,12 +222,22 @@ export default function EntitySetupPage() {
         throw new Error(typeof err.detail === "string" ? err.detail : "Failed to update");
       }
       const updatedData = await res.json();
-      await loadEntity();
-      
-      // Update URL to include entity_slug if available and not already in URL
-      if (updatedData.slug && !entitySlug) {
-        router.replace(`/${updatedData.slug}/scorecard/admin/governance-setup/entity-setup`);
+      const uploadedLogo = await uploadLogo(updatedData.id);
+      if (uploadedLogo?.logoUrl) {
+        setLogoPreviewUrl(uploadedLogo.logoUrl);
+        setLogoFile(null);
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("entityLogoUrl", uploadedLogo.logoUrl);
+        }
       }
+      if (typeof window !== "undefined" && updatedData.slug) {
+        sessionStorage.setItem("entitySlug", updatedData.slug);
+      }
+      if (updatedData.slug && updatedData.slug !== entitySlug) {
+        router.replace(`/${updatedData.slug}/scorecard/admin/governance-setup/entity-setup`);
+        return;
+      }
+      await loadEntity();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to save");
     } finally {
@@ -192,6 +258,7 @@ export default function EntitySetupPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          fullLegalName: form.fullLegalName || null,
           companyRegistrationNumber: form.companyRegistrationNumber || null,
           headquartersCountry: form.headquartersCountry || null,
           regionsOfOperation: form.regionsOfOperation ?? [],
@@ -215,19 +282,31 @@ export default function EntitySetupPage() {
         throw new Error(typeof err.detail === "string" ? err.detail : "Failed to save entity");
       }
       const updatedData = await res.json();
+      const uploadedLogo = await uploadLogo(updatedData.id);
+      if (uploadedLogo?.logoUrl) {
+        setLogoPreviewUrl(uploadedLogo.logoUrl);
+        setLogoFile(null);
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("entityLogoUrl", uploadedLogo.logoUrl);
+        }
+      }
+      if (typeof window !== "undefined" && updatedData.slug) {
+        sessionStorage.setItem("entitySlug", updatedData.slug);
+      }
       
       // Ensure slug exists
       if (!updatedData.slug) {
         throw new Error("Entity slug was not generated. Please try again.");
       }
       
-      // Reload entity to get updated slug
-      await loadEntity();
-      
       // Navigate to entity-specific URL if slug changed
       if (updatedData.slug && (!entitySlug || entitySlug !== updatedData.slug)) {
         router.replace(`/${updatedData.slug}/scorecard/admin/governance-setup/entity-setup`);
+        return;
       }
+      
+      // Reload entity to get the latest saved values when staying on the same slug
+      await loadEntity();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to onboard entity");
     } finally {
@@ -247,10 +326,22 @@ export default function EntitySetupPage() {
     setForm((prev) => ({ ...prev, sectors: next }));
   };
 
+  const handleLogoSelection = (file: File | null) => {
+    if (logoPreviewUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(logoPreviewUrl);
+    }
+    setLogoFile(file);
+    if (file) {
+      setLogoPreviewUrl(URL.createObjectURL(file));
+      return;
+    }
+    setLogoPreviewUrl(entity?.logoUrl ?? null);
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
-        <Header title="Entity Onboarding" subtitle="LeadAI · Governance Setup" titleNote="Step 2 of 6" />
+        <Header title="Entity Onboarding" subtitle="Governance Setup" />
         <p className="text-slate-500">Loading...</p>
       </div>
     );
@@ -259,7 +350,7 @@ export default function EntitySetupPage() {
   if (error && !entity) {
     return (
       <div className="space-y-6">
-        <Header title="Entity Onboarding" subtitle="LeadAI · Governance Setup" titleNote="Step 2 of 6" />
+        <Header title="Entity Onboarding" subtitle="Governance Setup" />
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-500/10 dark:text-amber-200">
           {error}
         </div>
@@ -273,20 +364,9 @@ export default function EntitySetupPage() {
     );
   }
 
-  const backUrl = entitySlug 
-    ? `/${entitySlug}/scorecard/admin/governance-setup`
-    : "/scorecard/admin/governance-setup";
-
   return (
     <div className="space-y-6">
-      <Header title="Entity Onboarding" subtitle="LeadAI · Governance Setup" titleNote="Step 2 of 6">
-        <Link
-          href={backUrl}
-          className="mt-2 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          Back to Governance Setup
-        </Link>
-      </Header>
+      <Header title="Entity Onboarding" subtitle="Governance Setup" />
 
       <form onSubmit={handleSave} className="space-y-8">
         {error && (
@@ -322,6 +402,38 @@ export default function EntitySetupPage() {
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Editable fields</h2>
           <div className="mt-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">Entity Name</label>
+              <input
+                type="text"
+                className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                value={form.fullLegalName ?? ""}
+                onChange={(e) => setForm((p) => ({ ...p, fullLegalName: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">Entity Logo</label>
+              <div className="mt-2 flex items-start gap-4">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+                  {logoPreviewUrl ? (
+                    <img src={logoPreviewUrl} alt="Entity logo preview" className="h-full w-full object-contain" />
+                  ) : (
+                    <span className="px-2 text-center text-xs text-slate-500 dark:text-slate-400">No logo uploaded</span>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                    onChange={(e) => handleLogoSelection(e.target.files?.[0] ?? null)}
+                    className="block text-sm text-slate-700 file:mr-3 file:rounded-xl file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700 dark:text-slate-200 dark:file:bg-slate-100 dark:file:text-slate-900 dark:hover:file:bg-slate-200"
+                  />
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    PNG, JPEG, WEBP, or SVG. The file is stored when you click Save changes.
+                  </p>
+                </div>
+              </div>
+            </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">Company Registration Number</label>
               <input

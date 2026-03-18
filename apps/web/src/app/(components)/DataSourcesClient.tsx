@@ -43,6 +43,7 @@ const initialForm: FormState = {
 export default function DataSourcesClient() {
   const [items, setItems] = useState<DataSource[]>([]);
   const [form, setForm] = useState<FormState>(initialForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -75,33 +76,63 @@ export default function DataSourcesClient() {
       setForm((prev) => ({ ...prev, [key]: event.target.value }));
     };
 
-  const handleCreate = async (event: React.FormEvent) => {
+  const resetForm = () => {
+    setForm(initialForm);
+    setEditingId(null);
+  };
+
+  const beginEdit = (item: DataSource) => {
+    setError(null);
+    setEditingId(item.id);
+    setForm({
+      name: item.name,
+      host: item.host,
+      port: String(item.port),
+      database: item.database,
+      username: item.username,
+      password: "",
+      ssl_mode: item.ssl_mode || "disable",
+    });
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`${apiBase}/admin/data-sources`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name.trim(),
-          type: "postgres",
-          host: form.host.trim(),
-          port: Number(form.port || 5432),
-          database: form.database.trim(),
-          username: form.username.trim(),
-          password: form.password || undefined,
-          ssl_mode: form.ssl_mode || undefined,
-        }),
-      });
+      const payload: Record<string, unknown> = {
+        name: form.name.trim(),
+        host: form.host.trim(),
+        port: Number(form.port || 5432),
+        database: form.database.trim(),
+        username: form.username.trim(),
+        ssl_mode: form.ssl_mode || undefined,
+      };
+
+      if (editingId) {
+        if (form.password) payload.password = form.password;
+      } else {
+        payload.type = "postgres";
+        payload.password = form.password || undefined;
+      }
+
+      const res = await fetch(
+        editingId ? `${apiBase}/admin/data-sources/${editingId}` : `${apiBase}/admin/data-sources`,
+        {
+          method: editingId ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
       if (!res.ok) {
         const msg = await res.text();
-        throw new Error(msg || `Failed to create (${res.status})`);
+        throw new Error(msg || `Failed to ${editingId ? "update" : "save"} (${res.status})`);
       }
-      setForm(initialForm);
+
+      resetForm();
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create");
+      setError(err instanceof Error ? err.message : `Failed to ${editingId ? "update" : "save"}`);
     } finally {
       setLoading(false);
     }
@@ -118,6 +149,7 @@ export default function DataSourcesClient() {
         const msg = await res.text();
         throw new Error(msg || `Failed to delete (${res.status})`);
       }
+      if (editingId === id) resetForm();
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete");
@@ -148,13 +180,26 @@ export default function DataSourcesClient() {
   return (
     <div className="space-y-6">
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-          Add Postgres Connector
-        </h2>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Store connection details for Postgres sources. Use Test to validate.
-        </p>
-        <form onSubmit={handleCreate} className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+              Database Connector
+            </h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Store connection details for Postgres sources. Use Test to validate.
+            </p>
+          </div>
+          {editingId ? (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              Cancel
+            </button>
+          ) : null}
+        </div>
+        <form onSubmit={handleSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
           <div>
             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
               Name
@@ -226,7 +271,7 @@ export default function DataSourcesClient() {
               onChange={handleChange("password")}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
               type="password"
-              placeholder="••••••••"
+              placeholder={editingId ? "Leave blank to keep current password" : "••••••••"}
             />
           </div>
           <div>
@@ -251,7 +296,13 @@ export default function DataSourcesClient() {
               className="w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
               disabled={loading}
             >
-              {loading ? "Saving..." : "Save Connector"}
+              {loading
+                ? editingId
+                  ? "Updating..."
+                  : "Saving..."
+                : editingId
+                ? "Update Connector"
+                : "Save Connector"}
             </button>
           </div>
         </form>
@@ -324,6 +375,14 @@ export default function DataSourcesClient() {
                     </td>
                     <td className="py-3 pr-4">
                       <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => beginEdit(item)}
+                          className="rounded-lg border border-sky-300 px-2 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50 disabled:opacity-60"
+                          disabled={busyId === item.id}
+                        >
+                          Update
+                        </button>
                         <button
                           type="button"
                           onClick={() => void handleTest(item.id)}

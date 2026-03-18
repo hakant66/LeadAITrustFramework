@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { resolveNavMode } from "@/lib/navMode";
+import { SINGLE_TENANT_UI } from "@/lib/singleTenant";
 import ProjectRegisterPage from "@/app/(components)/ProjectRegisterPage";
 
 type UserEntity = {
@@ -52,8 +53,8 @@ export default async function EntityProjectsRegisterPage({
   const entities = (await res.json()) as UserEntity[];
   let entity = entities.find((e) => e.slug === entitySlug);
 
-  // If not found in user_entity_access but user is master admin, fetch entity by slug
-  if (!entity && isMasterAdmin) {
+  // In single-tenant mode, trust the URL slug even if user_entity_access is stale or filtered.
+  if (!entity && (isMasterAdmin || SINGLE_TENANT_UI)) {
     const entityBySlugRes = await fetch(
       `${appUrl.replace(/\/+$/, "")}/api/core/entity/by-slug/${encodeURIComponent(entitySlug)}`,
       headers
@@ -71,6 +72,9 @@ export default async function EntityProjectsRegisterPage({
   }
 
   if (!entity) {
+    if (SINGLE_TENANT_UI) {
+      redirect(`/${encodeURIComponent(entitySlug)}/scorecard/admin/governance-setup/entity-setup`);
+    }
     const first = entities[0];
     if (first) {
       redirect(`/${encodeURIComponent(first.slug)}/projects/register`);
@@ -90,7 +94,7 @@ export default async function EntityProjectsRegisterPage({
       entityId={entity.entity_id}
       entitySlug={entity.slug}
       title={t("title")}
-      subtitle={t("subtitle")}
+      subtitle="Governance Setup"
       titleNote={t("stepNote")}
       showHeaderNextStep={false}
       showBottomNextStep={true}

@@ -29,7 +29,7 @@ def fetch_project_pillars(db: Connection, project_slug: str):
           from public.controls c
           join latest l on l.control_id = c.id and l.rn = 1
           where c.project_id is null or c.project_id in (
-            select id from public.projects where slug = :project_slug
+            select id from public.entity_projects where slug = :project_slug
           )
           group by c.pillar_key
         )
@@ -43,7 +43,7 @@ def fetch_project_pillars(db: Connection, project_slug: str):
           round(coalesce(po.weight, p.weight) * 100.0, 2) as pillar_weight_pct, -- 0..100 (display)
           po.updated_at                                 as updated_at
         from public.pillars p
-        left join public.projects pr on pr.slug = :project_slug
+        left join public.entity_projects pr on pr.slug = :project_slug
         left join public.pillar_overrides po
           on po.pillar_key = p.key and po.project_id = pr.id
         left join pillar_calc pc

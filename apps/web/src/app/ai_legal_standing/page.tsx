@@ -1,7 +1,7 @@
 // apps/web/src/app/ai_legal_standing/page.tsx
 "use client";
 
-import { FormEvent, useState, useEffect, type ReactNode } from "react";
+import { FormEvent, useState, useEffect, useRef, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -478,6 +478,8 @@ export default function AiLegalStandingPage() {
   });
   const [saveEntityLoading, setSaveEntityLoading] = useState(false);
   const [saveEntityError, setSaveEntityError] = useState<string | null>(null);
+  const [assessmentGeneratedNotice, setAssessmentGeneratedNotice] = useState(false);
+  const summaryRef = useRef<HTMLDivElement | null>(null);
 
   const handleSelect = (key: keyof AssessmentPayload, value: boolean) => {
     setPayload((prev) => ({ ...prev, [key]: value }));
@@ -538,6 +540,7 @@ export default function AiLegalStandingPage() {
     setMissingQuestions([]);
     setErrorDetails(null);
     setErrorDetailsCopied(false);
+    setAssessmentGeneratedNotice(false);
 
     const unanswered = Object.entries(payload).filter(([key, value]) => {
       if (value !== null) return false;
@@ -653,6 +656,12 @@ export default function AiLegalStandingPage() {
           return;
         }
         await persistAssessment(data, { redirect: false });
+        setAssessmentGeneratedNotice(true);
+        await new Promise((resolve) => window.setTimeout(resolve, 2000));
+        summaryRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }
     } catch (err) {
       setError(
@@ -667,6 +676,32 @@ export default function AiLegalStandingPage() {
     const storedId =
       typeof window !== "undefined" ? sessionStorage.getItem("entityId") : null;
     if (storedId) {
+      try {
+        const res = await fetch(`/api/core/entity/${encodeURIComponent(storedId)}`, {
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { id?: string; slug?: string | null };
+          if (data?.id && typeof window !== "undefined") {
+            sessionStorage.setItem("entityId", data.id);
+          }
+          if (typeof window !== "undefined") {
+            if (data?.slug) {
+              sessionStorage.setItem("entitySlug", data.slug);
+            } else {
+              sessionStorage.removeItem("entitySlug");
+            }
+          }
+          setResolvedEntityId(data?.id ?? storedId);
+          setResolvedEntitySlug(data?.slug ?? null);
+          return {
+            id: data?.id ?? storedId,
+            slug: data?.slug ?? null,
+          };
+        }
+      } catch {
+        // Fall back to session values below.
+      }
       return {
         id: storedId,
         slug:
@@ -709,6 +744,7 @@ export default function AiLegalStandingPage() {
     const decisionTraceText = assessmentResult.decision_trace
       .map((item) => `${item.decision} (${item.citation})`)
       .join("\n");
+    let targetSlugForRedirect: string | null = null;
     try {
       const { id: entityId, slug: entitySlug } = await resolveEntityContext();
       const entityProfileRaw = typeof window !== "undefined" ? sessionStorage.getItem("entityProfile") : null;
@@ -730,6 +766,25 @@ export default function AiLegalStandingPage() {
           const msg = typeof errBody.detail === "string" ? errBody.detail : "Failed to update entity";
           throw new Error(msg);
         }
+        const updatedEntity = (await res.json().catch(() => ({}))) as {
+          id?: string;
+          slug?: string | null;
+        };
+        if (typeof window !== "undefined") {
+          if (updatedEntity?.id) sessionStorage.setItem("entityId", updatedEntity.id);
+          if (updatedEntity?.slug) {
+            sessionStorage.setItem("entitySlug", updatedEntity.slug);
+          } else {
+            sessionStorage.removeItem("entitySlug");
+          }
+        }
+        if (updatedEntity?.id) {
+          setResolvedEntityId(updatedEntity.id);
+        }
+        if (updatedEntity?.slug) {
+          setResolvedEntitySlug(updatedEntity.slug);
+        }
+        targetSlugForRedirect = updatedEntity?.slug ?? entitySlug ?? null;
       } else if (entityProfile && entityProfile.fullLegalName && entityProfile.headquartersCountry) {
         const res = await fetch("/api/core/entity", {
           method: "POST",
@@ -765,7 +820,21 @@ export default function AiLegalStandingPage() {
           throw new Error(msg);
         }
         const data = await res.json();
-        if (data?.id && typeof window !== "undefined") sessionStorage.setItem("entityId", data.id);
+        if (typeof window !== "undefined") {
+          if (data?.id) sessionStorage.setItem("entityId", data.id);
+          if (data?.slug) {
+            sessionStorage.setItem("entitySlug", data.slug);
+          } else {
+            sessionStorage.removeItem("entitySlug");
+          }
+        }
+        if (data?.id) {
+          setResolvedEntityId(data.id);
+        }
+        if (data?.slug) {
+          setResolvedEntitySlug(data.slug);
+        }
+        targetSlugForRedirect = data?.slug ?? null;
       } else {
         setSaveEntityError("Complete the Entity form first, then return here.");
         setSaveEntityLoading(false);
@@ -773,7 +842,12 @@ export default function AiLegalStandingPage() {
       }
       if (opts?.redirect && typeof window !== "undefined") {
         const targetSlug =
-          entitySlug || resolvedEntitySlug || entitySlugParam || null;
+          targetSlugForRedirect ||
+          entitySlug ||
+          (typeof window !== "undefined" ? sessionStorage.getItem("entitySlug") : null) ||
+          resolvedEntitySlug ||
+          entitySlugParam ||
+          null;
         window.location.href = targetSlug
           ? `/${encodeURIComponent(targetSlug)}/scorecard/admin/governance-setup/entity-setup`
           : "/scorecard/admin/governance-setup/entity-setup";
@@ -1194,11 +1268,19 @@ export default function AiLegalStandingPage() {
               {isSubmitting ? t("buttons.assessing") : t("buttons.generateAndSave")}
             </button>
           </div>
+          {assessmentGeneratedNotice && (
+            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+              Assessment generated
+            </p>
+          )}
         </form>
       </section>
 
       <aside className="w-full lg:w-[360px]">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700/70 dark:bg-slate-900/70">
+        <div
+          ref={summaryRef}
+          className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700/70 dark:bg-slate-900/70"
+        >
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             {t("summary.title")}
           </h2>

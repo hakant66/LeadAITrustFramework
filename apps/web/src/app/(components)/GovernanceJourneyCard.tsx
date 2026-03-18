@@ -215,15 +215,15 @@ export default async function GovernanceJourneyCard({
 
   const stepsBase = [
     {
-      key: "legalStanding",
-      label: t("steps.legalStanding"),
-      href: legalStandingHref,
-      complete: true,
-    },
-    {
       key: "entity",
       label: t("steps.entity"),
       href: `${prefix}/scorecard/admin/governance-setup/entity-setup`,
+      complete: true,
+    },
+    {
+      key: "legalStanding",
+      label: t("steps.legalStanding"),
+      href: legalStandingHref,
       complete: true,
     },
     {

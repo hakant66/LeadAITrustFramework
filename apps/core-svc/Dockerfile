@@ -9,6 +9,7 @@ COPY apps/core-svc/requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt
 
 COPY apps/core-svc/ ./
+RUN chmod +x /app/start.sh
 
 EXPOSE 8001
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["/app/start.sh"]

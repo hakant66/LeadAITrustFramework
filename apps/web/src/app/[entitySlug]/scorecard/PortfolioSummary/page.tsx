@@ -34,6 +34,7 @@ export default async function EntityPortfolioSummaryPage({
       showAlerts
       headerVariant="back-entity"
       titleOverride="Portfolio of AI Projects"
+      subtitleOverride="Executive Reporting"
       showProjectCards={false}
     />
   );

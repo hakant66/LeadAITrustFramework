@@ -1,15 +1,17 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
-ARG NEXT_PUBLIC_DOC_ROOT
-ARG NEXT_PUBLIC_MCP_SERVER_URL
-ARG NEXT_PUBLIC_DIFY_WEBAPP_ORIGIN
-ARG NEXT_PUBLIC_DIFY_WEBAPP_PATH
-ARG MINIO_BUCKET
-ARG MINIO_ENDPOINT
-ARG MINIO_REGION
-ARG MINIO_ACCESS_KEY
-ARG MINIO_SECRET_KEY
+ARG NEXT_PUBLIC_DOC_ROOT=""
+ARG NEXT_PUBLIC_MCP_SERVER_URL=http://localhost:8787
+ARG NEXT_PUBLIC_DIFY_WEBAPP_ORIGIN=http://host.docker.internal:8080
+ARG NEXT_PUBLIC_DIFY_WEBAPP_PATH=/apps
+ARG MINIO_BUCKET=evidence
+ARG MINIO_ENDPOINT=http://minio:9000
+ARG MINIO_REGION=us-east-1
+ARG MINIO_ACCESS_KEY=minioadmin
+ARG MINIO_SECRET_KEY=minioadmin
+ARG DATABASE_URL=postgresql://leadai:leadai@postgres:5432/leadai
+ARG AUTH_DATABASE_URL=postgresql://leadai:leadai@postgres:5432/leadai?schema=auth
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_DOC_ROOT=$NEXT_PUBLIC_DOC_ROOT
 ENV NEXT_PUBLIC_MCP_SERVER_URL=$NEXT_PUBLIC_MCP_SERVER_URL
@@ -20,11 +22,17 @@ ENV MINIO_ENDPOINT=$MINIO_ENDPOINT
 ENV MINIO_REGION=$MINIO_REGION
 ENV MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY
 ENV MINIO_SECRET_KEY=$MINIO_SECRET_KEY
+ENV DATABASE_URL=$DATABASE_URL
+ENV AUTH_DATABASE_URL=$AUTH_DATABASE_URL
+RUN corepack enable
+COPY apps/web/package.json ./package.json
+COPY apps/web/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY apps/web/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY apps/web/.npmrc ./.npmrc
+RUN pnpm install --frozen-lockfile
 COPY apps/web/ ./
-COPY tools/web-node-modules.tgz /tmp/web-node-modules.tgz
-RUN tar -xzf /tmp/web-node-modules.tgz -C /app \
-  && rm /tmp/web-node-modules.tgz \
-  && node ./node_modules/next/dist/bin/next build
+RUN pnpm prisma generate \
+  && pnpm build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -40,9 +48,13 @@ ENV MINIO_ENDPOINT=$MINIO_ENDPOINT
 ENV MINIO_REGION=$MINIO_REGION
 ENV MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY
 ENV MINIO_SECRET_KEY=$MINIO_SECRET_KEY
+ENV DATABASE_URL=$DATABASE_URL
+ENV AUTH_DATABASE_URL=$AUTH_DATABASE_URL
+RUN corepack enable
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/next.config.* ./
 COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 3000

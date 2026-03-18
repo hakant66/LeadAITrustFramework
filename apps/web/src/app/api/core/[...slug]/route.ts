@@ -21,9 +21,23 @@ const HOP_BY_HOP_HEADERS = new Set([
   "content-length",
 ]);
 
+function normalizePathSegment(rawSegment: string): string {
+  let value = rawSegment;
+  for (let i = 0; i < 2; i += 1) {
+    try {
+      const decoded = decodeURIComponent(value);
+      if (decoded === value) break;
+      value = decoded;
+    } catch {
+      break;
+    }
+  }
+  return value;
+}
+
 function buildUrl(slug: string[], search: string): string {
   const base = CORE_BASE.replace(/\/+$/, "");
-  const path = slug.map(encodeURIComponent).join("/");
+  const path = slug.map((segment) => encodeURIComponent(normalizePathSegment(segment))).join("/");
   return `${base}/${path}${search}`;
 }
 

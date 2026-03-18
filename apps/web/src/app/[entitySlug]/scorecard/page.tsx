@@ -171,7 +171,7 @@ export default async function EntityScorecardHome({
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
       <div className="px-6 py-6 max-w-7xl mx-auto">
-        <Header title={t("title")} subtitle={t("subtitle")} entityName={entity.name}>
+        <Header title={t("title")} subtitle="Executive Reporting" entityName={entity.name}>
           <div className="flex w-full flex-wrap items-start gap-3">
             <BackButton />
             <div className="ml-auto flex flex-col items-end self-start">

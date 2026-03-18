@@ -61,7 +61,7 @@ export default async function PresentationDeckPage({
     const text = await deckRes.text();
     return (
       <div className="space-y-6">
-        <Header title="Presentation Deck" subtitle="LeadAI · Governance Dashboard">
+        <Header title="Presentation Deck" subtitle="Executive Reporting">
           <BackButton />
         </Header>
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-900">
@@ -76,7 +76,7 @@ export default async function PresentationDeckPage({
 
   return (
     <div className="space-y-6">
-      <Header title="Presentation Deck" subtitle="LeadAI · Governance Dashboard">
+      <Header title="Presentation Deck" subtitle="Executive Reporting">
         <div className="flex w-full flex-wrap items-start gap-3">
           <BackButton />
           <div className="ml-auto flex flex-col items-end self-start">

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { resolveNavMode } from "@/lib/navMode";
+import { SINGLE_TENANT_UI } from "@/lib/singleTenant";
 import GovernanceDashboardLanding from "@/app/scorecard/admin/governance-dashboard-reporting/GovernanceDashboardLanding";
 
 type UserEntity = { entity_id: string; role: string; name: string; slug: string; status: string | null };
@@ -45,8 +46,8 @@ export default async function EntityGovernanceDashboardReportingPage({
   const entities = (await res.json()) as UserEntity[];
   let entity = entities.find((e) => e.slug === entitySlug);
 
-  // If not found in user_entity_access but user is master admin, fetch entity by slug
-  if (!entity && isMasterAdmin) {
+  // In single-tenant mode, trust the URL slug even if user_entity_access is stale or filtered.
+  if (!entity && (isMasterAdmin || SINGLE_TENANT_UI)) {
     const entityBySlugRes = await fetch(
       `${appUrl.replace(/\/+$/, "")}/api/core/entity/by-slug/${encodeURIComponent(entitySlug)}`,
       headers
@@ -64,6 +65,9 @@ export default async function EntityGovernanceDashboardReportingPage({
   }
 
   if (!entity) {
+    if (SINGLE_TENANT_UI) {
+      redirect(`/${encodeURIComponent(entitySlug)}/scorecard/admin/governance-setup/entity-setup`);
+    }
     const first = entities[0];
     if (first) {
       redirect(`/${encodeURIComponent(first.slug)}/scorecard/admin/governance-dashboard-reporting`);
@@ -78,6 +82,7 @@ export default async function EntityGovernanceDashboardReportingPage({
       entityId={entity.entity_id}
       entities={entities}
       showExecutiveMenu
+      subtitleOverride="Executive Reporting"
     />
   );
 }

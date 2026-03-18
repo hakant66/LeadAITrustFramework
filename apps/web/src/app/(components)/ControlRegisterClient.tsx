@@ -787,7 +787,7 @@ export default function ControlRegisterClient({ entitySlug }: { entitySlug: stri
     <div className="space-y-6">
       <Header
         title="AI Control Register"
-        subtitle={`LeadAI · ${entityName || "Governance Setup"}`}
+        subtitle="Governance Setup"
         titleNote="Step 6 of 6"
       />
 

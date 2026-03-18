@@ -164,7 +164,7 @@ export default function KnowledgeBaseKpiPage() {
               className="rounded-full border border-indigo-200 bg-white px-4 py-2 text-xs font-semibold text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 dark:border-slate-600 dark:bg-slate-900 dark:text-indigo-200 dark:hover:bg-slate-800"
               onClick={() =>
                 router.push(
-                  "/blueprint-limited/scorecard/admin/governance-setup/ai-policy-register"
+                  "/scorecard/admin/governance-setup/ai-policy-register"
                 )
               }
             >

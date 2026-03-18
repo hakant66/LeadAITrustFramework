@@ -14,6 +14,7 @@ import {
   RefreshCw,
   ShieldAlert,
 } from "lucide-react";
+import { SINGLE_TENANT_UI } from "@/lib/singleTenant";
 
 /** Map API error response to a user-friendly message. */
 async function getApiErrorMessage(
@@ -73,6 +74,16 @@ export default function MasterAdminEntitiesPage() {
   const [currentEntityName, setCurrentEntityName] = useState<string | null>(null);
   const [userLabel, setUserLabel] = useState<string>("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (SINGLE_TENANT_UI) {
+      router.replace("/scorecard");
+    }
+  }, [router]);
+
+  if (SINGLE_TENANT_UI) {
+    return null;
+  }
 
   const fetchEntities = useCallback(async () => {
     setLoading(true);

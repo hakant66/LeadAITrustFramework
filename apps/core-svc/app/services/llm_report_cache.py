@@ -224,8 +224,7 @@ async def invalidate_cache_async(
     """
     Async version of invalidate_cache for use in async endpoints.
     """
-    import asyncpg
-    from app.db import get_pool
+    from app.db_async import get_pool
     
     pool = await get_pool()
     async with pool.acquire() as conn:

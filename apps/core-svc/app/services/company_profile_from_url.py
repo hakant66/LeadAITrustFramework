@@ -8,15 +8,17 @@ Step 3: Structure with OpenAI (from .env) or Gemini into CompanyProfile JSON.
 from __future__ import annotations
 
 import json
+import io
 import logging
 import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import httpx
 from pydantic import BaseModel, Field
+from pypdf import PdfReader
 
 logger = logging.getLogger(__name__)
 
@@ -193,6 +195,73 @@ def _url_to_domain(url: str) -> str:
         return ""
 
 
+def _score_candidate_url(url: str) -> int:
+    """Prefer legal/privacy/about pages and PDFs over generic homepages."""
+    normalized = _normalize_url(url).lower()
+    score = 0
+    if any(segment in normalized for segment in ("/about-us", "/about", "/company", "/contact")):
+        score += 45
+    if normalized.endswith(".pdf"):
+        score += 8
+    for needle, weight in (
+        ("privacy", 6),
+        ("legal", 6),
+        ("notice", 3),
+        ("impressum", 10),
+        ("about", 8),
+        ("company", 8),
+        ("contact", 8),
+        ("kvkk", 10),
+    ):
+        if needle in normalized:
+            score += weight
+    path = urlparse(normalized).path.strip("/")
+    if not path:
+        score -= 20
+    return score
+
+
+def _same_registered_site(candidate_url: str, root_domain: str) -> bool:
+    host = (urlparse(_normalize_url(candidate_url)).netloc or "").lower().lstrip("www.")
+    return host == root_domain or host.endswith(f".{root_domain}")
+
+
+def _build_candidate_urls(url: str, search_urls: List[str]) -> List[str]:
+    """Prefer first-party about/contact pages before search results and penalize regional CDN docs."""
+    normalized_url = _normalize_url(url)
+    parsed = urlparse(normalized_url)
+    root_domain = (parsed.netloc or "").lower().lstrip("www.")
+    seed_candidates = [
+        normalized_url,
+        f"{parsed.scheme}://{parsed.netloc}/about-us",
+        f"{parsed.scheme}://{parsed.netloc}/en/about-us",
+        f"{parsed.scheme}://{parsed.netloc}/contact",
+        f"{parsed.scheme}://{parsed.netloc}/en/contact",
+        f"{parsed.scheme}://{parsed.netloc}/about",
+        f"{parsed.scheme}://{parsed.netloc}/company",
+    ]
+
+    deduped: List[str] = []
+    for candidate in [*seed_candidates, *search_urls]:
+        if candidate and candidate not in deduped:
+            deduped.append(candidate)
+
+    def sort_key(candidate: str) -> tuple[int, int]:
+        normalized = _normalize_url(candidate).lower()
+        score = _score_candidate_url(candidate)
+        if _same_registered_site(candidate, root_domain):
+            score += 25
+        if "/cdn." in normalized or normalized.startswith("https://cdn."):
+            score -= 30
+        if "/eu/" in normalized or "spain" in normalized:
+            score -= 25
+        if normalized.endswith(".pdf"):
+            score -= 10
+        return (score, -deduped.index(candidate))
+
+    return sorted(deduped, key=sort_key, reverse=True)
+
+
 def _search_legal_pages(domain: str) -> List[str]:
     """Step 1: Search for Impressum / Legal / Privacy Policy pages via Serper."""
     api_key = os.getenv("SERPER_API_KEY")
@@ -223,6 +292,148 @@ def _search_legal_pages(domain: str) -> List[str]:
     return urls[:5]
 
 
+def _search_company_snippets(domain: str) -> List[str]:
+    """Fetch organic search snippets to add company-level context when pages are challenge-protected."""
+    api_key = os.getenv("SERPER_API_KEY")
+    if not api_key:
+        return []
+
+    query = f'site:{domain} company OR "about us" OR "central bank" OR "electronic money"'
+    headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}
+    payload = {"q": query, "num": 5}
+
+    try:
+        with httpx.Client(timeout=15.0) as client:
+            r = client.post(
+                "https://google.serper.dev/search",
+                json=payload,
+                headers=headers,
+            )
+            r.raise_for_status()
+            data = r.json()
+    except Exception:
+        return []
+
+    snippets: List[str] = []
+    for item in (data.get("organic") or data.get("results") or []):
+        if not isinstance(item, dict):
+            continue
+        title = (item.get("title") or "").strip()
+        snippet = (item.get("snippet") or "").strip()
+        if title or snippet:
+            snippets.append(" - ".join(part for part in (title, snippet) if part))
+    return snippets[:5]
+
+
+def _looks_like_block_page(text: str) -> bool:
+    lowered = (text or "").lower()
+    block_markers = (
+        "enable javascript and cookies to continue",
+        "güvenlik kontrolünü tamamlayın",
+        "bir adım daha kaldı",
+        "security check",
+        "access denied",
+        "captcha",
+        "cloudflare",
+        "challenge",
+    )
+    return any(marker in lowered for marker in block_markers)
+
+
+def _extract_tag_attrs(tag_html: str) -> Dict[str, str]:
+    attrs: Dict[str, str] = {}
+    for key, value in re.findall(r'([a-zA-Z:_-]+)\s*=\s*["\']([^"\']+)["\']', tag_html):
+        attrs[key.lower()] = value
+    return attrs
+
+
+def _extract_logo_candidates_from_html(base_url: str, html: str) -> List[str]:
+    candidates: List[str] = []
+    for match in re.finditer(r"<meta\b[^>]*>", html, flags=re.IGNORECASE):
+        attrs = _extract_tag_attrs(match.group(0))
+        content = (attrs.get("content") or "").strip()
+        property_name = (attrs.get("property") or attrs.get("name") or "").strip().lower()
+        if content and property_name in {"og:image", "og:image:secure_url", "twitter:image", "twitter:image:src"}:
+            resolved = urljoin(base_url, content)
+            if not content.startswith("data:") and resolved not in candidates:
+                candidates.append(resolved)
+
+    for match in re.finditer(r"<link\b[^>]*>", html, flags=re.IGNORECASE):
+        attrs = _extract_tag_attrs(match.group(0))
+        rel = (attrs.get("rel") or "").lower()
+        href = (attrs.get("href") or "").strip()
+        if href and any(token in rel for token in ("apple-touch-icon", "mask-icon", "icon", "shortcut icon")):
+            resolved = urljoin(base_url, href)
+            if not href.startswith("data:") and resolved not in candidates:
+                candidates.append(resolved)
+
+    for match in re.finditer(r"<img\b[^>]*>", html, flags=re.IGNORECASE):
+        attrs = _extract_tag_attrs(match.group(0))
+        src = (attrs.get("src") or "").strip()
+        hint = " ".join(filter(None, [attrs.get("class"), attrs.get("id"), attrs.get("alt")])).lower()
+        if src and "logo" in hint:
+            resolved = urljoin(base_url, src)
+            if not src.startswith("data:") and resolved not in candidates:
+                candidates.append(resolved)
+    return candidates
+
+
+def _score_logo_candidate(candidate_url: str, root_domain: str) -> int:
+    normalized = _normalize_url(candidate_url).lower()
+    parsed = urlparse(normalized)
+    host = (parsed.netloc or "").lower().lstrip("www.")
+    path = parsed.path.lower()
+    score = 0
+    if host == root_domain or host.endswith(f".{root_domain}"):
+        score += 40
+    if "logo" in path:
+        score += 35
+    if "brand" in path:
+        score += 15
+    if any(path.endswith(ext) for ext in (".svg", ".png", ".webp")):
+        score += 12
+    if "favicon" in path:
+        score -= 10
+    if any(part in path for part in ("/apple-touch-icon", "/mask-icon")):
+        score -= 3
+    if parsed.query:
+        score -= 1
+    return score
+
+
+def _discover_logo_url(url: str) -> Optional[str]:
+    base_url = _normalize_url(url)
+    root_domain = _url_to_domain(base_url)
+    try:
+        with httpx.Client(timeout=15.0, follow_redirects=True) as client:
+            response = client.get(
+                base_url,
+                headers={
+                    "User-Agent": (
+                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/122.0.0.0 Safari/537.36"
+                    ),
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.9",
+                },
+            )
+    except Exception:
+        return None
+
+    content_type = (response.headers.get("content-type") or "").lower()
+    if "text/html" not in content_type:
+        return None
+    html = response.text or ""
+    if not html:
+        return None
+
+    candidates = _extract_logo_candidates_from_html(str(response.url), html)
+    if not candidates:
+        return None
+    return max(candidates, key=lambda candidate: _score_logo_candidate(candidate, root_domain))
+
+
 def _scrape_url(url: str) -> Optional[str]:
     """Step 2: Scrape URL to markdown/text. Prefer Firecrawl; fallback to HTTP."""
     url = _normalize_url(url)
@@ -248,14 +459,38 @@ def _scrape_url(url: str) -> Optional[str]:
     if not markdown:
         try:
             with httpx.Client(timeout=15.0, follow_redirects=True) as client:
-                r = client.get(url, headers={"User-Agent": "LeadAI-EntityProfile/1.0"})
-                r.raise_for_status()
+                r = client.get(
+                    url,
+                    headers={
+                        "User-Agent": (
+                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/122.0.0.0 Safari/537.36"
+                        ),
+                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                        "Accept-Language": "en-US,en;q=0.9",
+                    },
+                )
+            content_type = (r.headers.get("content-type") or "").lower()
+            is_pdf = url.lower().endswith(".pdf") or "application/pdf" in content_type
+            if is_pdf:
+                reader = PdfReader(io.BytesIO(r.content))
+                pdf_text_parts = [
+                    (page.extract_text() or "").strip()
+                    for page in reader.pages
+                ]
+                markdown = "\n\n".join(part for part in pdf_text_parts if part).strip()[:20000]
+            else:
                 html = r.text
-            # Minimal strip: remove script/style, then tags
-            html = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
-            html = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.DOTALL | re.IGNORECASE)
-            markdown = re.sub(r"<[^>]+>", " ", html)
-            markdown = re.sub(r"\s+", " ", markdown).strip()[:20000]
+                if not html or len(html.strip()) < 200:
+                    return None
+                # Minimal strip: remove script/style, then tags
+                html = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
+                html = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.DOTALL | re.IGNORECASE)
+                markdown = re.sub(r"<[^>]+>", " ", html)
+                markdown = re.sub(r"\s+", " ", markdown).strip()[:20000]
+                if _looks_like_block_page(markdown):
+                    return None
         except Exception:
             return None
 
@@ -286,6 +521,7 @@ Return ONLY a flat JSON object (NOT nested) with these exact top-level keys (use
 }
 
 CRITICAL: Return a FLAT JSON object with all keys at the top level. Do NOT nest keys under categories like "core_identity" or "size_and_role".
+CRITICAL: If the sources mention multiple legal entities or regional affiliates, prefer the primary company operating the root website/domain the user entered. Do not switch to a country subsidiary unless the input URL itself points to that subsidiary.
 
 Text:
 """
@@ -616,18 +852,44 @@ def profile_company_from_url(url: str) -> Dict[str, Any]:
 
     # Step 1: Discover legal pages
     search_urls = _search_legal_pages(domain)
-    urls_to_scrape = [url]
-    for u in search_urls:
-        if u and u not in urls_to_scrape:
-            urls_to_scrape.append(u)
+    search_snippets = _search_company_snippets(domain)
+    urls_to_scrape = _build_candidate_urls(url, search_urls)
 
     # Step 2: Scrape and concatenate content
     combined_text: List[str] = []
-    for u in urls_to_scrape[:3]:
+    first_party_candidates = [
+        u for u in urls_to_scrape
+        if _same_registered_site(u, domain) and not _normalize_url(u).lower().endswith(".pdf")
+    ]
+    fallback_candidates = [u for u in urls_to_scrape if u not in first_party_candidates]
+
+    for u in first_party_candidates[:4]:
         content = _scrape_url(u)
         if content:
             combined_text.append(content)
-    raw_text = "\n\n".join(combined_text) if combined_text else None
+            if len(combined_text) >= 2:
+                break
+
+    if not combined_text and not search_snippets:
+        for u in fallback_candidates[:4]:
+            content = _scrape_url(u)
+            if content:
+                combined_text.append(content)
+                if len(combined_text) >= 2:
+                    break
+
+    if not combined_text and not search_snippets:
+        for u in urls_to_scrape[:6]:
+            content = _scrape_url(u)
+            if content:
+                combined_text.append(content)
+                if len(combined_text) >= 2:
+                    break
+    raw_parts: List[str] = []
+    if search_snippets:
+        raw_parts.append("Search snippets:\n" + "\n".join(search_snippets))
+    raw_parts.extend(combined_text)
+    raw_text = "\n\n".join(raw_parts) if raw_parts else None
     if not raw_text:
         return {"_error": "Could not scrape content from URL"}
 
@@ -685,6 +947,9 @@ def profile_company_from_url(url: str) -> Dict[str, Any]:
         "sectors": sectors,
         "regionsOfOperation": regions,
     }
+    discovered_logo_url = _discover_logo_url(url)
+    if discovered_logo_url:
+        out["logoUrl"] = discovered_logo_url
     # Compliance personnel (only include when non-empty so frontend can merge without overwriting with "")
     for key, val in (
         ("authorizedRepresentativeName", profile.authorized_representative_name),

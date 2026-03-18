@@ -301,6 +301,9 @@ export default function EntityPage() {
   const [llmHealthOk, setLlmHealthOk] = useState<boolean | null>(null); // null = checking, true = ok, false = issues
   const [searchResults, setSearchResults] = useState<Record<string, unknown> | null>(null);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const [discoveredLogoUrl, setDiscoveredLogoUrl] = useState<string | null>(null);
 
   // Check LLM API health on mount
   useEffect(() => {
@@ -327,6 +330,14 @@ export default function EntityPage() {
         : { ...prev, capturedBy: capturedByEmail }
     );
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (logoPreviewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(logoPreviewUrl);
+      }
+    };
+  }, [logoPreviewUrl]);
 
   const validateField = (
     field: keyof EntityProfile,
@@ -440,6 +451,14 @@ export default function EntityPage() {
       
       // Store search results for modal display
       setSearchResults(data);
+      if (typeof data.logoUrl === "string" && data.logoUrl.trim()) {
+        setDiscoveredLogoUrl(data.logoUrl);
+        setLogoFile(null);
+        setLogoPreviewUrl((prev) => {
+          if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+          return data.logoUrl;
+        });
+      }
       
       // Update profile with search results
       setProfile((prev) => {
@@ -488,6 +507,32 @@ export default function EntityPage() {
     setErrors((prev) => ({ ...prev, sectors: "" }));
   };
 
+  const uploadLogo = async (entityId: string) => {
+    let res: Response;
+    if (logoFile) {
+      const body = new FormData();
+      body.append("file", logoFile);
+      res = await fetch(`/api/core/entity/${entityId}/logo`, {
+        method: "POST",
+        body,
+      });
+    } else if (discoveredLogoUrl) {
+      res = await fetch(`/api/core/entity/${entityId}/logo-from-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: discoveredLogoUrl }),
+      });
+    } else {
+      return null;
+    }
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      const detail = typeof data.detail === "string" ? data.detail : "Failed to upload logo.";
+      throw new Error(detail);
+    }
+    return res.json();
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setSubmitError(null);
@@ -501,7 +546,17 @@ export default function EntityPage() {
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length > 0 || !isFormValid()) return;
+    if (Object.keys(newErrors).length > 0 || !isFormValid()) {
+      setSubmitError("Please complete the required fields before saving the entity profile.");
+      if (typeof window !== "undefined") {
+        window.setTimeout(() => {
+          document
+            .querySelector(".text-red-600, .text-red-400")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 0);
+      }
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -537,8 +592,17 @@ export default function EntityPage() {
         throw new Error(msg || `Request failed (${res.status})`);
       }
       const data = await res.json();
+      const logoData = data?.id ? await uploadLogo(data.id) : null;
       sessionStorage.setItem("entityProfile", JSON.stringify(profile));
       if (data?.id) sessionStorage.setItem("entityId", data.id);
+      if (data?.slug) {
+        sessionStorage.setItem("entitySlug", data.slug);
+      } else {
+        sessionStorage.removeItem("entitySlug");
+      }
+      if (logoData?.logoUrl) {
+        sessionStorage.setItem("entityLogoUrl", logoData.logoUrl);
+      }
       router.push("/ai_legal_standing?skipIntro=true");
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Failed to save entity profile.");
@@ -633,6 +697,46 @@ export default function EntityPage() {
             {errors.fullLegalName && (
               <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.fullLegalName}</p>
             )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
+              Company Logo
+            </label>
+            <div className="mt-1 flex items-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950/40">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+                {logoPreviewUrl ? (
+                  <img
+                    src={logoPreviewUrl}
+                    alt="Company logo preview"
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span className="px-2 text-center text-xs text-slate-500 dark:text-slate-400">
+                    No logo selected
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] ?? null;
+                    setLogoFile(file);
+                    setDiscoveredLogoUrl(null);
+                    setLogoPreviewUrl((prev) => {
+                      if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+                      return file ? URL.createObjectURL(file) : null;
+                    });
+                  }}
+                  className="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-500 dark:text-slate-300"
+                />
+                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                  Upload a PNG, JPG, WEBP, or SVG, or use the AI-discovered logo preview. The displayed logo will be stored when you save the entity profile.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -1151,7 +1255,7 @@ export default function EntityPage() {
         {hasEUPresence() ? (
           <button
             type="submit"
-            disabled={!isFormValid() || isSubmitting}
+            disabled={isSubmitting}
             className="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? t("buttons.saving") : t("buttons.nextToLegalStanding")}
@@ -1159,7 +1263,7 @@ export default function EntityPage() {
         ) : (
           <button
             type="submit"
-            disabled={!isFormValid() || isSubmitting}
+            disabled={isSubmitting}
             className="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? t("buttons.saving") : t("buttons.save")}

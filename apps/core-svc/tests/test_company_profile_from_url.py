@@ -10,11 +10,13 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from app.services.company_profile_from_url import (
+    _discover_logo_url,
     _normalize_url,
     _url_to_domain,
     _search_legal_pages,
     _scrape_url,
     _structure_with_gemini,
+    _build_candidate_urls,
     profile_company_from_url,
     CompanyProfile,
 )
@@ -203,3 +205,35 @@ def test_profile_company_from_url_success_returns_camelCase(
     # Germany is HQ so it's added to regions; France is normalized
     assert "Germany" in result["regionsOfOperation"]
     assert "France" in result["regionsOfOperation"]
+
+
+def test_discover_logo_url_prefers_og_image():
+    html = """
+    <html><head>
+      <meta property="og:image" content="/assets/company-logo.png" />
+      <link rel="icon" href="/favicon.ico" />
+    </head></html>
+    """
+    with patch("app.services.company_profile_from_url.httpx.Client") as mock_client:
+        response = MagicMock()
+        response.headers = {"content-type": "text/html; charset=utf-8"}
+        response.text = html
+        response.url = "https://example.com/about"
+        mock_client.return_value.__enter__.return_value.get.return_value = response
+        result = _discover_logo_url("https://example.com")
+
+    assert result == "https://example.com/assets/company-logo.png"
+
+
+def test_build_candidate_urls_prefers_first_party_about_pages_over_regional_cdn_pdf():
+    candidates = _build_candidate_urls(
+        "https://www.papara.com/",
+        [
+            "https://cdn.papara.com/eu/web/Assets/privacy-notice.pdf",
+            "https://www.papara.com/en/about-us",
+            "https://www.papara.com/en/contact",
+        ],
+    )
+    assert candidates.index("https://www.papara.com/en/about-us") < candidates.index(
+        "https://cdn.papara.com/eu/web/Assets/privacy-notice.pdf"
+    )

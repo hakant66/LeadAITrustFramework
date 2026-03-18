@@ -1,5 +1,4 @@
 import Header from "@/app/(components)/Header";
-import HistoryBackButton from "@/app/(components)/HistoryBackButton";
 import DataManagerModal from "@/app/(components)/DataManagerModal";
 import { resolveNavMode } from "@/lib/navMode";
 
@@ -30,11 +29,11 @@ export default function RequirementRegisterPage({
 }) {
   const navMode = resolveNavMode();
   const subtitle =
-    navMode === "legacy" ? "LeadAI · TrustOps" : "LeadAI · Governance Setup";
+    navMode === "legacy" ? "LeadAI · TrustOps" : "Governance Setup";
   const title =
     navMode === "legacy"
       ? "Requirement Register"
-      : "AI Requirements Register";
+      : "KPI Register";
   const decisionItems =
     assessment?.decisionTrace
       ?.split(/\r?\n+/)
@@ -42,9 +41,7 @@ export default function RequirementRegisterPage({
       .filter(Boolean) ?? [];
   return (
     <div className="space-y-6">
-      <Header title={title} subtitle={subtitle} titleNote="Step 5 of 6">
-        <HistoryBackButton label="Back" />
-      </Header>
+      <Header title={title} subtitle={subtitle} titleNote="Step 5 of 6" />
       {assessment && (
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <div className="flex flex-wrap items-start justify-between gap-3">

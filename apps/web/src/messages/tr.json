@@ -192,7 +192,7 @@
     "actions": "İşlemler"
   },
   "AdminSidebar": {
-    "title": "YZ YÖNETİMİ",
+    "title": "YZ YÖNETİM MERKEZİ",
     "aria": {
       "expand": "Kenar çubuğunu genişlet",
       "collapse": "Kenar çubuğunu daralt"
@@ -204,6 +204,7 @@
       "governanceSetup": "Yönetim Dizayn",
       "governanceExecution": "Yönetim Yürütme",
       "controlAudit": "Denetim",
+      "admin": "Araçlar",
       "dataRegister": "Veri Kaynağı Kaydı",
       "knowledgeBase": "Bilgi Kütüphanesi",
       "trustScore": "GÜVEN & SKOR",
@@ -216,8 +217,8 @@
       "trustOverview": "Güven Genel Bakış",
       "aiSystemRegistry": "YZ Sistem Kaydı",
       "requirementRegister": "Gereksinim Kaydı",
-      "entityLegalStanding": "1. Kurum - Yasal Statü",
-      "entitySetup": "1. Kurum - Sisteme Katılım",
+      "entityLegalStanding": "Yasal Statü",
+      "entitySetup": "Sisteme Katılım",
       "scope": "Kapsam - Uygulama Alanı",
       "policyManager": "Politika Yöneticisi",
       "trustAxes": "Güven Eksenleri",
@@ -244,10 +245,10 @@
       "presentationDeck": "Sunum Dosyası",
       "intelligentAlerts": "Akıllı Uyarılar ve Trendler",
       "aiProjectsRegister": "YZ Projeleri Kaydı",
-      "aiProjectRegister": "2. Proje - Portföy",
-      "aiSystemRegister": "3. Sistem - Envanter",
-      "aiRequirementsRegister": "4. KPI - Metrik",
-      "aiKpiRegister": "5. Kontrol - Aksiyon",
+      "aiProjectRegister": "Projeler",
+      "aiSystemRegister": "YZ Sistemleri",
+      "aiRequirementsRegister": "KPI'lar",
+      "aiKpiRegister": "Kontroller",
       "aiPolicyRegister": "Politika - Yetki",
       "actionAssignment": "2. Atama - Eylem",
       "actionAssignmentProject": "Aksiyon Atama",
@@ -347,7 +348,7 @@
   },
   "ActionAssignmentPage": {
     "title": "Aksiyon Atama",
-    "subtitle": "LeadAI · YZ Yönetişim Yürütme",
+    "subtitle": "Governance Execution",
     "titleNote": "Her proje için KPI ve kontrol aksiyonlarını atayın.",
     "projectLabel": "Proje",
     "projectSlugLabel": "Proje kısa adı",
@@ -1190,8 +1191,8 @@
     "subheading": "YZ Yönetişim Yürütmeye başlamak için 6 adım",
     "description": "Her adımı sırasıyla tamamlayarak bir sonraki yönetişim hazırlığı aşamasının kilidini açın.",
     "steps": {
-      "legalStanding": "1. Kurum - Yasal Statü",
-      "entity": "2. Kurum - Onboarding",
+      "entity": "1. Kurum - Onboarding",
+      "legalStanding": "2. Kurum - Yasal Statü",
       "project": "3. Proje - Portföy",
       "system": "4. Sistem - Envanter",
       "kpi": "5. KPI - Metrik",

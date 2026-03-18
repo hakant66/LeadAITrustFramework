@@ -23,5 +23,5 @@ async def init_pool() -> asyncpg.Pool:
 
 async def get_project_id_by_slug(slug: str) -> Optional[str]:
     pool = get_pool() or await init_pool()
-    row = await pool.fetchrow("SELECT id FROM public.projects WHERE slug=$1", slug)
+    row = await pool.fetchrow("SELECT id FROM public.entity_projects WHERE slug=$1", slug)
     return row["id"] if row else None

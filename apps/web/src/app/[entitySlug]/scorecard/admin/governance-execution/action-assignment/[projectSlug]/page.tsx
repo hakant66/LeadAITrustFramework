@@ -20,6 +20,20 @@ const appBase =
   process.env.NEXTAUTH_URL ??
   "http://localhost:3000";
 
+function normalizeProjectSlug(rawProjectSlug: string): string {
+  let value = rawProjectSlug;
+  for (let i = 0; i < 2; i += 1) {
+    try {
+      const decoded = decodeURIComponent(value);
+      if (decoded === value) break;
+      value = decoded;
+    } catch {
+      break;
+    }
+  }
+  return value;
+}
+
 async function fetchJson<T>(
   url: string,
   cookieHeader: string
@@ -44,7 +58,8 @@ export default async function ActionAssignmentProjectPage({
 }: {
   params: Promise<{ entitySlug: string; projectSlug: string }>;
 }) {
-  const { entitySlug, projectSlug } = await params;
+  const { entitySlug, projectSlug: rawProjectSlug } = await params;
+  const projectSlug = normalizeProjectSlug(rawProjectSlug);
   const t = await getTranslations("ActionAssignmentPage");
   const entity = await validateEntityAccess(entitySlug, {
     legacyRedirect: "/scorecard/admin",

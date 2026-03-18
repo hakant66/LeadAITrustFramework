@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Header from "@/app/(components)/Header";
-import BackButton from "@/app/scorecard/admin/governance-dashboard-reporting/BackButton";
 
 type AssessmentResult = {
   primary_role: string;
@@ -324,17 +323,7 @@ export default function EntityLegalStandingPage() {
 
   return (
     <div className="space-y-6">
-      <Header
-        title={entity?.fullLegalName ?? t("summary.title")}
-        subtitle="LeadAI · Governance Setup"
-      >
-        <div className="flex flex-col items-end gap-2">
-          <BackButton label="Back" />
-          {userLabel ? (
-            <div className="text-sm font-medium text-white/80">{userLabel}</div>
-          ) : null}
-        </div>
-      </Header>
+      <Header title="Legal Standing" subtitle="Governance Setup" />
 
       <div className="space-y-6">
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">

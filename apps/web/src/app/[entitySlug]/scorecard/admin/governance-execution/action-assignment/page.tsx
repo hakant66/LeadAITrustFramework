@@ -3,6 +3,8 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { validateEntityAccess } from "@/lib/entityScopedPage";
 import { getTranslations } from "next-intl/server";
+import BackButton from "@/app/scorecard/admin/governance-dashboard-reporting/BackButton";
+import { auth } from "@/auth";
 
 type Project = {
   slug: string;
@@ -41,6 +43,8 @@ export default async function ActionAssignmentIndexPage({
 }) {
   const { entitySlug } = await params;
   const t = await getTranslations("ActionAssignmentPage");
+  const session = await auth();
+  const userLabel = session?.user?.name ?? session?.user?.email ?? "";
   const entity = await validateEntityAccess(entitySlug, {
     legacyRedirect: "/scorecard/admin",
     fallbackRedirect: "/scorecard/admin/governance-execution",
@@ -124,7 +128,14 @@ export default async function ActionAssignmentIndexPage({
 
   return (
     <div className="space-y-6">
-      <Header title={t("title")} subtitle={t("subtitle")} titleNote={t("titleNote")} />
+      <Header title={t("title")} subtitle="Governance Execution" titleNote={t("titleNote")}>
+        <div className="flex flex-col items-end gap-2">
+          <BackButton label="Back" />
+          {userLabel ? (
+            <div className="text-sm font-medium text-white/80">{userLabel}</div>
+          ) : null}
+        </div>
+      </Header>
       {!policyFinalised && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-100">
           <div className="font-semibold">{t("setupPendingTitle")}</div>

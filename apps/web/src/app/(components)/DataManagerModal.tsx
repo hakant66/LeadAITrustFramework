@@ -919,7 +919,7 @@ export default function DataManagerModal({
       case "nist_ai_rmf":
         return "NIST AI RMF";
       case "company_specific":
-        return "INTERNAL";
+        return "ISO 27001";
       default:
         return value ?? "—";
     }
@@ -7833,7 +7833,7 @@ export default function DataManagerModal({
                             })
                           }
                         />
-                        INTERNAL
+                        ISO 27001
                         <span className="text-[10px] font-semibold text-red-500">*</span>
                       </label>
                       <input
@@ -8022,7 +8022,7 @@ export default function DataManagerModal({
                     <option value="eu_ai_act">EU AI Act</option>
                     <option value="iso_42001">ISO 42001</option>
                     <option value="nist_ai_rmf">NIST AI RMF</option>
-                    <option value="company_specific">INTERNAL</option>
+                    <option value="company_specific">ISO 27001</option>
                     <option value="other">Other</option>
                   </select>
                 </label>

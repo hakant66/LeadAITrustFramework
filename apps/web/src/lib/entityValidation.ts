@@ -3,6 +3,7 @@
  * Returns entity if found, null if not found (caller should redirect).
  */
 import { cookies } from "next/headers";
+import { SINGLE_TENANT_UI } from "@/lib/singleTenant";
 
 export type UserEntity = {
   entity_id: string;
@@ -45,7 +46,9 @@ export async function findEntityBySlug(
   }
 
   const entities = (await res.json()) as UserEntity[];
-  let entity = entities.find((e) => e.slug === entitySlug);
+  let entity =
+    entities.find((e) => e.slug === entitySlug) ??
+    (SINGLE_TENANT_UI ? entities[0] ?? null : null);
 
   // If not found in user_entity_access but user is master admin, fetch entity by slug
   if (!entity && isMasterAdmin) {

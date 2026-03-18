@@ -108,6 +108,7 @@ services:
       SMTP_SETTINGS_ENCRYPTION_KEY: ${SMTP_SETTINGS_ENCRYPTION_KEY:-}
       APP_BASE_URL: ${APP_BASE_URL:-}
       AUTH_URL: ${AUTH_URL:-http://localhost:3000}
+      DB_STARTUP_TIMEOUT_SECONDS: ${DB_STARTUP_TIMEOUT_SECONDS:-90}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -308,9 +309,10 @@ services:
       AUTH_URL: ${AUTH_URL:-http://localhost:3000}
       # Server-side self-fetch (e.g. projects) — use same container to avoid DNS/TLS issues
       INTERNAL_APP_URL: ${INTERNAL_APP_URL:-http://localhost:3000}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://leadai:leadai@postgres:5432/leadai}
       AUTH_DATABASE_URL: ${AUTH_DATABASE_URL:-postgresql://leadai:leadai@postgres:5432/leadai?schema=auth}
       # Email (NextAuth sign-in code); set in .env (e.g. Resend SMTP)
-      EMAIL_SERVER: ${EMAIL_SERVER:-}
+      EMAIL_SERVER: ${EMAIL_SERVER:-smtp://mailpit:1025}
       EMAIL_FROM: ${EMAIL_FROM:-LeadAI <no-reply@localhost>}
       DIFY_WEBAPP_ORIGIN: ${DIFY_WEBAPP_ORIGIN:-http://host.docker.internal:8080}
       DIFY_WEBAPP_PATH: ${DIFY_WEBAPP_PATH:-/apps}
@@ -348,8 +350,16 @@ services:
       - minio
       - qdrant
       - mock-jira
+      - mailpit
     ports:
       - "3000:3000"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: leadai-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
   mock-jira:
     build:

@@ -209,6 +209,16 @@ class PillarWeightItem(BaseModel):
 
 class PillarWeightsIn(BaseModel):
     items: List[PillarWeightItem]
+
+
+class PillarScoreItem(BaseModel):
+    pillar: str
+    score_pct: float
+    maturity: Optional[conint(ge=1, le=5)] = None
+
+
+class PillarScoresIn(BaseModel):
+    pillars: List[PillarScoreItem]
     
 # ---- Helpers -----------------------------------------------------------------
 def clamp01(x: float) -> float:
@@ -912,6 +922,112 @@ async def get_pillars(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load pillars: {e}")
+
+
+@router.post("/{project_slug}/pillars")
+async def post_pillars(
+    project_slug: str,
+    body: PillarScoresIn,
+    entity_id: UUID = Depends(get_entity_id_with_auth_editor),
+    user_id: UUID = Depends(get_current_user_id),
+) -> Dict[str, Any]:
+    """
+    Upsert explicit pillar scores/maturity for a project.
+    This is used by project clone/migration flows that carry pillar snapshots forward.
+    """
+    if not body.pillars:
+        raise HTTPException(status_code=400, detail="No pillars provided")
+
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        project = await get_project_out_or_none(conn, project_slug, entity_id)
+        if project is None:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        proj_row = await conn.fetchrow(
+            """
+            SELECT id
+            FROM entity_projects
+            WHERE slug = $1 AND entity_id = $2 AND is_archived IS NOT TRUE
+            """,
+            project_slug,
+            entity_id,
+        )
+        if not proj_row:
+            raise HTTPException(status_code=404, detail="Project not found")
+        project_id = proj_row["id"]
+
+        pillar_defs = await conn.fetch(
+            """
+            SELECT key, name
+            FROM pillars
+            """
+        )
+        by_key = {(row["key"] or "").strip().lower(): row for row in pillar_defs}
+        by_name = {(row["name"] or "").strip().lower(): row for row in pillar_defs}
+
+        updates: List[tuple[str, UUID, str, str, float, int]] = []
+        unknown: List[str] = []
+        for item in body.pillars:
+            raw_label = item.pillar.strip()
+            if not raw_label:
+                continue
+            match = by_key.get(raw_label.lower()) or by_name.get(raw_label.lower())
+            if not match:
+                unknown.append(raw_label)
+                continue
+            score_pct = clamp100(float(item.score_pct))
+            maturity = (
+                int(item.maturity)
+                if item.maturity is not None
+                else maturity_from_score(score_pct)
+            )
+            updates.append(
+                (
+                    project_id,
+                    entity_id,
+                    match["key"],
+                    match["name"] or raw_label,
+                    score_pct,
+                    maturity,
+                )
+            )
+
+        if unknown:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown pillars: {', '.join(sorted(set(unknown)))}",
+            )
+        if not updates:
+            raise HTTPException(status_code=400, detail="No valid pillars provided")
+
+        await conn.executemany(
+            """
+            INSERT INTO pillar_overrides (
+              id, entity_id, project_id, pillar_key, pillar_name, score_pct, maturity, updated_at
+            )
+            VALUES (
+              gen_random_uuid()::text, $2, $1, $3::varchar(60), $4, $5, $6, NOW()
+            )
+            ON CONFLICT (entity_id, project_id, pillar_key)
+            DO UPDATE SET
+              pillar_name = EXCLUDED.pillar_name,
+              score_pct = EXCLUDED.score_pct,
+              maturity = EXCLUDED.maturity,
+              updated_at = NOW()
+            """,
+            updates,
+        )
+
+        await _log_audit(
+            "pillar_overrides.upsert",
+            user_id=str(user_id),
+            entity_id=str(entity_id),
+            project_slug=project_slug,
+            count=len(updates),
+        )
+
+        return {"ok": True, "updated": len(updates)}
 
 
 @router.get("/{project_slug}/controls")

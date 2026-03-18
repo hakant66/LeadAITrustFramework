@@ -18,37 +18,48 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.create_table(
-        "ai_legal_standing_submissions",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("entity_id", postgresql.UUID(as_uuid=True), nullable=True),
-        sa.Column("first_name", sa.Text(), nullable=False),
-        sa.Column("last_name", sa.Text(), nullable=False),
-        sa.Column("email", sa.Text(), nullable=False),
-        sa.Column("company", sa.Text(), nullable=True),
-        sa.Column("answers", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
-        sa.Column("result", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
-        sa.Column(
-            "created_at",
-            sa.DateTime(timezone=True),
-            nullable=False,
-            server_default=sa.text("now()"),
-        ),
-        sa.ForeignKeyConstraint(["entity_id"], ["entity.id"], ondelete="SET NULL"),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_index(
-        "ix_ai_legal_standing_submissions_created_at",
-        "ai_legal_standing_submissions",
-        ["created_at"],
-        unique=False,
-    )
-    op.create_index(
-        "ix_ai_legal_standing_submissions_email",
-        "ai_legal_standing_submissions",
-        ["email"],
-        unique=False,
-    )
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    table_names = set(inspector.get_table_names())
+
+    if "ai_legal_standing_submissions" not in table_names:
+        op.create_table(
+            "ai_legal_standing_submissions",
+            sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+            sa.Column("entity_id", postgresql.UUID(as_uuid=True), nullable=True),
+            sa.Column("first_name", sa.Text(), nullable=False),
+            sa.Column("last_name", sa.Text(), nullable=False),
+            sa.Column("email", sa.Text(), nullable=False),
+            sa.Column("company", sa.Text(), nullable=True),
+            sa.Column("answers", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+            sa.Column("result", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+            sa.Column(
+                "created_at",
+                sa.DateTime(timezone=True),
+                nullable=False,
+                server_default=sa.text("now()"),
+            ),
+            sa.ForeignKeyConstraint(["entity_id"], ["entity.id"], ondelete="SET NULL"),
+            sa.PrimaryKeyConstraint("id"),
+        )
+
+    index_names = {
+        index["name"] for index in inspector.get_indexes("ai_legal_standing_submissions")
+    }
+    if "ix_ai_legal_standing_submissions_created_at" not in index_names:
+        op.create_index(
+            "ix_ai_legal_standing_submissions_created_at",
+            "ai_legal_standing_submissions",
+            ["created_at"],
+            unique=False,
+        )
+    if "ix_ai_legal_standing_submissions_email" not in index_names:
+        op.create_index(
+            "ix_ai_legal_standing_submissions_email",
+            "ai_legal_standing_submissions",
+            ["email"],
+            unique=False,
+        )
 
 
 def downgrade() -> None:

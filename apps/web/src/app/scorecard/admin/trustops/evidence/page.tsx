@@ -4,8 +4,7 @@ import { resolveNavMode } from "@/lib/navMode";
 
 export default function EvidenceVaultPage({ entityId }: { entityId?: string } = {}) {
   const navMode = resolveNavMode();
-  const subtitle =
-    navMode === "legacy" ? "LeadAI · TrustOps" : "LeadAI · Control & Audit";
+  const subtitle = navMode === "legacy" ? "LeadAI · TrustOps" : "Control & Audit";
   return (
     <div className="space-y-6">
       <Header title="Evidence Vault" subtitle={subtitle} />

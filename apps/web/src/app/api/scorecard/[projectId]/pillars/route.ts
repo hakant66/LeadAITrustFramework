@@ -6,6 +6,7 @@ type Ctx = { params: Promise<{ projectId: string }> };
 
 export async function POST(req: Request, ctx: Ctx) {
   const { projectId } = await ctx.params; // Next 15: params is a Promise
+  const url = new URL(req.url);
   const body = (await req.json().catch(() => ({}))) as any;
 
   // Expect { project_id, pillars: [{ pillar, score_pct, maturity? }] }
@@ -31,6 +32,7 @@ export async function POST(req: Request, ctx: Ctx) {
 
   // Get session and forward audit headers to core-svc
   const session = await auth();
+  const entityId = url.searchParams.get("entity_id");
 
   const res = await fetch(`${base}/scorecard/${encodeURIComponent(projectId)}/pillars`, {
     method: "POST",
@@ -40,6 +42,7 @@ export async function POST(req: Request, ctx: Ctx) {
       "X-User-Email": session?.user?.email ?? "anonymous@local",
       "X-Reason": "upsert pillar overrides",
       "X-Source": "web-ui",
+      ...(entityId ? { "X-Entity-ID": entityId } : {}),
     },
     body: JSON.stringify(payload),
   });

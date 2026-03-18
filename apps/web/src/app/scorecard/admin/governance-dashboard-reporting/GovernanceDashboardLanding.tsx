@@ -69,8 +69,11 @@ export default async function GovernanceDashboardLanding({
   showExecutiveMenu = false,
   headerVariant = "default",
   titleOverride,
+  subtitleOverride,
   showProjectCards = true,
   executionMenuItems,
+  hideEntityBadge = false,
+  hideSignOut = false,
 }: {
   dashboardPath?: "dashboard" | "vipdashboard";
   entitySlug?: string;
@@ -80,8 +83,11 @@ export default async function GovernanceDashboardLanding({
   showExecutiveMenu?: boolean;
   headerVariant?: "default" | "back-entity";
   titleOverride?: string;
+  subtitleOverride?: string;
   showProjectCards?: boolean;
   executionMenuItems?: Array<{ label: string; href: string }>;
+  hideEntityBadge?: boolean;
+  hideSignOut?: boolean;
 }) {
   const t = await getTranslations("GovernanceDashboard");
   const locale = await getLocale();
@@ -296,20 +302,20 @@ export default async function GovernanceDashboardLanding({
     <div className="space-y-6">
       <Header
         title={titleOverride ?? t("title")}
-        subtitle={t("subtitle")}
-        entityName={currentEntity?.name ?? undefined}
+        subtitle={subtitleOverride ?? t("subtitle")}
+        entityName={hideEntityBadge ? undefined : currentEntity?.name ?? undefined}
       >
         {headerVariant === "back-entity" ? (
           <div className="flex w-full flex-wrap items-start gap-3">
             <BackButton />
             <div className="ml-auto flex flex-col items-end self-start">
-              {currentEntity && entitySlug && entities.length > 1 ? (
+              {!hideEntityBadge && currentEntity && entitySlug && entities.length > 1 ? (
                 <EntitySwitcher
                   entities={entities}
                   currentSlug={entitySlug}
                   basePath={entitySwitcherPath}
                 />
-              ) : currentEntity ? (
+              ) : !hideEntityBadge && currentEntity ? (
                 <span
                   className="inline-flex items-center rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-sm font-medium text-white shadow-sm dark:border-white/20 dark:bg-white/5"
                   title={currentEntity.slug}
@@ -324,9 +330,9 @@ export default async function GovernanceDashboardLanding({
           </div>
         ) : (
           <div className="flex flex-wrap items-center gap-3">
-            {currentEntity && entitySlug && entities.length > 1 ? (
+            {!hideEntityBadge && currentEntity && entitySlug && entities.length > 1 ? (
               <EntitySwitcher entities={entities} currentSlug={entitySlug} />
-            ) : currentEntity ? (
+            ) : !hideEntityBadge && currentEntity ? (
               <span
                 className="inline-flex items-center rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-sm font-medium text-white shadow-sm dark:border-white/20 dark:bg-white/5"
                 title={currentEntity.slug}
@@ -334,12 +340,14 @@ export default async function GovernanceDashboardLanding({
                 {t("viewingEntity", { name: currentEntity.name })}
               </span>
             ) : null}
-            <Link
-              href="/"
-              className="inline-flex items-center px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-sm font-medium shadow-sm transition hover:border-slate-300 hover:text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              {t("signOut")}
-            </Link>
+            {!hideSignOut ? (
+              <Link
+                href="/"
+                className="inline-flex items-center px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-sm font-medium shadow-sm transition hover:border-slate-300 hover:text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800"
+              >
+                {t("signOut")}
+              </Link>
+            ) : null}
           </div>
         )}
       </Header>
@@ -432,6 +440,155 @@ export default async function GovernanceDashboardLanding({
               </div>
             </Link>
           </div>
+        </section>
+      )}
+
+      {showExecutiveMenu && (
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+              {t("executiveReport.title")}
+            </h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+              {t("executiveReport.subtitle")}
+            </p>
+          </div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            {t("executiveReport.note")}
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t("executiveReport.stats.total")}
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-50">
+              {totalProjects}
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t("executiveReport.stats.onTarget")}
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-emerald-600">
+              {onTargetCount}
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t("executiveReport.stats.belowTarget")}
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-amber-600">
+              {belowTargetCount}
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t("executiveReport.stats.noData")}
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-slate-600 dark:text-slate-200">
+              {noDataCount}
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t("executiveReport.stats.avgTrust")}
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-indigo-600">
+              {avgTrust === null ? "—" : `${avgTrust}%`}
+            </div>
+            <div className="mt-1 text-xs text-slate-500">
+              {t("executiveReport.stats.highRisk")}: {highRiskCount}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-xs uppercase text-slate-500">
+              <tr className="border-b border-slate-200 dark:border-slate-700">
+                <th className="py-2 text-left">{t("executiveReport.table.project")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.risk")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.priority")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.sponsor")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.owner")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.projectStatus")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.trust")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.target")}</th>
+                <th className="py-2 text-left">{t("executiveReport.table.status")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {summaries.map((p) => {
+                const riskLabel = p.risk_level ?? t("projectCard.na");
+                const priorityLabel = p.priority ?? p.risk_level ?? t("projectCard.na");
+                const statusLabel =
+                  p.trust_status === "onTarget"
+                    ? t("executiveReport.status.onTarget")
+                    : p.trust_status === "belowTarget"
+                    ? t("executiveReport.status.belowTarget")
+                    : t("executiveReport.status.noData");
+                const statusClass =
+                  p.trust_status === "onTarget"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : p.trust_status === "belowTarget"
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-slate-50 text-slate-600 border-slate-200";
+                const projectHref =
+                  dashboardPath === "vipdashboard"
+                    ? `/scorecard/${encodeURIComponent(p.slug)}/${dashboardPath}`
+                    : entitySlug
+                    ? `/${encodeURIComponent(entitySlug)}/scorecard/${encodeURIComponent(
+                        p.slug
+                      )}/${dashboardPath}`
+                    : `/scorecard/${encodeURIComponent(p.slug)}/${dashboardPath}`;
+
+                return (
+                  <tr key={p.slug} className="align-top">
+                    <td className="py-2 pr-4 font-medium text-slate-900 dark:text-slate-50">
+                      <Link
+                        href={projectHref}
+                        className="text-indigo-600 hover:underline dark:text-indigo-300"
+                      >
+                        {p.name}
+                      </Link>
+                    </td>
+                    <td className="py-2 pr-4 text-slate-600 dark:text-slate-300">
+                      {riskLabel}
+                    </td>
+                    <td className="py-2 pr-4 text-slate-600 dark:text-slate-300">
+                      {priorityLabel}
+                    </td>
+                    <td className="py-2 pr-4 text-slate-600 dark:text-slate-300">
+                      {p.sponsor ?? "—"}
+                    </td>
+                    <td className="py-2 pr-4 text-slate-600 dark:text-slate-300">
+                      {p.owner ?? "—"}
+                    </td>
+                    <td className="py-2 pr-4 text-slate-600 dark:text-slate-300">
+                      {p.project_status ?? "—"}
+                    </td>
+                    <td className="py-2 pr-4 text-slate-900 dark:text-slate-50">
+                      {p.overall_pct === null ? "—" : `${Math.round(p.overall_pct)}%`}
+                    </td>
+                    <td className="py-2 pr-4 text-slate-600 dark:text-slate-300">
+                      {p.target_pct}%
+                    </td>
+                    <td className="py-2">
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${statusClass}`}
+                      >
+                        {statusLabel}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
         </section>
       )}
 

@@ -37,7 +37,7 @@ export default function AISystemRegisterPage() {
     return null;
   }
 
-  const subtitle = "LeadAI · Governance Setup";
+  const subtitle = "Governance Setup";
   const title = "AI System Register";
 
   useEffect(() => {

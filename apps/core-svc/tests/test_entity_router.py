@@ -184,6 +184,7 @@ async def test_profile_from_url_success(client):
         "headquartersCountry": "Germany",
         "sectors": ["Technology"],
         "regionsOfOperation": ["EU"],
+        "logoUrl": "https://example.com/logo.png",
     }
 
     with patch("app.routers.entity.profile_company_from_url", return_value=result):
@@ -195,3 +196,4 @@ async def test_profile_from_url_success(client):
     data = resp.json()
     assert data["fullLegalName"] == "Example GmbH"
     assert data["headquartersCountry"] == "Germany"
+    assert data["logoUrl"] == "https://example.com/logo.png"

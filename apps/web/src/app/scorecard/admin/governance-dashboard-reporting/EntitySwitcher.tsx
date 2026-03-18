@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { SINGLE_TENANT_UI } from "@/lib/singleTenant";
 
 type UserEntity = { entity_id: string; role: string; name: string; slug: string; status: string | null };
 
@@ -30,7 +31,7 @@ export default function EntitySwitcher({
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  if (entities.length <= 1) return null;
+  if (SINGLE_TENANT_UI || entities.length <= 1) return null;
 
   const current = entities.find((e) => e.slug === currentSlug) ?? entities[0];
 

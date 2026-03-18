@@ -11,11 +11,14 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional, Tuple
-from uuid import UUID
+from uuid import UUID, uuid4
+from urllib.parse import urlparse
 
 import asyncpg
-from fastapi import APIRouter, HTTPException, Request
+import httpx
+from fastapi import APIRouter, File, HTTPException, Request, Response, UploadFile
 from pydantic import BaseModel, Field
+from app.services.s3_client import delete_object, get_object, object_uri, upload_stream_to_s3
 
 try:
     from app.services.company_profile_from_url import profile_company_from_url, check_llm_config, _CANONICAL_COUNTRIES, _COUNTRY_ALIASES
@@ -38,6 +41,44 @@ DATABASE_URL = os.getenv(
 )
 
 _pool: Optional[asyncpg.Pool] = None
+ENTITY_LOGO_PROVIDER_KEY = "google"
+ENTITY_LOGO_TYPE = "entity_logo"
+ENTITY_SLUG_TABLES = [
+    "ai_readiness_results",
+    "ai_requirement_register",
+    "ai_system_registry",
+    "aims_scope",
+    "assessments",
+    "audit_events",
+    "control_reminder_log",
+    "control_values",
+    "control_values_exec",
+    "control_values_history",
+    "entity_projects",
+    "evidence",
+    "evidence_audit",
+    "jira_risk_register",
+    "jira_sync_metadata",
+    "llm_report_cache",
+    "pillar_overrides",
+    "pillar_overrides_history",
+    "policy_alerts",
+    "policy_versions",
+    "project_pillar_scores",
+    "project_translations",
+    "provenance_artifacts",
+    "provenance_datasets",
+    "provenance_evaluations",
+    "provenance_evidence",
+    "provenance_lineage",
+    "provenance_manifest_facts",
+    "provenance_models",
+    "trust_decay_events",
+    "trust_evaluation_audit",
+    "trust_evaluations",
+    "trust_monitoring_signals",
+    "trustmarks",
+]
 
 
 async def _get_pool() -> asyncpg.Pool:
@@ -231,7 +272,8 @@ class EntityProfileResponse(BaseModel):
 
 
 class EntityProfileUpdate(BaseModel):
-    """Editable fields for Entity Setup page (excludes website, fullLegalName, legalForm)."""
+    """Editable fields for Entity Setup page."""
+    fullLegalName: Optional[str] = None
     companyRegistrationNumber: Optional[str] = None
     headquartersCountry: Optional[str] = None
     regionsOfOperation: Optional[List[str]] = None
@@ -279,11 +321,16 @@ class EntityProfileFull(BaseModel):
     aiComplianceOfficerEmail: Optional[str] = None
     executiveSponsorName: Optional[str] = None
     executiveSponsorEmail: Optional[str] = None
+    logoUrl: Optional[str] = None
     createdAt: Optional[str] = None
     updatedAt: Optional[str] = None
 
 
 class ProfileFromUrlRequest(BaseModel):
+    url: str = Field(..., min_length=5)
+
+
+class EntityLogoFromUrlRequest(BaseModel):
     url: str = Field(..., min_length=5)
 
 
@@ -295,6 +342,90 @@ def _get_executor() -> ThreadPoolExecutor:
     if _executor is None:
         _executor = ThreadPoolExecutor(max_workers=2)
     return _executor
+
+
+async def _store_entity_logo(
+    conn: asyncpg.Connection,
+    entity_id: UUID,
+    request: Request,
+    *,
+    filename: str,
+    content_type: str,
+    body: bytes,
+) -> dict:
+    existing_rows = await conn.fetch(
+        """
+        SELECT id, uri
+        FROM entity_provider_artifacts
+        WHERE entity_id = $1 AND type = $2
+        ORDER BY updated_at DESC, id DESC
+        """,
+        entity_id,
+        ENTITY_LOGO_TYPE,
+    )
+
+    object_key = f"entity-logos/{entity_id}/{uuid4()}-{_clean_filename(filename)}"
+
+    async def _iter_upload():
+        yield body
+
+    size_bytes, sha256_hex = await upload_stream_to_s3(
+        object_key,
+        _iter_upload(),
+        content_type=content_type,
+    )
+    storage_uri = object_uri(object_key)
+
+    await conn.execute(
+        "DELETE FROM entity_provider_artifacts WHERE entity_id = $1 AND type = $2",
+        entity_id,
+        ENTITY_LOGO_TYPE,
+    )
+    await conn.execute(
+        """
+        INSERT INTO entity_provider_artifacts (
+          id, entity_id, provider_key, name, uri, sha256, type, status, updated_at
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now())
+        """,
+        str(uuid4()),
+        entity_id,
+        ENTITY_LOGO_PROVIDER_KEY,
+        "Entity Logo",
+        storage_uri,
+        sha256_hex,
+        ENTITY_LOGO_TYPE,
+        "active",
+    )
+
+    for existing_row in existing_rows:
+        old_key = _s3_key_from_uri(existing_row["uri"])
+        if old_key:
+            try:
+                delete_object(old_key)
+            except Exception:
+                pass
+
+    actor = request.headers.get("x-leadai-user") or request.headers.get("x-forwarded-user") or "anonymous"
+    if append_audit_event:
+        await append_audit_event(
+            event_type="entity.logo_uploaded",
+            actor=actor,
+            object_type="entity",
+            object_id=str(entity_id),
+            details={
+                "filename": filename,
+                "size_bytes": size_bytes,
+                "content_type": content_type,
+            },
+        )
+
+    return {
+        "entity_id": str(entity_id),
+        "logoUrl": f"/api/core/entity/{entity_id}/logo",
+        "sha256": sha256_hex,
+        "size_bytes": size_bytes,
+    }
 
 
 @router.get("/health")
@@ -385,16 +516,20 @@ def _generate_entity_slug(full_legal_name: str) -> str:
     return slug
 
 
-async def _ensure_unique_entity_slug(conn: asyncpg.Connection, base_slug: str) -> str:
+async def _ensure_unique_entity_slug(
+    conn: asyncpg.Connection,
+    base_slug: str,
+    exclude_entity_id: Optional[UUID] = None,
+) -> str:
     """Ensure entity slug is unique by appending number if needed."""
     slug = base_slug
     counter = 1
     while True:
-        existing = await conn.fetchval(
+        existing = await conn.fetchrow(
             "SELECT id FROM entity WHERE slug = $1",
-            slug
+            slug,
         )
-        if not existing:
+        if not existing or existing["id"] == exclude_entity_id:
             return slug
         slug = f"{base_slug}-{counter}"
         counter += 1
@@ -549,6 +684,17 @@ async def _entity_to_full(
         "SELECT s.name FROM entity_sector es JOIN entity_sector_lookup s ON s.id = es.sector_id WHERE es.entity_id = $1",
         entity_id,
     )
+    logo_artifact = await conn.fetchrow(
+        """
+        SELECT id
+        FROM entity_provider_artifacts
+        WHERE entity_id = $1 AND type = $2
+        ORDER BY updated_at DESC, id DESC
+        LIMIT 1
+        """,
+        entity_id,
+        ENTITY_LOGO_TYPE,
+    )
 
     def _pick(translated: Optional[str], base: Optional[str]) -> Optional[str]:
         return translated if translated is not None else base
@@ -587,6 +733,7 @@ async def _entity_to_full(
             row.get("executive_sponsor_name"),
         ),
         executiveSponsorEmail=row.get("executive_sponsor_email"),
+        logoUrl=f"/api/core/entity/{entity_id}/logo" if logo_artifact else None,
         createdAt=row["created_at"].isoformat() if row.get("created_at") else None,
         updatedAt=row["updated_at"].isoformat() if row.get("updated_at") else None,
     )
@@ -633,7 +780,7 @@ async def update_entity(
     body: EntityProfileUpdate,
     request: Request,
 ) -> EntityProfileFull:
-    """Update entity (Entity Setup page). Excludes website, fullLegalName, legalForm. Auditable."""
+    """Update entity (Entity Setup page). Auditable."""
     pool = await _get_pool()
     async with pool.acquire() as conn:
         row = await conn.fetchrow("SELECT * FROM entity WHERE id = $1", entity_id)
@@ -653,6 +800,15 @@ async def update_entity(
             row = await conn.fetchrow("SELECT * FROM entity WHERE id = $1", entity_id)
 
         updates: Dict[str, Any] = {}
+        if body.fullLegalName is not None:
+            full_legal_name = body.fullLegalName.strip()
+            if not full_legal_name:
+                raise HTTPException(status_code=400, detail="fullLegalName cannot be empty")
+            updates["full_legal_name"] = full_legal_name
+            base_slug = _generate_entity_slug(full_legal_name)
+            updates["slug"] = await _ensure_unique_entity_slug(
+                conn, base_slug, exclude_entity_id=entity_id
+            )
         if body.headquartersCountry is not None:
             updates["headquarters_country_id"] = await _get_or_create_country(conn, body.headquartersCountry)
         if body.primaryRole is not None:
@@ -700,6 +856,7 @@ async def update_entity(
                 "UPDATE entity SET " + ", ".join(set_parts) + " WHERE id = $1",
                 *params,
             )
+            await _propagate_entity_slug(conn, row.get("slug"), updates.get("slug"))
 
         if body.regionsOfOperation is not None:
             region_ids: List[UUID] = []
@@ -742,3 +899,155 @@ async def update_entity(
 
         row = await conn.fetchrow("SELECT * FROM entity WHERE id = $1", entity_id)
         return await _entity_to_full(conn, row)
+
+
+def _clean_filename(filename: Optional[str]) -> str:
+    import re
+
+    safe = os.path.basename(filename or "").strip() or "logo"
+    safe = re.sub(r"[^A-Za-z0-9._-]+", "-", safe).strip("-")
+    return safe or "logo"
+
+
+def _s3_key_from_uri(uri: str) -> Optional[str]:
+    if not uri.startswith("s3://"):
+        return None
+    parsed = urlparse(uri)
+    key = parsed.path.lstrip("/")
+    return key or None
+
+
+async def _propagate_entity_slug(
+    conn: asyncpg.Connection, old_slug: Optional[str], new_slug: Optional[str]
+) -> None:
+    if not old_slug or not new_slug or old_slug == new_slug:
+        return
+    for table_name in ENTITY_SLUG_TABLES:
+        await conn.execute(
+            f'UPDATE "{table_name}" SET entity_slug = $1 WHERE entity_slug = $2',
+            new_slug,
+            old_slug,
+        )
+
+
+@router.get("/{entity_id}/logo")
+async def get_entity_logo(entity_id: UUID) -> Response:
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            """
+            SELECT uri
+            FROM entity_provider_artifacts
+            WHERE entity_id = $1 AND type = $2
+            ORDER BY updated_at DESC, id DESC
+            LIMIT 1
+            """,
+            entity_id,
+            ENTITY_LOGO_TYPE,
+        )
+        if not row:
+            raise HTTPException(status_code=404, detail="Logo not found")
+        uri = row["uri"]
+    key = _s3_key_from_uri(uri)
+    if not key:
+        raise HTTPException(status_code=500, detail="Logo storage URI is invalid")
+    try:
+        obj = get_object(key)
+        body = obj["Body"].read()
+        media_type = obj.get("ContentType") or "application/octet-stream"
+        return Response(content=body, media_type=media_type)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to load logo: {exc}") from exc
+
+
+@router.post("/{entity_id}/logo")
+async def upload_entity_logo(
+    entity_id: UUID,
+    request: Request,
+    file: UploadFile = File(...),
+) -> dict:
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Logo filename is required")
+    content_type = (file.content_type or "").strip().lower()
+    if content_type not in {"image/png", "image/jpeg", "image/webp", "image/svg+xml"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Logo must be a PNG, JPEG, WEBP, or SVG image",
+        )
+
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        entity = await conn.fetchrow("SELECT id FROM entity WHERE id = $1", entity_id)
+        if not entity:
+            raise HTTPException(status_code=404, detail="Entity not found")
+
+        try:
+            body = await file.read()
+        finally:
+            await file.close()
+
+        return await _store_entity_logo(
+            conn,
+            entity_id,
+            request,
+            filename=file.filename,
+            content_type=content_type,
+            body=body,
+        )
+
+
+@router.post("/{entity_id}/logo-from-url")
+async def upload_entity_logo_from_url(
+    entity_id: UUID,
+    body: EntityLogoFromUrlRequest,
+    request: Request,
+) -> dict:
+    source_url = body.url.strip()
+    parsed = urlparse(source_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise HTTPException(status_code=400, detail="A valid http(s) logo URL is required")
+
+    pool = await _get_pool()
+    async with pool.acquire() as conn:
+        entity = await conn.fetchrow("SELECT id FROM entity WHERE id = $1", entity_id)
+        if not entity:
+            raise HTTPException(status_code=404, detail="Entity not found")
+
+        try:
+            async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
+                response = await client.get(
+                    source_url,
+                    headers={
+                        "User-Agent": (
+                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/122.0.0.0 Safari/537.36"
+                        ),
+                    },
+                )
+                response.raise_for_status()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Failed to fetch remote logo: {exc}") from exc
+
+        content_type = (response.headers.get("content-type") or "").split(";")[0].strip().lower()
+        if content_type not in {"image/png", "image/jpeg", "image/webp", "image/svg+xml", "image/x-icon", "image/vnd.microsoft.icon"}:
+            raise HTTPException(status_code=400, detail="Remote logo URL did not return a supported image")
+        normalized_content_type = "image/png" if content_type in {"image/x-icon", "image/vnd.microsoft.icon"} else content_type
+        filename = os.path.basename(urlparse(str(response.url)).path) or "entity-logo"
+        if "." not in filename:
+            extension_map = {
+                "image/png": ".png",
+                "image/jpeg": ".jpg",
+                "image/webp": ".webp",
+                "image/svg+xml": ".svg",
+            }
+            filename = f"{filename}{extension_map.get(normalized_content_type, '.png')}"
+
+        return await _store_entity_logo(
+            conn,
+            entity_id,
+            request,
+            filename=filename,
+            content_type=normalized_content_type,
+            body=response.content,
+        )

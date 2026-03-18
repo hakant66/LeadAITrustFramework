@@ -149,7 +149,7 @@ def _kpi_score_for_project(conn: psycopg.Connection, project_id: str, kpi_key: s
       SELECT MAX(cv.kpi_score)::float
       FROM public.control_values cv
       WHERE cv.project_slug = (
-        SELECT slug FROM public.projects WHERE id = %s
+        SELECT slug FROM public.entity_projects WHERE id = %s
       ) AND lower(btrim(cv.kpi_key)) = lower(btrim(%s))
     """
     with conn.cursor() as cur:
@@ -265,7 +265,7 @@ def apply_guardrails_for_project(
 RAW_PILLAR_SQL = """
 WITH scope AS (
   SELECT p.id AS project_id, p.slug
-  FROM public.projects p
+  FROM public.entity_projects p
   WHERE p.id = %(project_id)s
 ),
 base AS (

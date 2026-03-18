@@ -2,6 +2,8 @@ import Header from "@/app/(components)/Header";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { validateEntityAccess } from "@/lib/entityScopedPage";
+import BackButton from "@/app/scorecard/admin/governance-dashboard-reporting/BackButton";
+import { auth } from "@/auth";
 
 const appBase =
   process.env.INTERNAL_APP_URL ??
@@ -39,6 +41,8 @@ export default async function EvidenceCaptureIndexPage({
   params: Promise<{ entitySlug: string }>;
 }) {
   const { entitySlug } = await params;
+  const session = await auth();
+  const userLabel = session?.user?.name ?? session?.user?.email ?? "";
   const entity = await validateEntityAccess(entitySlug, {
     legacyRedirect: "/scorecard/admin",
     fallbackRedirect: "/scorecard/admin/governance-execution",
@@ -124,8 +128,16 @@ export default async function EvidenceCaptureIndexPage({
     <div className="space-y-6">
       <Header
         title="Evidence Capture"
-        subtitle="Choose a project to capture evidence"
-      />
+        subtitle="Governance Execution"
+        titleNote="Choose a project to capture evidence"
+      >
+        <div className="flex flex-col items-end gap-2">
+          <BackButton label="Back" />
+          {userLabel ? (
+            <div className="text-sm font-medium text-white/80">{userLabel}</div>
+          ) : null}
+        </div>
+      </Header>
       {!policyFinalised && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-100">
           <div className="font-semibold">Governance setup not finalised</div>

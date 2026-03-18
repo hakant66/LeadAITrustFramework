@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { coreApiBase } from "@/lib/coreApiBase";
 import type { NavMode } from "@/lib/navMode";
+import { SINGLE_TENANT_UI } from "@/lib/singleTenant";
 
 type NavItem = {
   labelKey: string;
@@ -149,26 +150,26 @@ const buildV2NavSections = (
       title: "AI Governance Setup",
       href: p("/scorecard/admin/governance-setup"),
       items: [
-        { labelKey: "items.entityLegalStanding", label: "1. Entity - Legal Standing", href: legalStandingHref },
-        { labelKey: "items.entitySetup", label: "2. Entity - Onboarding", href: p("/scorecard/admin/governance-setup/entity-setup") },
+        { labelKey: "items.entitySetup", label: "Onboarding", href: p("/scorecard/admin/governance-setup/entity-setup") },
+        { labelKey: "items.entityLegalStanding", label: "Legal Standing", href: legalStandingHref },
         {
           labelKey: "items.aiProjectRegister",
-          label: "3. Project - The Portfolio",
+          label: "Projects",
           href: p("/scorecard/admin/governance-setup/ai-project-register"),
         },
         {
           labelKey: "items.aiSystemRegister",
-          label: "4. AI System - The Inventory",
+          label: "AI Systems",
           href: p("/scorecard/admin/governance-setup/ai-system-register"),
         },
         {
           labelKey: "items.aiRequirementsRegister",
-          label: "5. KPI - The Metric",
+          label: "KPIs",
           href: p("/scorecard/admin/governance-setup/ai-requirements-register"),
         },
         {
           labelKey: "items.aiKpiRegister",
-          label: "6. Control - The Action",
+          label: "Controls",
           href: p("/scorecard/admin/governance-setup/control-register"),
         },
       ],
@@ -213,125 +214,128 @@ const buildV2NavSections = (
       ],
     },
     {
-      id: "dataRegister",
-      titleKey: "sections.dataRegister",
-      title: "AI Data Register",
-      href: p("/scorecard/admin/data-register"),
-      items: [
-        { labelKey: "items.dataSources", label: "Data Sources", href: p("/scorecard/admin/data-register/data-sources") },
+      id: "adminGroup",
+      titleKey: "sections.admin",
+      title: "ADMIN",
+      items: [],
+      subsections: [
         {
-          labelKey: "items.dataClassification",
-          label: "Data Classification",
-          href: p("/scorecard/admin/data-register/data-classification"),
+          titleKey: "sections.dataRegister",
+          title: "AI Data Register",
+          items: [
+            { labelKey: "items.dataSources", label: "Data Sources", href: p("/scorecard/admin/data-register/data-sources") },
+            {
+              labelKey: "items.dataClassification",
+              label: "Data Classification",
+              href: p("/scorecard/admin/data-register/data-classification"),
+            },
+            {
+              labelKey: "items.retentionDeletion",
+              label: "Retention & Deletion",
+              href: p("/scorecard/admin/data-register/retention"),
+            },
+            {
+              labelKey: "items.interfaces",
+              label: "Interfaces",
+              href: p("/scorecard/admin/data-register/interfaces"),
+            },
+          ],
         },
         {
-          labelKey: "items.retentionDeletion",
-          label: "Retention & Deletion",
-          href: p("/scorecard/admin/data-register/retention"),
+          titleKey: "sections.knowledgeBase",
+          title: "AI Knowledge Base",
+          items: [
+            { labelKey: "items.knowhow", label: "Knowhow", href: "/scorecard/admin/knowledgebase" },
+            {
+              labelKey: "items.knowledgeVault",
+              label: "Knowledge Vault",
+              href: "/scorecard/admin/knowledge-vault",
+            },
+          ],
         },
         {
-          labelKey: "items.interfaces",
-          label: "Interfaces",
-          href: p("/scorecard/admin/data-register/interfaces"),
-        },
-      ],
-    },
-    {
-      id: "knowledgeBase",
-      titleKey: "sections.knowledgeBase",
-      title: "AI Knowledge Base",
-      items: [
-        { labelKey: "items.knowhow", label: "Knowhow", href: "/scorecard/admin/knowledgebase" }, // No entity prefix - global
-        {
-          labelKey: "items.knowledgeVault",
-          label: "Knowledge Vault",
-          href: "/scorecard/admin/knowledge-vault",
-        },
-      ],
-    },
-    {
-      id: "trustScore",
-      titleKey: "sections.trustScore",
-      title: "TRUST & SCORE",
-      items: [
-        { labelKey: "items.intelligentAlerts", label: "Intelligent Alerts & Trends", href: p("/scorecard/admin/alerts") },
-        { labelKey: "items.trustOverview", label: "Trust Overview", href: p("/scorecard/admin/control-audit") },
-        { labelKey: "items.trustAxes", label: "Trust Axes", href: p("/scorecard/admin/control-audit/axes") },
-        {
-          labelKey: "items.provenanceLineage",
-          label: "Provenance & Lineage",
-          href: p("/scorecard/admin/control-audit/provenance"),
-        },
-        { labelKey: "items.trustMonitoring", label: "Trust Monitoring", href: p("/scorecard/admin/control-audit/monitoring") },
-        { labelKey: "items.trustSnapshots", label: "Trust Snapshots", href: p("/scorecard/admin/control-audit/snapshots") },
-        {
-          labelKey: "items.provenanceSchedule",
-          label: "Provenance Schedule",
-          href: p("/admin/provenanceschedule"),
-        },
-      ],
-    },
-    {
-      id: "iso42001",
-      titleKey: "sections.iso42001",
-      title: "ISO 42001",
-      href: p("/scorecard/admin/iso-42001"),
-      items: [
-        { labelKey: "items.scope", label: "Scope - The Boundary", href: p("/scorecard/admin/governance-setup/aims-scope") },
-        { labelKey: "items.pillarAdmin", label: "Pillar Admin", href: pillarAdmin },
-        {
-          labelKey: "items.manageKpisControls",
-          label: "Manage KPIs and Controls",
-          href: "/admin/manage-kpis-controls",
+          titleKey: "sections.trustScore",
+          title: "TRUST & SCORE",
+          items: [
+            { labelKey: "items.intelligentAlerts", label: "Intelligent Alerts & Trends", href: p("/scorecard/admin/alerts") },
+            { labelKey: "items.trustOverview", label: "Trust Overview", href: p("/scorecard/admin/control-audit") },
+            { labelKey: "items.trustAxes", label: "Trust Axes", href: p("/scorecard/admin/control-audit/axes") },
+            {
+              labelKey: "items.provenanceLineage",
+              label: "Provenance & Lineage",
+              href: p("/scorecard/admin/control-audit/provenance"),
+            },
+            { labelKey: "items.trustMonitoring", label: "Trust Monitoring", href: p("/scorecard/admin/control-audit/monitoring") },
+            { labelKey: "items.trustSnapshots", label: "Trust Snapshots", href: p("/scorecard/admin/control-audit/snapshots") },
+            {
+              labelKey: "items.provenanceSchedule",
+              label: "Provenance Schedule",
+              href: p("/admin/provenanceschedule"),
+            },
+          ],
         },
         {
-          labelKey: "items.aiPolicyRegister",
-          label: "Policy - The Mandate",
-          href: p("/scorecard/admin/governance-setup/ai-policy-register"),
+          titleKey: "sections.iso42001",
+          title: "ISO 42001",
+          items: [
+            { labelKey: "items.scope", label: "Scope - The Boundary", href: p("/scorecard/admin/governance-setup/aims-scope") },
+            { labelKey: "items.pillarAdmin", label: "Pillar Admin", href: pillarAdmin },
+            {
+              labelKey: "items.manageKpisControls",
+              label: "Manage KPIs and Controls",
+              href: "/admin/manage-kpis-controls",
+            },
+            {
+              labelKey: "items.aiPolicyRegister",
+              label: "Policy - The Mandate",
+              href: p("/scorecard/admin/governance-setup/ai-policy-register"),
+            },
+            {
+              labelKey: "items.policyExecution",
+              label: "Policy Execution",
+              href: p("/scorecard/admin/governance-execution/policy-execution"),
+            },
+          ],
         },
         {
-          labelKey: "items.policyExecution",
-          label: "Policy Execution",
-          href: p("/scorecard/admin/governance-execution/policy-execution"),
+          titleKey: "sections.reportAdmin",
+          title: "REPORT ADMIN",
+          items: [
+            { labelKey: "items.reportSetup", label: "Report Setup", href: "/admin/reportschedule" },
+            {
+              labelKey: "items.govReqPrompt",
+              label: "Gov. Req. Report Prompt",
+              href: "/admin/gov-req-report-prompt",
+            },
+            {
+              labelKey: "items.executiveReportPrompt",
+              label: "Executive Report Prompt",
+              href: "/admin/ai-summary-llm-prompt",
+            },
+            {
+              labelKey: "items.boardLevelReportPrompt",
+              label: "Board-Level Report Prompt",
+              href: "/admin/board-level-report-prompt",
+            },
+            {
+              labelKey: "items.boardLevelDeckPrompt",
+              label: "Board-Level Deck Prompt",
+              href: "/admin/board-level-deck-prompt",
+            },
+            { labelKey: "items.kpiSchedule", label: "KPI Schedule", href: "/admin/kpischedule" },
+          ],
         },
-      ],
-    },
-    {
-      id: "reportAdmin",
-      titleKey: "sections.reportAdmin",
-      title: "REPORT ADMIN",
-      items: [
-        { labelKey: "items.reportSetup", label: "Report Setup", href: "/admin/reportschedule" },
-        {
-          labelKey: "items.govReqPrompt",
-          label: "Gov. Req. Report Prompt",
-          href: "/admin/gov-req-report-prompt",
-        },
-        {
-          labelKey: "items.executiveReportPrompt",
-          label: "Executive Report Prompt",
-          href: "/admin/ai-summary-llm-prompt",
-        },
-        {
-          labelKey: "items.boardLevelReportPrompt",
-          label: "Board-Level Report Prompt",
-          href: "/admin/board-level-report-prompt",
-        },
-        {
-          labelKey: "items.boardLevelDeckPrompt",
-          label: "Board-Level Deck Prompt",
-          href: "/admin/board-level-deck-prompt",
-        },
-        { labelKey: "items.kpiSchedule", label: "KPI Schedule", href: "/admin/kpischedule" },
       ],
     },
     {
       id: "masterAdmin",
       titleKey: "sections.masterAdmin",
       title: "System Admin",
-      href: "/admin/entities",
+      href: SINGLE_TENANT_UI ? "/admin/manage-access" : "/admin/entities",
       items: [
-        { labelKey: "items.allEntities", label: "Choose Entity", href: "/admin/entities" },
+        ...(SINGLE_TENANT_UI
+          ? []
+          : [{ labelKey: "items.allEntities", label: "Choose Entity", href: "/admin/entities" }]),
         { labelKey: "items.manageAccess", label: "Manage Access", href: "/admin/manage-access" },
         { labelKey: "items.emailSettings", label: "Email Settings", href: "/admin/email-settings" },
         {
@@ -344,8 +348,8 @@ const buildV2NavSections = (
           label: "Model Providers",
           href: "/admin/model-providers",
         },
-        { labelKey: "items.systemHealth", label: "System Health", href: "/health" },
         { labelKey: "items.modelCards", label: "Model Cards", href: p("/scorecard/admin/governance-execution/model-cards") },
+        { labelKey: "items.systemHealth", label: "System Health", href: "/health" },
       ],
     },
   ];
