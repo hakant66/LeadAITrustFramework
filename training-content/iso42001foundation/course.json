@@ -1,0 +1,35 @@
+{
+  "slug": "iso42001foundation",
+  "title": "ISO/IEC 42001 Lead Implementer Preparation Training",
+  "shortTitle": "ISO/IEC 42001 Lead Implementer",
+  "tagline": "Practical preparation for designing, operating, and evidencing an Artificial Intelligence Management System.",
+  "description": "A LeadAI Academy course for professionals who need to implement ISO/IEC 42001, coordinate an AIMS, and prepare teams for audit-ready AI governance.",
+  "estimatedMinutes": 140,
+  "passScore": 80,
+  "certificateLabel": "LeadAI Academy certificate placeholder",
+  "targetAudience": [
+    "AI governance, compliance, privacy, and security leads",
+    "Programme managers and transformation leaders responsible for AI delivery",
+    "Risk, audit, legal, and internal control teams supporting an AIMS",
+    "Product, data, and engineering managers coordinating AI system lifecycle controls"
+  ],
+  "learningOutcomes": [
+    "Explain how modern AI systems convert data, rules, and model logic into outputs and decisions.",
+    "Discuss AI governance as a management discipline that aligns innovation, accountability, risk control, and regulatory readiness.",
+    "Recognize the major AI governance and regulatory frameworks shaping organizational expectations.",
+    "Describe why ISO/IEC 42001 is a leading reference point for establishing an Artificial Intelligence Management System.",
+    "Outline AI-specific security threats and the governance controls needed to manage them.",
+    "Summarize the AI governance trifecta of privacy, cybersecurity, and legal oversight.",
+    "Define ISO/IEC 42001 considerations for ethics, privacy, security, transparency, and lifecycle governance.",
+    "Map ISO/IEC 42001 clauses to the Plan-Do-Check-Act model for continual improvement.",
+    "Describe a structured implementation path for establishing, operating, monitoring, and improving an AIMS.",
+    "State the role of top management in policy, accountability, resources, and sustained AI governance."
+  ],
+  "modules": [
+    "module-01-introduction.json",
+    "module-02-standard-overview.json",
+    "module-03-scope-and-applicability.json",
+    "module-04-management-system-requirements.json",
+    "module-05-annex-a-pillars.json"
+  ]
+}

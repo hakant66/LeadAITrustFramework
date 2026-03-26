@@ -1,0 +1,203 @@
+{
+  "id": "module-01",
+  "title": "AI Governance Foundations and ISO/IEC 42001 Context",
+  "summary": "Build the business case for AI governance and place ISO/IEC 42001 in the wider regulatory and management-system landscape.",
+  "pages": [
+    {
+      "id": "learning-outcomes",
+      "title": "Learning outcomes for lead implementers",
+      "sections": [
+        {
+          "heading": "What this training prepares you to do",
+          "paragraphs": [
+            "This course is designed for professionals who will design, coordinate, or improve an Artificial Intelligence Management System.",
+            "The focus is practical: understand the operating model, assign accountability, manage risk, and create evidence that proves governance is working."
+          ],
+          "bullets": [
+            "Explain AI in business terms and describe how outputs are created and governed.",
+            "Position ISO/IEC 42001 within the broader AI governance and regulatory landscape.",
+            "Identify security, privacy, legal, and transparency concerns that shape AIMS design.",
+            "Prepare leadership, policy, and implementation decisions for a credible AIMS."
+          ]
+        }
+      ],
+      "callout": "Lead implementer training is about building and operating the management system, not only understanding the standard."
+    },
+    {
+      "id": "ai-in-organizations",
+      "title": "The use of AI in organizations",
+      "sections": [
+        {
+          "heading": "Why AI is now a board-level topic",
+          "paragraphs": [
+            "Organizations across healthcare, financial services, manufacturing, retail, education, logistics, and the public sector use AI to improve decisions, increase efficiency, strengthen customer engagement, and accelerate innovation.",
+            "That value is meaningful, but it also creates new obligations around accountability, oversight, risk treatment, and regulatory readiness."
+          ],
+          "bullets": [
+            "AI processes large data volumes and surfaces patterns that would be difficult to detect manually.",
+            "AI automates repeatable work and frees skilled teams for higher-value judgment and analysis.",
+            "AI supports customer service through chatbots, copilots, and intelligent assistants.",
+            "AI can strengthen fraud detection, anomaly detection, cyber monitoring, and resilience when human oversight remains in place."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "how-ai-works-and-governance",
+      "title": "How AI basically works and why governance matters",
+      "sections": [
+        {
+          "heading": "A simple operating view",
+          "paragraphs": [
+            "At a high level, AI systems collect and prepare data, train or configure models, evaluate inputs against model logic, and produce outputs that then need review, governance, and monitoring over time.",
+            "Because outputs can influence consequential decisions, the operating flow must be governed rather than treated as a black box."
+          ]
+        },
+        {
+          "heading": "What AI governance means",
+          "paragraphs": [
+            "AI governance is the set of rules, practices, roles, and decision rights that ensure AI systems are developed and used responsibly, ethically, and safely.",
+            "It translates principles into management action through policy, controls, ownership, monitoring, and escalation."
+          ],
+          "bullets": [
+            "AI governance reduces biased outcomes and opaque decision-making.",
+            "It creates defined accountability for incidents, exceptions, and change.",
+            "It supports legal and regulatory readiness as AI scrutiny increases."
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-ai-operating-view.png",
+          "alt": "Illustration showing input collection, AI neural computation, and generated output delivery.",
+          "caption": "Simple operating view of how prepared inputs move through AI processing and become governed outputs."
+        }
+      ],
+      "callout": "AI governance is the management discipline that connects innovation to accountability and control."
+    },
+    {
+      "id": "non-compliance-and-frameworks",
+      "title": "The impact of non-compliance and the wider governance landscape",
+      "sections": [
+        {
+          "heading": "Why weak governance is expensive",
+          "paragraphs": [
+            "Regulatory non-compliance affects more than fines. It can create operational disruption, remediation cost, legal exposure, customer churn, management distraction, and loss of trust with regulators, partners, employees, and customers.",
+            "For AI-enabled organizations, failures often affect both technology and business decision-making, which amplifies impact."
+          ]
+        },
+        {
+          "heading": "Frameworks that shape expectations",
+          "paragraphs": [
+            "AI compliance is not built on one law or one standard. It sits within a broader ecosystem of management-system standards, risk frameworks, ethical principles, and jurisdiction-specific regulation."
+          ],
+          "bullets": [
+            "EU AI Act",
+            "ISO/IEC 27001",
+            "ISO/IEC 42001",
+            "OECD AI Principles",
+            "NIST AI Risk Management Framework",
+            "IEEE ethics guidance for autonomous and intelligent systems"
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-impact-of-non-compliance.png",
+          "alt": "Diagram showing financial, operational, legal, and reputational impacts of AI regulatory non-compliance.",
+          "caption": "Non-compliance affects far more than fines, with financial, operational, legal, and reputational consequences."
+        }
+      ]
+    },
+    {
+      "id": "what-iso42001-is",
+      "title": "What ISO/IEC 42001 is and how PDCA shapes it",
+      "sections": [
+        {
+          "heading": "The purpose of the standard",
+          "paragraphs": [
+            "ISO/IEC 42001 is the international management-system standard for organizations that develop, provide, or use AI systems.",
+            "It specifies requirements for establishing, implementing, maintaining, and continually improving an Artificial Intelligence Management System so organizations can govern AI with discipline, trust, and business value."
+          ],
+          "bullets": [
+            "Stronger AI risk assessment and governance discipline",
+            "Clearer responsibilities, controls, and evidence requirements",
+            "Improved quality, reliability, safety, security, and transparency",
+            "Greater stakeholder confidence through an auditable framework"
+          ]
+        },
+        {
+          "heading": "The PDCA foundation",
+          "paragraphs": [
+            "Like other modern ISO management-system standards, ISO/IEC 42001 follows the Plan-Do-Check-Act cycle.",
+            "PDCA gives organizations a practical rhythm for setting direction, implementing controls, evaluating performance, and improving governance over time."
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-aims-overview.png",
+          "alt": "Overview diagram of ISO/IEC 42001 as an Artificial Intelligence Management System.",
+          "caption": "ISO/IEC 42001 establishes an AIMS for organizations that develop, provide, or use AI systems."
+        },
+        {
+          "src": "assets/media/figure-pdca-continual-improvement.png",
+          "alt": "Diagram of the PDCA cycle applied to responsible AI management.",
+          "caption": "PDCA gives the AIMS its continual-improvement operating rhythm."
+        }
+      ],
+      "callout": "ISO/IEC 42001 combines innovation with control by making responsible AI a repeatable management practice."
+    }
+  ],
+  "knowledgeCheck": {
+    "title": "Module 1 knowledge check",
+    "questions": [
+      {
+        "id": "m1q1",
+        "prompt": "Organizations widely use --------------, --------------, and --------------- to provide rapid first-line responses and route more complex issues appropriately.",
+        "options": [
+          "AI chatbots, copilots, intelligent assistants",
+          "phone, calculator, notebook",
+          "mouse, keyboard, printer",
+          "manager, assistant, secretary"
+        ],
+        "correctIndex": 0,
+        "explanation": "The document highlights chatbots, copilots, and intelligent assistants as common customer-service AI capabilities."
+      },
+      {
+        "id": "m1q2",
+        "prompt": "AI receives all of the inputs by itself.",
+        "options": [
+          "False",
+          "True"
+        ],
+        "correctIndex": 0,
+        "explanation": "AI systems depend on data, configuration, oversight, and governance decisions made by people and organizations."
+      },
+      {
+        "id": "m1q3",
+        "type": "short-text",
+        "prompt": "ISO/IEC 42001 is built around the ______ cycle.",
+        "acceptedAnswers": [
+          "pdca",
+          "plan do check act",
+          "plan-do-check-act"
+        ],
+        "placeholder": "Enter the cycle name",
+        "explanation": "The standard follows the Plan-Do-Check-Act cycle for continual improvement."
+      },
+      {
+        "id": "m1q4",
+        "prompt": "The most important reason for establishing an AI governance model in an organization is _________.",
+        "options": [
+          "Ethical considerations",
+          "Accessibility in work",
+          "Algorithm manipulation",
+          "Cybersecurity"
+        ],
+        "correctIndex": 0,
+        "explanation": "Among the listed choices, ethical considerations are the closest fit to why organizations establish AI governance in the training."
+      }
+    ]
+  }
+}

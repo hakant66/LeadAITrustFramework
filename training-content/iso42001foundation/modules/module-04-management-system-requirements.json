@@ -1,0 +1,198 @@
+{
+  "id": "module-04",
+  "title": "Scope, Implementation, Leadership, and Risk Treatment",
+  "summary": "Move from understanding the standard to implementing it: define scope, structure the programme, sustain leadership commitment, and manage AI risk dynamically.",
+  "pages": [
+    {
+      "id": "scope-and-applicability",
+      "title": "Understanding the scope of ISO/IEC 42001",
+      "sections": [
+        {
+          "heading": "Why scope matters",
+          "paragraphs": [
+            "An AIMS can only be effective when the organization clearly defines what it governs, who is responsible, and where the management-system boundaries begin and end.",
+            "ISO/IEC 42001 is intentionally broad and can be applied by organizations of different sizes and sectors that develop, provide, or use AI systems."
+          ],
+          "bullets": [
+            "Scope defines which AI systems, business processes, geographies, and organizational units sit inside the AIMS.",
+            "The standard is relevant to large enterprises, regulated entities, start-ups, public bodies, and non-profits.",
+            "Responsible AI governance requires lifecycle-based thinking beyond conventional IT control."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "structured-implementation-approach",
+      "title": "Implementing ISO/IEC 42001 with a structured approach",
+      "sections": [
+        {
+          "heading": "Treat implementation as management transformation",
+          "paragraphs": [
+            "A practical implementation programme should be disciplined, evidence-based, and led as a management transformation rather than a documentation exercise."
+          ],
+          "bullets": [
+            "Define scope and applicability so responsibilities and evidence boundaries are clear.",
+            "Translate leadership intent into policy, objectives, governance principles, and decision criteria.",
+            "Establish the AIMS using PDCA so governance, controls, records, review, and improvement work as one coherent system.",
+            "Ensure leadership commitment, accountability, and resource allocation remain visible."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "implementation-disciplines-and-benefits",
+      "title": "Implementation disciplines and business benefits",
+      "sections": [
+        {
+          "heading": "Disciplines to operationalize",
+          "bullets": [
+            "Risk assessment and treatment throughout the lifecycle",
+            "Operational planning and control for AI-related activities",
+            "Performance evaluation through monitoring, analysis, audits, and reviews",
+            "Compatibility with other management-system standards",
+            "Formal AI system impact assessment"
+          ]
+        },
+        {
+          "heading": "Benefits of implementation",
+          "paragraphs": [
+            "When implemented well, ISO/IEC 42001 creates both control value and business value.",
+            "Organizations gain stronger transparency, reliability, stakeholder confidence, accountability, and readiness for regulation or certification."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leadership-and-culture",
+      "title": "Leadership and commitment in AI governance",
+      "sections": [
+        {
+          "heading": "Why leadership is decisive",
+          "paragraphs": [
+            "AI governance requires choices about risk appetite, accountability, transparency, investment, and acceptable use. Without active top-management sponsorship, an AIMS becomes fragmented, under-resourced, or symbolic."
+          ],
+          "bullets": [
+            "Leadership should set direction, approve policy, allocate resources, and remove obstacles.",
+            "Roles and responsibilities should be defined for owners, users, developers, reviewers, and control functions.",
+            "The AI policy should be communicated, understood, and supported through practical governance routines.",
+            "Leadership also shapes culture by encouraging transparency, challenge, escalation, and learning from incidents."
+          ]
+        }
+      ],
+      "callout": "Visible leadership support makes responsible AI a business priority rather than a side project."
+    },
+    {
+      "id": "risk-assessment-and-treatment",
+      "title": "Risk assessment and risk treatment",
+      "sections": [
+        {
+          "heading": "Dynamic risk management for AI",
+          "paragraphs": [
+            "AI systems create a distinct risk profile because they evolve rapidly, depend heavily on data, interact with users in dynamic ways, and influence consequential decisions.",
+            "Risk treatment should be proportionate to significance and revisited through monitoring, incident learning, performance analysis, and continual improvement."
+          ],
+          "bullets": [
+            "Identify risks from design choices, data quality, security weaknesses, human use, misuse, and third-party dependencies.",
+            "Use design changes, technical controls, human review, restricted use, monitoring thresholds, training, and supplier controls as treatment options.",
+            "Run AI system impact assessments for effects on individuals, groups, and society.",
+            "Tie risk treatment to evidence so controls can be reviewed and defended."
+          ]
+        }
+      ]
+    }
+  ],
+  "knowledgeCheck": {
+    "title": "Module 4 knowledge check",
+    "questions": [
+      {
+        "id": "m4q1",
+        "prompt": "ISO/IEC 42001 can be implemented by organizations of different sizes, sectors, and types.",
+        "options": [
+          "True",
+          "False"
+        ],
+        "correctIndex": 0,
+        "explanation": "The standard is intentionally broad and can be tailored to a wide range of organizations."
+      },
+      {
+        "id": "m4q2",
+        "type": "short-text",
+        "prompt": "Leadership in AI governance should be explored with special emphasis on management ________ to the objectives of the AIMS.",
+        "acceptedAnswers": [
+          "commitment"
+        ],
+        "placeholder": "Fill in the blank",
+        "explanation": "Management commitment is a central theme in leadership expectations."
+      },
+      {
+        "id": "m4q3",
+        "type": "short-text",
+        "prompt": "The ________ of the standard refers to the scenarios to which ISO/IEC 42001 can be applied.",
+        "acceptedAnswers": [
+          "applicability"
+        ],
+        "placeholder": "Fill in the blank",
+        "explanation": "Applicability describes the situations and organizations to which the standard can be applied."
+      },
+      {
+        "id": "m4q4",
+        "prompt": "Monitoring, measurement, analysis, and evaluation are used to determine overall system ________.",
+        "options": [
+          "Scope",
+          "Objectivity",
+          "Performance"
+        ],
+        "correctIndex": 2,
+        "explanation": "Those activities are used to determine how the system performs."
+      },
+      {
+        "id": "m4q5",
+        "prompt": "Why is an AI policy considered a foundational governance control in ISO/IEC 42001?",
+        "options": [
+          "Because it replaces risk assessment",
+          "Because it defines direction, expectations, and decision boundaries for responsible AI",
+          "Because it is only required for certification",
+          "Because it eliminates the need for human oversight"
+        ],
+        "correctIndex": 1,
+        "explanation": "The AI policy anchors direction, intent, and operating expectations for the AIMS."
+      },
+      {
+        "id": "m4q6",
+        "prompt": "How does lifecycle management reduce AI-related operational and compliance risk?",
+        "options": [
+          "By focusing only on procurement",
+          "By ensuring controls, approvals, testing, monitoring, and change discipline across the system lifecycle",
+          "By removing the need for documentation",
+          "By making all models fully autonomous"
+        ],
+        "correctIndex": 1,
+        "explanation": "Lifecycle management creates checkpoints and evidence across the system lifecycle."
+      },
+      {
+        "id": "m4q7",
+        "prompt": "Why is data governance a distinct control area in an AI management system?",
+        "options": [
+          "Because data quality, lineage, integrity, and appropriate use directly affect AI outcomes and risk",
+          "Because all AI systems use the same dataset",
+          "Because data governance is only a privacy issue",
+          "Because the model is more important than the data"
+        ],
+        "correctIndex": 0,
+        "explanation": "Data governance materially affects quality, fairness, reliability, and accountability."
+      },
+      {
+        "id": "m4q8",
+        "prompt": "What governance risk can arise from third-party AI providers and external relationships?",
+        "options": [
+          "No material risk if the contract is signed",
+          "Loss of accountability, weak oversight, dependency, and unmanaged supplier risk",
+          "Only infrastructure cost risk",
+          "Only reputational benefit"
+        ],
+        "correctIndex": 1,
+        "explanation": "Third-party AI relationships can obscure ownership, create hidden dependencies, and weaken oversight if not governed actively."
+      }
+    ]
+  }
+}

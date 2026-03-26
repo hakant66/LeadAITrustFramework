@@ -1,0 +1,221 @@
+{
+  "id": "module-02",
+  "title": "AI Security, Resilience, and Special ISO/IEC 42001 Considerations",
+  "summary": "Cover the AI-specific threats, governance resilience measures, and special themes that make AI governance distinct from conventional IT governance.",
+  "pages": [
+    {
+      "id": "security-threats",
+      "title": "Security threats specific to AI systems",
+      "sections": [
+        {
+          "heading": "Input manipulation and injection",
+          "bullets": [
+            "Direct injection that explicitly tries to bypass safety controls",
+            "Indirect injection hidden in external content that the model reads",
+            "Adversarial evasion that adds subtle noise to manipulate classification"
+          ]
+        },
+        {
+          "heading": "Integrity, privacy, and agentic threats",
+          "bullets": [
+            "Data poisoning and model hijacking in the supply chain",
+            "Model inversion, membership inference, and model theft",
+            "Excessive agency, memory poisoning, and agent-to-agent phishing"
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-ai-security-threat-matrix.png",
+          "alt": "Matrix of AI security threats covering manipulation, supply chain, privacy, and agentic risks.",
+          "caption": "AI governance must account for prompt injection, model compromise, inference attacks, and autonomous-agent abuse."
+        }
+      ],
+      "callout": "Effective AI governance must address both business risk and system-level security risk."
+    },
+    {
+      "id": "resilience-and-workforce",
+      "title": "AI resilience and defense strategies",
+      "sections": [
+        {
+          "heading": "From security to resilience",
+          "paragraphs": [
+            "Security identifies vulnerabilities, while resilience defines how the organization survives, responds, and improves when those vulnerabilities are exploited.",
+            "An effective AIMS treats threats through governance, secure development, access controls, monitoring, testing, incident response, and clear accountability."
+          ]
+        },
+        {
+          "heading": "The human layer",
+          "bullets": [
+            "Eliminate shadow AI by bringing unauthorized employee use into a governed environment.",
+            "Teach staff to recognize emerging risks such as agent-to-agent phishing.",
+            "Define who is legally and operationally accountable when AI agents make mistakes."
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-workforce-readiness.png",
+          "alt": "Diagram linking shadow AI removal, accountability, operations, and AI literacy to workforce readiness.",
+          "caption": "Resilience depends on both technical controls and a workforce that can govern AI use in practice."
+        }
+      ]
+    },
+    {
+      "id": "governance-trifecta",
+      "title": "The AI governance trifecta",
+      "sections": [
+        {
+          "heading": "Three integrated pillars",
+          "paragraphs": [
+            "The course introduces privacy, cybersecurity, and legal as an integrated governance trifecta for AI oversight.",
+            "ISO/IEC 42001 acts as the operational blueprint that helps those disciplines function as one system rather than as disconnected silos."
+          ],
+          "bullets": [
+            "Privacy protects rights through data minimization, purpose limitation, fairness, and transparency.",
+            "Cybersecurity protects models, data, and technical architecture against compromise and manipulation.",
+            "Legal aligns governance with liability, contractual exposure, and evolving AI regulation."
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-audit-readiness-trifecta.png",
+          "alt": "Diagram showing the AI governance trifecta aligned with plan, do, check, and act.",
+          "caption": "The governance trifecta links privacy, cybersecurity, and legal into one operating model for responsible AI."
+        }
+      ]
+    },
+    {
+      "id": "iso-standards-and-info-security",
+      "title": "ISO standards and information security alignment",
+      "sections": [
+        {
+          "heading": "Why ISO/IEC 27001 still matters",
+          "paragraphs": [
+            "Organizations increasingly need to align AI governance with information security rather than treat them as separate agendas.",
+            "ISO/IEC 27001 enables an Information Security Management System that protects information assets through risk-based controls, governance, and continual improvement."
+          ]
+        },
+        {
+          "heading": "How ISO/IEC 42001 complements it",
+          "paragraphs": [
+            "ISO/IEC 42001 establishes an AIMS focused on responsible development, provision, or use of AI systems.",
+            "In practice, many organizations need both standards because AI risk intersects with information security, privacy, quality, and operational resilience."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "special-considerations",
+      "title": "Special considerations in ISO/IEC 42001",
+      "sections": [
+        {
+          "heading": "Themes that make AI governance distinctive",
+          "paragraphs": [
+            "ISO/IEC 42001 reflects the fact that AI systems can create dynamic impacts on individuals, organizations, and society across the full lifecycle."
+          ],
+          "bullets": [
+            "Ethics: fairness, human oversight, accountability, and consequences for affected groups",
+            "Privacy: disciplined management of data, roles, documentation, and controls",
+            "Security: risk treatment across design, data, deployment, and third-party dependencies",
+            "Transparency: information, reporting, and documentation that make AI use understandable"
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-special-considerations.png",
+          "alt": "Diagram highlighting ethics, privacy, security risk identification, and transparency requirements in ISO 42001.",
+          "caption": "ISO/IEC 42001 adds AI-specific considerations around ethics, privacy, security, and transparency."
+        }
+      ],
+      "callout": "AI governance goes beyond generic IT control because AI can adapt, scale, and influence human outcomes in less predictable ways."
+    }
+  ],
+  "knowledgeCheck": {
+    "title": "Module 2 knowledge check",
+    "questions": [
+      {
+        "id": "m2q1",
+        "prompt": "Reconstructing sensitive training data (e.g., medical records) through targeted queries is called __________.",
+        "options": [
+          "Model Theft",
+          "Data Poisoning",
+          "Direct Injection",
+          "Model Inversion"
+        ],
+        "correctIndex": 3,
+        "explanation": "Model inversion refers to inferring sensitive training information from model behavior or outputs."
+      },
+      {
+        "id": "m2q2",
+        "prompt": "________ theft means replicating a proprietary model's behavior via automated API scraping.",
+        "options": [
+          "Algorithm",
+          "AI",
+          "Replica",
+          "Model"
+        ],
+        "correctIndex": 3,
+        "explanation": "Model theft or model extraction reproduces model behavior without authorization."
+      },
+      {
+        "id": "m2q3",
+        "prompt": "Which of these is not a component of AI Governance Trifecta?",
+        "options": [
+          "Privacy",
+          "Performance",
+          "Cybersecurity",
+          "Legal"
+        ],
+        "correctIndex": 1,
+        "explanation": "The course frames the trifecta as privacy, cybersecurity, and legal."
+      },
+      {
+        "id": "m2q4",
+        "type": "short-text",
+        "prompt": "ISO _______ allows organizations to develop, monitor, and responsibly use or provide AI-enabled products and services.",
+        "acceptedAnswers": [
+          "42001"
+        ],
+        "placeholder": "Enter digits only",
+        "explanation": "ISO/IEC 42001 is the AIMS standard for responsible AI governance."
+      },
+      {
+        "id": "m2q5",
+        "type": "short-text",
+        "prompt": "ISO _______ allows organizations to establish an information security management system.",
+        "acceptedAnswers": [
+          "27001"
+        ],
+        "placeholder": "Enter digits only",
+        "explanation": "ISO/IEC 27001 is the management-system standard for information security."
+      },
+      {
+        "id": "m2q6",
+        "prompt": "Bringing unauthorized employee AI use into a governed environment is _____________",
+        "options": [
+          "AI Literacy training",
+          "Eliminating \"Shadow AI\"",
+          "Accountability Frameworks",
+          "Human in the Loop"
+        ],
+        "correctIndex": 1,
+        "explanation": "The course uses the phrase eliminating shadow AI for governed control of unofficial AI use."
+      },
+      {
+        "id": "m2q7",
+        "type": "short-text",
+        "prompt": "ISO/IEC 42001 standard requires organizations to identify and manage risks throughout the AI  _______.",
+        "acceptedAnswers": [
+          "lifecycle",
+          "ai lifecycle",
+          "system lifecycle"
+        ],
+        "placeholder": "Fill in the blank",
+        "explanation": "The standard expects risks to be managed across the full AI system lifecycle."
+      }
+    ]
+  }
+}

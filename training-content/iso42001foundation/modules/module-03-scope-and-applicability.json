@@ -1,0 +1,364 @@
+{
+  "id": "module-03",
+  "title": "PDCA, Clauses, Leadership, Planning, and Resources",
+  "summary": "Translate clauses 4 through 10 into a management-system operating model and focus on what leadership and planning require in practice.",
+  "pages": [
+    {
+      "id": "pdca-and-clauses",
+      "title": "The PDCA cycle and ISO/IEC 42001 clauses",
+      "sections": [
+        {
+          "heading": "Reading the standard through a PDCA lens",
+          "paragraphs": [
+            "ISO/IEC 42001 aligns with the harmonized structure used across ISO management-system standards.",
+            "In practice, clauses 4 through 10 set context and direction, move into enablement and operations, and then require evaluation and improvement."
+          ],
+          "bullets": [
+            "Plan covers context, scope, leadership commitments, risk, opportunities, and objectives.",
+            "Do covers support and operation, including lifecycle controls, data, and third-party governance.",
+            "Check covers monitoring, measurement, internal audit, and management review.",
+            "Act covers nonconformity handling, corrective action, and continual improvement."
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-pdca-clauses.png",
+          "alt": "Diagram mapping context, leadership, planning, support, operations, performance evaluation, and improvement to PDCA.",
+          "caption": "Clauses 4 through 10 can be read through a PDCA lens when implementing ISO/IEC 42001."
+        }
+      ]
+    },
+    {
+      "id": "leadership-role",
+      "title": "Leadership expectations and accountability",
+      "sections": [
+        {
+          "heading": "What top management must do",
+          "paragraphs": [
+            "Leadership is expected to provide direction and support for the AIMS by establishing and approving an AI policy, aligning objectives and controls with business strategy, and reviewing the AIMS at planned intervals.",
+            "The organization must also define roles, responsibilities, authorities, and reporting lines for AI-related decisions."
+          ],
+          "bullets": [
+            "Establish and review the AI policy.",
+            "Assign ownership of AI systems, incidents, approvals, and monitoring.",
+            "Provide resources and remove obstacles.",
+            "Ensure governance is integrated into business processes rather than isolated in one team."
+          ]
+        }
+      ],
+      "callout": "A lead implementer needs visible leadership sponsorship, not only delegated technical ownership.",
+      "images": [
+        {
+          "src": "assets/media/figure-plan-leadership-planning.png",
+          "alt": "Diagram showing context, leadership, and planning requirements within the Plan part of PDCA.",
+          "caption": "The Plan phase combines context, leadership, scope, policy, and planning requirements."
+        }
+      ]
+    },
+    {
+      "id": "planning-risk-impact-lifecycle",
+      "title": "Planning, risk, impact, and lifecycle management",
+      "sections": [
+        {
+          "heading": "Planning before AI scales",
+          "paragraphs": [
+            "ISO/IEC 42001 requires organizations to identify risks and opportunities, set objectives, and define controls and responsibilities in advance.",
+            "That includes documented assessment of intended and unintended effects on individuals, groups, and society."
+          ]
+        },
+        {
+          "heading": "Lifecycle discipline",
+          "bullets": [
+            "Determine requirements and specifications.",
+            "Design and develop the AI system.",
+            "Verify and validate performance and controls.",
+            "Deploy, operate, monitor, and manage change with traceable records."
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-ai-system-lifecycle.png",
+          "alt": "Lifecycle diagram showing requirements, design, verification, deployment, operations, recording, and technical documentation.",
+          "caption": "Lifecycle governance requires defined controls from requirements through operations, event recording, and documentation."
+        }
+      ]
+    },
+    {
+      "id": "planning-data-use-third-parties",
+      "title": "Planning for data, use of AI, and third-party relationships",
+      "sections": [
+        {
+          "heading": "Data governance in planning",
+          "paragraphs": [
+            "Organizations should define and implement controls for data sourcing, preparation, quality, lineage, integrity, retention, and appropriate use.",
+            "Weak data practices quickly become weak AI practices."
+          ]
+        },
+        {
+          "heading": "Responsible use and supplier governance",
+          "bullets": [
+            "Use AI systems consistently with policy, intended purpose, and operating boundaries.",
+            "Maintain human oversight, misuse prevention, and exception handling.",
+            "Manage outsourced development, model providers, and customer-facing AI commitments as part of the governance boundary."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "resources-and-stakeholders",
+      "title": "Resources and information for interested stakeholders",
+      "sections": [
+        {
+          "heading": "Determining resources",
+          "paragraphs": [
+            "Planning includes data and tooling resources, systems and infrastructure, human resources, competence, and access to specialist expertise.",
+            "Lead implementers need to turn those resource decisions into documented governance commitments."
+          ]
+        },
+        {
+          "heading": "Information for interested stakeholders",
+          "bullets": [
+            "External reporting where required",
+            "Incident and escalation reporting",
+            "Information tailored to interested stakeholders",
+            "System documentation and user information"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "do-check-act",
+      "title": "The Do, Check, and Act operating rhythm",
+      "sections": [
+        {
+          "heading": "Do",
+          "paragraphs": [
+            "The Do phase implements the AIMS through support and operational controls."
+          ]
+        },
+        {
+          "heading": "Check and Act",
+          "paragraphs": [
+            "The Check phase evaluates performance through monitoring, measurement, internal audit, and management review.",
+            "The Act phase responds to findings, corrects nonconformities, and improves the effectiveness and suitability of the AIMS."
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-do-requirements.png",
+          "alt": "Diagram listing supporting and operational requirements under the Do phase of PDCA.",
+          "caption": "Support and operational requirements sit mainly in the Do phase of the AIMS."
+        }
+      ]
+    }
+  ],
+  "knowledgeCheck": {
+    "title": "Module 3 knowledge check",
+    "questions": [
+      {
+        "id": "m3q1",
+        "prompt": "The support and operational requirements of ISO/IEC 42001 are part of the ________ component of the PDCA cycle.",
+        "options": [
+          "Do",
+          "Plan",
+          "Check",
+          "Act"
+        ],
+        "correctIndex": 0,
+        "explanation": "Support and operation are part of the Do phase."
+      },
+      {
+        "id": "m3q2",
+        "type": "multi-select",
+        "prompt": "Which of these are leadership requirements under ISO/IEC 42001?",
+        "options": [
+          "Internal organization",
+          "Management guidance for AI system development and maintenance",
+          "Enacting the AI policy",
+          "Impact assessment",
+          "Performing the stakeholder analysis",
+          "Determining scope of AI management system"
+        ],
+        "correctIndices": [
+          0,
+          2,
+          5
+        ],
+        "explanation": "The leadership-oriented requirements in the training focus on internal organization, enacting the AI policy, and determining scope."
+      },
+      {
+        "id": "m3q3",
+        "type": "ordering",
+        "prompt": "What is the correct sequence of the AI system lifecycle phases shown in the figure?",
+        "items": [
+          "Operations and monitoring",
+          "Verification and validation",
+          "Determining requirements and specifications",
+          "Deployment",
+          "Technical documentation",
+          "Design and development"
+        ],
+        "correctOrder": [
+          2,
+          5,
+          1,
+          3,
+          0,
+          4
+        ],
+        "helperText": "Assign a unique position number to each phase.",
+        "explanation": "The figure orders the lifecycle from requirements through design, validation, deployment, operations and monitoring, then technical documentation."
+      },
+      {
+        "id": "m3q4",
+        "prompt": "There is no need for the organization to plan for human resources.",
+        "options": [
+          "True",
+          "False"
+        ],
+        "correctIndex": 1,
+        "explanation": "Human resources, competence, and access to expertise are explicit planning concerns."
+      },
+      {
+        "id": "m3q5",
+        "prompt": "The organization is not responsible for any risk posed by third-party stakeholders.",
+        "options": [
+          "False",
+          "True"
+        ],
+        "correctIndex": 0,
+        "explanation": "Third-party risk remains within the organization's governance responsibility."
+      },
+      {
+        "id": "m3q6",
+        "type": "short-text",
+        "prompt": "Planning resources and ensuring that interested parties have the necessary information are part of ______ requirements.",
+        "acceptedAnswers": [
+          "planning",
+          "planning requirements"
+        ],
+        "placeholder": "Fill in the blank",
+        "explanation": "Those activities are part of the planning requirements in the standard."
+      },
+      {
+        "id": "m3q7",
+        "prompt": "The \"Check\" part of the PDCA cycle refers to the evaluation of AIMS ________.",
+        "options": [
+          "Performance",
+          "Management",
+          "Configuration"
+        ],
+        "correctIndex": 0,
+        "explanation": "Check is concerned with evaluating AIMS performance."
+      },
+      {
+        "id": "m3q8",
+        "type": "matching",
+        "prompt": "Match the clauses of ISO/IEC 42001 with the PDCA components.",
+        "leftItems": [
+          "Operations",
+          "Leadership",
+          "Improvement",
+          "AIMS"
+        ],
+        "rightOptions": [
+          "Coincides with the Do part",
+          "Coincides with the Plan part",
+          "Coincides with the Act part",
+          "Coincides with the Check part"
+        ],
+        "correctMatches": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "helperText": "Choose the PDCA component that best matches each clause area from the training figure.",
+        "explanation": "In the training mapping, operations align to Do, leadership to Plan, improvement to Act, and AIMS evaluation to Check."
+      },
+      {
+        "id": "m3q9",
+        "type": "multi-select",
+        "prompt": "Which of these come under the \"context\" of the organization?",
+        "options": [
+          "AI policy enactment",
+          "Management guidance for AI system development",
+          "External context",
+          "Internal stakeholders",
+          "Internal context",
+          "Stakeholder analysis"
+        ],
+        "correctIndices": [
+          2,
+          4,
+          5
+        ],
+        "explanation": "Context includes internal and external factors plus the needs and expectations of interested parties."
+      },
+      {
+        "id": "m3q10",
+        "prompt": "An external organization is required to establish a system of accountability for an organization that has already implemented ISO/IEC 42001.",
+        "options": [
+          "True",
+          "False"
+        ],
+        "correctIndex": 1,
+        "explanation": "The implementing organization must define its own accountability model."
+      },
+      {
+        "id": "m3q11",
+        "type": "multi-select",
+        "prompt": "Which of the following components are necessary regarding information for interested stakeholders?",
+        "options": [
+          "Incident reporting",
+          "System documentation and user information",
+          "Information for interested stakeholders",
+          "System computing resources",
+          "External reporting",
+          "Internal reporting"
+        ],
+        "correctIndices": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "explanation": "Stakeholder information in the training centers on incident reporting, documentation, tailored information, and external reporting."
+      },
+      {
+        "id": "m3q12",
+        "type": "multi-select",
+        "prompt": "Which of the following are operational requirements under the \"Do\" section of the PDCA cycle?",
+        "options": [
+          "Ensuring the presence of necessary information",
+          "Data for AI systems",
+          "Third-party and consumer relations",
+          "Controls and procedures",
+          "Resource planning",
+          "Use of AI systems"
+        ],
+        "correctIndices": [
+          1,
+          2,
+          3,
+          5
+        ],
+        "explanation": "The Do section covers operational controls, data, AI system use, and third-party relationships rather than planning and support setup."
+      },
+      {
+        "id": "m3q13",
+        "prompt": "The letter \"A\" in the PDCA cycle denotes the ______ part.",
+        "options": [
+          "Analyze",
+          "Act",
+          "Assess"
+        ],
+        "correctIndex": 1,
+        "explanation": "PDCA stands for Plan, Do, Check, Act."
+      }
+    ]
+  }
+}

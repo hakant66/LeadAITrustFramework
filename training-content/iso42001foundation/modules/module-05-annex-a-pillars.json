@@ -1,0 +1,169 @@
+{
+  "id": "module-05",
+  "title": "Evidence, Audit Readiness, and Governance Pillars",
+  "summary": "Shift from implementation planning to proof: show how the AIMS becomes auditable through evidence, operational discipline, and clear governance pillars.",
+  "pages": [
+    {
+      "id": "evidence-oriented-mindset",
+      "title": "The evidence-oriented mindset",
+      "sections": [
+        {
+          "heading": "What auditors will look for",
+          "paragraphs": [
+            "To achieve certification or credible assurance, an organization must move beyond policy and prove operational discipline through a verifiable AIMS.",
+            "Auditors seek coherence between intent and reality, which means leadership, risk, lifecycle, operations, competence, and review records all need to line up."
+          ],
+          "bullets": [
+            "Governance evidence such as approved policy, scope, and accountability charters",
+            "Risk and lifecycle evidence such as assessments, supplier due diligence, and validation reports",
+            "Operational evidence such as incidents, monitoring results, and management reviews",
+            "Competence evidence such as training records for AI roles"
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "assets/media/figure-audit-readiness-trifecta.png",
+          "alt": "Diagram connecting the AI governance trifecta to plan, do, check, and act as an audit-readiness checklist.",
+          "caption": "Audit readiness depends on turning governance intent into a disciplined operating model with evidence."
+        }
+      ]
+    },
+    {
+      "id": "four-pillars-and-readiness",
+      "title": "The four pillars of audit readiness",
+      "sections": [
+        {
+          "heading": "Questions implementation teams must answer",
+          "bullets": [
+            "Rule: what formal policy or control defines the expectation?",
+            "Accountability: who is the human owner of the control?",
+            "Traceability: what record proves the action happened?",
+            "Improvement: what review mechanism keeps the control effective over time?"
+          ]
+        },
+        {
+          "heading": "Common success factors",
+          "paragraphs": [
+            "A common failure pattern is strong documentation with weak execution.",
+            "Lead implementers need governance to be visible in daily workflows, consistently applied across the AI portfolio, and actively justified by leadership."
+          ]
+        }
+      ],
+      "callout": "Evidence is strongest when it is created naturally by the operating process rather than collected later for the audit."
+    },
+    {
+      "id": "operational-readiness-checklist",
+      "title": "Operational readiness checklist for an AIMS",
+      "sections": [
+        {
+          "heading": "Foundation and governance",
+          "bullets": [
+            "Clear scope and inventory of AI systems and use cases",
+            "Named executive sponsorship and transparent accountability",
+            "Documented AI policy and governance principles"
+          ]
+        },
+        {
+          "heading": "Risk, lifecycle, and provider integrity",
+          "bullets": [
+            "Defined methods for risk and impact assessment",
+            "Lifecycle controls for design, validation, deployment, monitoring, and change",
+            "Data governance practices and third-party oversight"
+          ]
+        },
+        {
+          "heading": "Continuous improvement rhythm",
+          "bullets": [
+            "Operational monitoring and incident escalation",
+            "Internal audits and management reviews",
+            "Corrective action and PDCA-based improvement"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "governance-pillars-and-summary",
+      "title": "Governance pillars and course summary",
+      "sections": [
+        {
+          "heading": "Functional governance pillars",
+          "bullets": [
+            "Policy and direction",
+            "Organization and accountability",
+            "Resources and competence",
+            "Lifecycle management",
+            "Data governance",
+            "Information and transparency",
+            "Responsible use",
+            "Third-party and supplier management"
+          ]
+        },
+        {
+          "heading": "What to retain from the course",
+          "paragraphs": [
+            "ISO/IEC 42001 positions AI governance as a practical, auditable management system that links policy, risk, lifecycle control, third-party oversight, and continual improvement.",
+            "For lead implementers, the core discipline is to build governance that can be operated, evidenced, reviewed, and improved in day-to-day business practice."
+          ]
+        }
+      ]
+    }
+  ],
+  "knowledgeCheck": {
+    "title": "Module 5 knowledge check",
+    "questions": [
+      {
+        "id": "m5q1",
+        "prompt": "According to the 'Four Pillars' of Audit Readiness, which specific element is required to prove that a documented action actually took place in practice?",
+        "options": [
+          "Improvement",
+          "Accountability",
+          "Traceability",
+          "Rule"
+        ],
+        "correctIndex": 2,
+        "helperText": "Hint: Think about the 'paper trail' or records that auditors look for to verify compliance.",
+        "explanation": "Traceability is the record or paper trail that proves the action happened."
+      },
+      {
+        "id": "m5q2",
+        "prompt": "Fill in the blank: A common failure in ISO/IEC 42001 implementation is __________, where an organization has strong documentation but fails to integrate governance into daily workflows.",
+        "options": [
+          "Data provenance",
+          "Portfolio sampling",
+          "Executive sponsorship",
+          "Inconsistency (Documentation vs. Execution)"
+        ],
+        "correctIndex": 3,
+        "helperText": "Hint: The standard values how work is actually recorded and improved over just having written policies.",
+        "explanation": "The course highlights the risk of good papers but weak operational execution."
+      },
+      {
+        "id": "m5q3",
+        "prompt": "In the context of the Governance Pillars, which pillar is specifically responsible for providing external stakeholders with disclosures about the logic and use of AI systems?",
+        "options": [
+          "Resources & Competence",
+          "Information & Transparency",
+          "Responsible Use",
+          "Data Governance"
+        ],
+        "correctIndex": 1,
+        "helperText": "Hint: Look for the pillar that bridges the gap between the organization's internal AI logic and the external audience's understanding.",
+        "explanation": "Information and transparency covers stakeholder disclosure and clear communication about AI systems."
+      },
+      {
+        "id": "m5q4",
+        "prompt": "Which category of evidence would an auditor be reviewing if they were examining 'incident logs' and 'records of management reviews'?",
+        "options": [
+          "Risk & Lifecycle",
+          "Competence",
+          "Governance",
+          "Operations"
+        ],
+        "correctIndex": 3,
+        "helperText": "Hint: These items reflect the day-to-day 'AIMS Rhythm' and real-time performance tracking.",
+        "explanation": "Those records are operational evidence that show the AIMS rhythm is running in practice."
+      }
+    ]
+  }
+}

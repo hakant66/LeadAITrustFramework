@@ -1,0 +1,201 @@
+{
+  "title": "ISO/IEC 42001 lead implementer final assessment",
+  "passingScore": 80,
+  "questions": [
+    {
+      "id": "fa1",
+      "prompt": "What is the main purpose of ISO/IEC 42001?",
+      "options": [
+        "To define one mandatory AI model architecture",
+        "To provide a management system for responsible AI governance",
+        "To replace privacy and security standards",
+        "To eliminate the need for leadership oversight"
+      ],
+      "correctIndex": 1,
+      "explanation": "ISO/IEC 42001 is an organizational management-system standard for governing AI responsibly.",
+      "tags": [
+        "aims",
+        "foundation"
+      ]
+    },
+    {
+      "id": "fa2",
+      "type": "short-text",
+      "prompt": "Which improvement cycle underpins ISO/IEC 42001?",
+      "acceptedAnswers": [
+        "pdca",
+        "plan do check act",
+        "plan-do-check-act"
+      ],
+      "placeholder": "Enter the cycle name",
+      "explanation": "The standard follows the Plan-Do-Check-Act cycle.",
+      "tags": [
+        "pdca"
+      ]
+    },
+    {
+      "id": "fa3",
+      "type": "multi-select",
+      "prompt": "Which actions belong to leadership in an effective AIMS? Select all that apply.",
+      "options": [
+        "Approve and communicate the AI policy",
+        "Assign accountability and reporting lines",
+        "Provide resources and visible sponsorship",
+        "Avoid management review once the system launches",
+        "Outsource all governance accountability to suppliers"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Leadership is expected to set direction, assign accountability, and sustain the AIMS with resources and review.",
+      "tags": [
+        "leadership"
+      ]
+    },
+    {
+      "id": "fa4",
+      "prompt": "Which AI-specific threat reconstructs sensitive training data through targeted queries?",
+      "options": [
+        "Model theft",
+        "Model inversion",
+        "Direct injection",
+        "Data poisoning"
+      ],
+      "correctIndex": 1,
+      "explanation": "Model inversion infers sensitive training information from outputs or responses.",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "fa5",
+      "prompt": "Why is an AI policy considered a foundational governance control in ISO/IEC 42001?",
+      "options": [
+        "Because it replaces risk assessment",
+        "Because it defines direction, expectations, and decision boundaries for responsible AI",
+        "Because it is only required for certification",
+        "Because it eliminates the need for human oversight"
+      ],
+      "correctIndex": 1,
+      "explanation": "The AI policy anchors direction, expectations, and governance intent.",
+      "tags": [
+        "pillars",
+        "policy"
+      ]
+    },
+    {
+      "id": "fa6",
+      "prompt": "How does lifecycle management reduce AI-related operational and compliance risk?",
+      "options": [
+        "By focusing only on procurement",
+        "By ensuring controls, approvals, testing, monitoring, and change discipline across the lifecycle",
+        "By removing the need for documentation",
+        "By making all models fully autonomous"
+      ],
+      "correctIndex": 1,
+      "explanation": "Lifecycle management reduces risk by applying controls and evidence requirements from requirements through monitoring and change.",
+      "tags": [
+        "pillars",
+        "lifecycle"
+      ]
+    },
+    {
+      "id": "fa7",
+      "prompt": "Why is data governance a distinct control area in an AI management system?",
+      "options": [
+        "Because data quality, lineage, integrity, and appropriate use directly affect AI outcomes and risk",
+        "Because all AI systems use the same dataset",
+        "Because data governance is only a privacy issue",
+        "Because the model is more important than the data"
+      ],
+      "correctIndex": 0,
+      "explanation": "Data governance materially affects quality, fairness, reliability, privacy, and accountability.",
+      "tags": [
+        "pillars",
+        "data-governance"
+      ]
+    },
+    {
+      "id": "fa8",
+      "prompt": "What governance risk can arise from third-party AI providers and external relationships?",
+      "options": [
+        "No material risk if the contract is signed",
+        "Loss of accountability, weak oversight, dependency, and unmanaged supplier risk",
+        "Only infrastructure cost risk",
+        "Only reputational benefit"
+      ],
+      "correctIndex": 1,
+      "explanation": "Third-party AI relationships can introduce hidden dependencies and weaken oversight if not governed actively.",
+      "tags": [
+        "pillars",
+        "third-parties"
+      ]
+    },
+    {
+      "id": "fa9",
+      "type": "multi-select",
+      "prompt": "Which activities belong mainly to the Check phase of PDCA? Select all that apply.",
+      "options": [
+        "Monitoring and measurement",
+        "Internal audit",
+        "Management review",
+        "Initial scope definition",
+        "Corrective action planning"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Check is focused on monitoring, audit, review, and evaluation. Corrective action then feeds into Act.",
+      "tags": [
+        "pdca"
+      ]
+    },
+    {
+      "id": "fa10",
+      "prompt": "Which of the following best describes audit-ready evidence?",
+      "options": [
+        "Only a signed executive memo",
+        "Records showing controls are defined, assigned, performed, and reviewed",
+        "A promise to document actions later",
+        "Only external certification marketing material"
+      ],
+      "correctIndex": 1,
+      "explanation": "Audit-ready evidence proves that governance works in practice, not only on paper.",
+      "tags": [
+        "audit"
+      ]
+    },
+    {
+      "id": "fa11",
+      "type": "short-text",
+      "prompt": "Which ISO standard establishes an information security management system? Enter digits only.",
+      "acceptedAnswers": [
+        "27001"
+      ],
+      "placeholder": "Enter digits only",
+      "explanation": "ISO/IEC 27001 is the management-system standard for information security.",
+      "tags": [
+        "standards"
+      ]
+    },
+    {
+      "id": "fa12",
+      "prompt": "What is the most credible implementation pattern for ISO/IEC 42001?",
+      "options": [
+        "Treat it as a one-time documentation exercise",
+        "Establish scope, ownership, controls, evidence, review, and continual improvement",
+        "Adopt only supplier due diligence and ignore management review",
+        "Wait until an external audit forces action"
+      ],
+      "correctIndex": 1,
+      "explanation": "The standard works as a management system that must be operated, evidenced, reviewed, and improved over time.",
+      "tags": [
+        "implementation"
+      ]
+    }
+  ]
+}
